@@ -613,7 +613,7 @@
             <span id="auth-status" class="sync-status">Auth: desconectado</span>
             <button class="btn-toolbar" id="btn-login" type="button">Entrar</button>
             <button class="btn-toolbar" id="btn-logout-auth" type="button">Sair (Auth)</button>
-            <span id="sync-status" class="sync-status">Sem conexão com Gist</span>
+            <span id="sync-status" class="sync-status">Sem login Firebase</span>
             <button class="btn-toolbar" id="btn-editor-name" type="button">Nome do Editor</button>
             <button class="btn-toolbar" id="btn-export-backup" type="button">Exportar backup JSON</button>
             <button class="btn-toolbar" id="btn-import-backup" type="button">Importar backup JSON</button>
@@ -638,7 +638,7 @@
     <div class="content-layout">
         <div class="editor-panel">
             <h3>Dados do Contrato (não aparece na impressão)</h3>
-            <div id="gist-connection-note" class="status-note">Conectando ao Gist...</div>
+            <div id="gist-connection-note" class="status-note">Aguardando login Firebase...</div>
             <div class="tabs-wrap">
                 <button class="tab-btn active" id="tab-btn-contrato" type="button">Contrato</button>
                 <button class="tab-btn" id="tab-btn-imoveis" type="button">Imóveis</button>
@@ -741,21 +741,12 @@
                 </div>
 
                 <div class="config-wrap tech-panel">
-                    <div class="tech-title">Painel técnico (Gist)</div>
-                    <div class="tech-note">Estas configurações são técnicas (GIST_ID, GIST_FILE e TOKEN). </div>
+                    <div class="tech-title">Painel técnico (Firebase)</div>
+                    <div class="tech-note">Persistência ativa no Firestore com autenticação Google. Integração com Gist desativada nesta etapa.</div>
                     <div class="editor-grid">
-                        <div class="editor-field full"><label for="f-gist-id">GIST_ID</label><input id="f-gist-id"
-                                type="text" placeholder="Ex.: 0123456789abcdef0123456789abcdef"></div>
-                        <div class="editor-field"><label for="f-gist-file">GIST_FILE</label><input id="f-gist-file"
-                                type="text" value="contratos.json"></div>
-                        <div class="editor-field"><label>&nbsp;</label><button class="btn-secondary"
-                                id="btn-save-config" type="button">Aplicar config</button></div>
-                        <div class="editor-field full"><label>TOKEN (sessão atual)</label>
-                            <div class="editor-actions" style="margin-top: 0;"><button class="btn-secondary"
-                                    id="btn-connect-token" type="button">Conectar/Informar token</button><button
-                                    class="btn-secondary" id="btn-logout-token" type="button">Remover token da
-                                    sessão</button></div>
-                        </div>
+                        <div class="editor-field full"><label>Projeto Firebase</label><input type="text" value="contratos-59638" disabled></div>
+                        <div class="editor-field"><label>Coleção de versões</label><input type="text" value="contracts" disabled></div>
+                        <div class="editor-field"><label>Coleção de imóveis</label><input type="text" value="properties" disabled></div>
                     </div>
                 </div>
 
@@ -1058,6 +1049,7 @@
 
     <script type="module" src="./js/firebase-init.js"></script>
     <script type="module" src="./js/repositories/contractsRepo.js"></script>
+    <script type="module" src="./js/repositories/propertiesRepo.js"></script>
     <script type="module" src="./js/auth.js"></script>
     <script>
         window.FIREBASE_CONFIG = window.FIREBASE_CONFIG || {
@@ -1070,7 +1062,7 @@
             measurementId: "G-1KTHVXWV3S"
         };
 
-        // Dados de exemplo até carregar do Gist
+        // Dados de exemplo até carregar do Firestore
         const defaultDb = {
             locador: {
                 nome: "FULANO DE TAL",
@@ -1119,7 +1111,6 @@
             selectedPropertyId: ""
         };
 
-        const GIST_SCHEMA_VERSION = 1;
         const DEFAULT_MEMORIAL_TEXT = `Paredes internas: Tinta Acrílica Premium Coral Semi Brilho cor Meditação.
 Teto: Tinta Acrílica Premium Branco Gelo.
 Portas e rodapés: acabamento em bom estado.
@@ -1128,51 +1119,21 @@ Banheiro: box, espelho, torneiras e saboneteira.
 Área de serviço: tanque e torneira funcionando.
 Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fixos conforme vistoria.`;
 
-        // A única persistência local é o nome do editor. Todo o resto fica no Gist.
+        // A única persistência local é o nome do editor. Todo o resto fica no Firestore.
         const EDITOR_NAME_KEY = 'contratoEditorName_v1';
-        const TOKEN_SESSION_KEY = 'githubTokenSession_v1';
         const LEGACY_GIST_CONFIG_KEY = 'contratoGistConfig_v1';
         const LEGACY_TOKEN_LOCAL_KEY = 'githubTokenRemember_v1';
-        const URL_PARAM_TOKEN = 'gh_token';
-        const URL_PARAM_GIST_ID = 'gist_id';
-        const URL_PARAM_GIST_FILE = 'gist_file';
 
         let db = JSON.parse(JSON.stringify(defaultDb));
         let openedVersionId = null;
-        let loadedFromRemote = false;
         let versionsCache = [];
-        // propertiesCache: lista de imóveis em memória, sincronizada exclusivamente com o Gist.
+        // propertiesCache: lista de imóveis em memória, sincronizada com o Firestore.
         let propertiesCache = [];
         let currentPropertyId = null;
         let propertyFormDirty = false;
         let lastPropertySelectionId = '';
         let isApplyingPropertySelection = false;
-        let runtimeToken = '';
         let currentAuthUser = null;
-
-        // === Configuração por URL (token/gist_id/gist_file) ===
-        function getUrlRuntimeConfig() {
-            const params = new URLSearchParams(window.location.search);
-            return {
-                token: (params.get(URL_PARAM_TOKEN) || '').trim(),
-                gistId: (params.get(URL_PARAM_GIST_ID) || '').trim(),
-                gistFile: (params.get(URL_PARAM_GIST_FILE) || '').trim()
-            };
-        }
-
-        function applyUrlRuntimeConfig(values) {
-            const url = new URL(window.location.href);
-            const params = url.searchParams;
-
-            const gistId = (values?.gistId || '').trim();
-            const gistFile = (values?.gistFile || '').trim();
-
-            if (gistId) params.set(URL_PARAM_GIST_ID, gistId); else params.delete(URL_PARAM_GIST_ID);
-            if (gistFile) params.set(URL_PARAM_GIST_FILE, gistFile); else params.delete(URL_PARAM_GIST_FILE);
-
-            const next = `${url.pathname}${params.toString() ? `?${params.toString()}` : ''}${url.hash}`;
-            window.history.replaceState({}, '', next);
-        }
 
         // === Avisos de conexão/estado ===
         function setGistConnectionNote(message, isError = false) {
@@ -1191,16 +1152,24 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             if (!currentAuthUser?.uid || !window.ContractsRepo) {
                 versionsCache = [];
                 openedVersionId = null;
-                refreshVersionList();
                 return;
             }
 
             const remoteVersions = await window.ContractsRepo.listVersions(currentAuthUser.uid);
             versionsCache = remoteVersions;
             openedVersionId = null;
-            applyDataFromSource();
-            setSyncStatus('Fonte: Firestore');
-            setGistConnectionNote('Versões carregadas do Firestore');
+        }
+
+        async function loadPropertiesFromFirestore() {
+            if (!currentAuthUser?.uid || !window.PropertiesRepo) {
+                propertiesCache = [];
+                currentPropertyId = null;
+                return;
+            }
+
+            const remoteProperties = await window.PropertiesRepo.listProperties(currentAuthUser.uid);
+            propertiesCache = remoteProperties;
+            currentPropertyId = propertiesCache[0]?.id || null;
         }
 
         async function saveVersionToFirestore(version) {
@@ -1227,22 +1196,52 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
         }
 
+        async function savePropertyToFirestore(property) {
+            if (!currentAuthUser?.uid || !window.PropertiesRepo) {
+                throw new Error('Faça login para salvar imóveis no Firestore.');
+            }
+            await window.PropertiesRepo.upsertProperty(currentAuthUser.uid, property);
+        }
+
+        async function deletePropertyFromFirestore(propertyId) {
+            if (!currentAuthUser?.uid || !window.PropertiesRepo) {
+                throw new Error('Faça login para excluir imóveis no Firestore.');
+            }
+            await window.PropertiesRepo.deleteProperty(currentAuthUser.uid, propertyId);
+        }
+
         window.handleFirebaseAuthChanged = async function (user) {
             currentAuthUser = user || null;
             if (!currentAuthUser) {
                 versionsCache = [];
                 openedVersionId = null;
+                propertiesCache = [];
+                currentPropertyId = null;
                 refreshVersionList();
+                refreshPropertyList();
+                refreshPropertySelectInContract();
+                setPropertyFormData(createEmptyProperty());
                 setSyncStatus('Sem login Firebase');
-                setGistConnectionNote('Faça login para carregar versões do Firestore.', true);
+                setGistConnectionNote('Faça login para carregar versões e imóveis do Firestore.', true);
                 return;
             }
 
             try {
-                await loadVersionsFromFirestore();
+                await Promise.all([
+                    loadVersionsFromFirestore(),
+                    loadPropertiesFromFirestore()
+                ]);
+                applyDataFromSource();
+                if (propertiesCache.length) {
+                    selectPropertyForEditor(propertiesCache[0].id);
+                } else {
+                    setPropertyFormData(createEmptyProperty());
+                }
+                setSyncStatus('Fonte: Firestore');
+                setGistConnectionNote('Versões e imóveis carregados do Firestore');
             } catch (error) {
                 setSyncStatus('Erro Firestore');
-                setGistConnectionNote(error.message || 'Falha ao carregar versões do Firestore.', true);
+                setGistConnectionNote(error.message || 'Falha ao carregar dados do Firestore.', true);
             }
         };
 
@@ -1280,191 +1279,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         function clearLegacyLocalPersistence() {
             localStorage.removeItem(LEGACY_GIST_CONFIG_KEY);
             localStorage.removeItem(LEGACY_TOKEN_LOCAL_KEY);
-        }
-
-        function getConfigFromFields() {
-            return {
-                gistId: fieldValue('f-gist-id'),
-                gistFile: fieldValue('f-gist-file') || 'contratos.json'
-            };
-        }
-
-        function setConfigFields(config) {
-            setFieldValue('f-gist-id', config?.gistId || '');
-            setFieldValue('f-gist-file', config?.gistFile || 'contratos.json');
-        }
-
-        // === Token GitHub (memória + sessionStorage) ===
-        function getStoredToken() {
-            const urlToken = getUrlRuntimeConfig().token;
-            return urlToken || runtimeToken || sessionStorage.getItem(TOKEN_SESSION_KEY) || '';
-        }
-
-        function setStoredToken(token) {
-            runtimeToken = token;
-            sessionStorage.setItem(TOKEN_SESSION_KEY, token);
-        }
-
-        function clearStoredToken() {
-            runtimeToken = '';
-            sessionStorage.removeItem(TOKEN_SESSION_KEY);
-        }
-
-        function promptTokenAndStore() {
-            const input = window.prompt('Informe o token do GitHub (escopo para editar o Gist):');
-            if (!input) return '';
-            const token = input.trim();
-            if (!token) return '';
-            setStoredToken(token);
-            return token;
-        }
-
-        function githubHeaders(token) {
-            return {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/vnd.github+json',
-                'Content-Type': 'application/json'
-            };
-        }
-
-        // === Schema remoto (Gist): { schemaVersion, properties, versions } ===
-        function normalizeRemoteState(parsed) {
-            if (Array.isArray(parsed)) {
-                return {
-                    migrated: true,
-                    state: {
-                        schemaVersion: GIST_SCHEMA_VERSION,
-                        properties: [],
-                        versions: parsed
-                    }
-                };
-            }
-
-            if (!parsed || typeof parsed !== 'object') {
-                return {
-                    migrated: true,
-                    state: {
-                        schemaVersion: GIST_SCHEMA_VERSION,
-                        properties: [],
-                        versions: []
-                    }
-                };
-            }
-
-            const properties = Array.isArray(parsed.properties) ? parsed.properties : [];
-            const versions = Array.isArray(parsed.versions) ? parsed.versions : [];
-
-            return {
-                migrated: !Array.isArray(parsed.properties) || !Array.isArray(parsed.versions) || parsed.schemaVersion !== GIST_SCHEMA_VERSION,
-                state: {
-                    schemaVersion: GIST_SCHEMA_VERSION,
-                    properties,
-                    versions
-                }
-            };
-        }
-
-        // === gistLoad / gistSave ===
-        async function gistLoadState(config, token) {
-            if (!config?.gistId) throw new Error('GIST_ID não configurado.');
-            const response = await fetch(`https://api.github.com/gists/${config.gistId}`, {
-                method: 'GET',
-                headers: githubHeaders(token)
-            });
-
-            if (response.status === 401 || response.status === 403) {
-                throw new Error('Token inválido ou sem permissão para acessar este Gist.');
-            }
-            if (response.status === 404) {
-                throw new Error('Gist não encontrado. Verifique o GIST_ID.');
-            }
-            if (!response.ok) {
-                throw new Error('Falha ao ler o Gist remoto.');
-            }
-
-            const gist = await response.json();
-            const file = gist?.files?.[config.gistFile];
-            if (!file) {
-                throw new Error('Arquivo JSON não existe no Gist ainda.');
-            }
-
-            let parsed;
-            try {
-                parsed = JSON.parse(file.content || '[]');
-            } catch {
-                throw new Error('Conteúdo JSON inválido no arquivo remoto.');
-            }
-
-            return normalizeRemoteState(parsed);
-        }
-
-        async function gistSaveState(config, token, state) {
-            if (!config?.gistId) throw new Error('GIST_ID não configurado.');
-            const payload = {
-                files: {
-                    [config.gistFile]: {
-                        content: JSON.stringify(state, null, 2)
-                    }
-                }
-            };
-
-            const response = await fetch(`https://api.github.com/gists/${config.gistId}`, {
-                method: 'PATCH',
-                headers: githubHeaders(token),
-                body: JSON.stringify(payload)
-            });
-
-            if (response.status === 401 || response.status === 403) {
-                throw new Error('Token inválido ou sem permissão para gravar no Gist.');
-            }
-            if (response.status === 404) {
-                throw new Error('Gist não encontrado para gravação.');
-            }
-            if (!response.ok) {
-                throw new Error('Falha ao gravar dados no Gist.');
-            }
-        }
-
-        function buildRemoteState(nextProperties = propertiesCache) {
-            return {
-                schemaVersion: GIST_SCHEMA_VERSION,
-                properties: nextProperties,
-                versions: []
-            };
-        }
-
-        async function persistRemoteState(nextProperties = propertiesCache) {
-            const config = getConfigFromFields();
-            if (!config.gistId) {
-                loadedFromRemote = false;
-                setSyncStatus('Sem conexão com Gist');
-                setGistConnectionNote('Sem conexão com Gist (GIST_ID não informado)', true);
-                return false;
-            }
-
-            let token = getStoredToken();
-            if (!token) {
-                token = promptTokenAndStore();
-                if (!token) {
-                    loadedFromRemote = false;
-                    setSyncStatus('Sem conexão com Gist');
-                    setGistConnectionNote('Sem conexão com Gist (token não informado)', true);
-                    return false;
-                }
-            }
-
-            try {
-                await gistSaveState(config, token, buildRemoteState(nextProperties));
-                loadedFromRemote = true;
-                setSyncStatus('Fonte: remoto sincronizado');
-                setGistConnectionNote('Conectado ao Gist');
-                return true;
-            } catch (error) {
-                loadedFromRemote = false;
-                setSyncStatus('Sem conexão com Gist');
-                setGistConnectionNote(error.message || 'Sem conexão com Gist', true);
-                throw error;
-            }
         }
 
         function getLatestVersion(versions) {
@@ -1536,7 +1350,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             if (!versionsCache.length) {
                 const option = document.createElement('option');
                 option.value = '';
-                option.textContent = 'Nenhuma versão no Gist';
+                option.textContent = 'Nenhuma versão salva';
                 select.appendChild(option);
                 return;
             }
@@ -1566,7 +1380,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 refreshVersionList();
                 refreshPropertySelectInContract();
                 refreshPropertyList();
-                setGistConnectionNote('Dados carregados do Gist');
+                setGistConnectionNote('Dados carregados do Firestore');
                 return;
             }
 
@@ -1577,7 +1391,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             refreshVersionList();
             refreshPropertySelectInContract();
             refreshPropertyList();
-            setGistConnectionNote('Dados de exemplo (nenhuma versão no Gist)');
+            setGistConnectionNote('Dados de exemplo (nenhuma versão no Firestore)');
         }
 
         function parseCurrencyToNumber(value) {
@@ -1970,25 +1784,21 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
 
-            const nextProperties = [...propertiesCache];
-            const index = existing ? nextProperties.findIndex((item) => item.id === existing.id) : -1;
-            if (index >= 0) {
-                nextProperties[index] = nextProperty;
-            } else {
-                nextProperties.push(nextProperty);
-            }
-
             try {
-                const ok = await persistRemoteState(nextProperties);
-                if (!ok) return;
-                propertiesCache = nextProperties;
+                await savePropertyToFirestore(nextProperty);
+                const index = propertiesCache.findIndex((item) => item.id === nextProperty.id);
+                if (index >= 0) {
+                    propertiesCache[index] = nextProperty;
+                } else {
+                    propertiesCache.push(nextProperty);
+                }
                 currentPropertyId = nextProperty.id;
                 propertyFormDirty = false;
                 refreshPropertyList();
                 refreshPropertySelectInContract();
                 alert('Imóvel salvo com sucesso.');
             } catch (error) {
-                alert(error.message || 'Falhou ao salvar imóvel no Gist.');
+                alert(error.message || 'Falhou ao salvar imóvel no Firestore.');
             }
         }
 
@@ -2010,8 +1820,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             const nextProperties = [...propertiesCache, copy];
             try {
-                const ok = await persistRemoteState(nextProperties);
-                if (!ok) return;
+                await savePropertyToFirestore(copy);
                 propertiesCache = nextProperties;
                 currentPropertyId = copy.id;
                 setPropertyFormData(copy);
@@ -2019,7 +1828,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 refreshPropertySelectInContract();
                 alert('Imóvel duplicado com sucesso.');
             } catch (error) {
-                alert(error.message || 'Falhou ao duplicar imóvel no Gist.');
+                alert(error.message || 'Falhou ao duplicar imóvel no Firestore.');
             }
         }
 
@@ -2034,8 +1843,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             const nextProperties = propertiesCache.filter((item) => item.id !== source.id);
             try {
-                const ok = await persistRemoteState(nextProperties);
-                if (!ok) return;
+                await deletePropertyFromFirestore(source.id);
                 propertiesCache = nextProperties;
                 if (fieldValue('f-property-selected') === source.id) {
                     setFieldValue('f-property-selected', '');
@@ -2048,7 +1856,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 render();
                 alert('Imóvel excluído com sucesso.');
             } catch (error) {
-                alert(error.message || 'Falhou ao excluir imóvel no Gist.');
+                alert(error.message || 'Falhou ao excluir imóvel no Firestore.');
             }
         }
 
@@ -2474,72 +2282,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             refreshVersionList();
         }
 
-        async function connectAndTestToken() {
-            const currentToken = getStoredToken();
-            let token = currentToken;
-
-            if (!token) {
-                token = promptTokenAndStore();
-                if (!token) return;
-            } else {
-                const change = window.confirm('Já existe token salvo.\nOK = informar um novo token\nCancelar = testar token atual');
-                if (change) {
-                    token = promptTokenAndStore();
-                    if (!token) return;
-                }
-            }
-
-            const config = getConfigFromFields();
-            if (!config.gistId) {
-                setSyncStatus('Token informado; falta GIST_ID');
-                alert('Token informado. Agora preencha o GIST_ID e clique em Aplicar config.');
-                return;
-            }
-
-            try {
-                const remoteState = await gistLoadState(config, token);
-                propertiesCache = remoteState.state.properties;
-                loadedFromRemote = true;
-                setSyncStatus('Gist conectado (imóveis)');
-                setGistConnectionNote('Conectado ao Gist para imóveis');
-                refreshPropertyList();
-                refreshPropertySelectInContract();
-                if (remoteState.migrated) {
-                    await persistRemoteState(propertiesCache);
-                }
-                alert('Conexão com Gist validada (somente imóveis nesta etapa).');
-            } catch (error) {
-                if (String(error.message || '').includes('Arquivo JSON não existe')) {
-                    propertiesCache = [];
-                    loadedFromRemote = true;
-                    setSyncStatus('Gist conectado; imóveis serão criados ao salvar');
-                    setGistConnectionNote('Gist conectado sem arquivo remoto; clique em Salvar para criar.');
-                    refreshPropertyList();
-                    refreshPropertySelectInContract();
-                    alert('Conexão com Gist validada. O arquivo será criado ao salvar o primeiro imóvel.');
-                    return;
-                }
-                loadedFromRemote = false;
-                propertiesCache = [];
-                setSyncStatus('Sem conexão com Gist');
-                setGistConnectionNote(error.message || 'Sem conexão com Gist', true);
-                refreshPropertyList();
-                refreshPropertySelectInContract();
-                alert(error.message || 'Falha na conexão com Gist.');
-            }
-        }
-
-        function logoutToken() {
-            clearStoredToken();
-            loadedFromRemote = false;
-            propertiesCache = [];
-            setSyncStatus('Sem conexão com Gist');
-            setGistConnectionNote('Sem conexão com Gist', true);
-            refreshPropertyList();
-            refreshPropertySelectInContract();
-            alert('Token removido da sessão atual.');
-        }
-
         function exportBackupJson() {
             const blob = new Blob([JSON.stringify(versionsCache, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -2580,49 +2322,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
         }
 
-        async function bootstrapVersionsFromRemoteIfPossible() {
-            const urlConfig = getUrlRuntimeConfig();
-            const config = {
-                gistId: urlConfig.gistId || fieldValue('f-gist-id'),
-                gistFile: urlConfig.gistFile || fieldValue('f-gist-file') || 'contratos.json'
-            };
-
-            setConfigFields(config);
-            applyUrlRuntimeConfig(config);
-
-            const token = getStoredToken();
-            if (!config.gistId || !token) {
-                loadedFromRemote = false;
-                propertiesCache = [];
-                setSyncStatus('Sem conexão com Gist');
-                setGistConnectionNote('Sem conexão com Gist', true);
-                return;
-            }
-
-            try {
-                const remoteState = await gistLoadState(config, token);
-                propertiesCache = remoteState.state.properties;
-                loadedFromRemote = true;
-                setSyncStatus('Gist: imóveis carregados');
-                setGistConnectionNote('Imóveis carregados do Gist');
-                if (remoteState.migrated) {
-                    await persistRemoteState(propertiesCache);
-                }
-            } catch (error) {
-                if (String(error.message || '').includes('Arquivo JSON não existe')) {
-                    propertiesCache = [];
-                    loadedFromRemote = true;
-                    setSyncStatus('Gist conectado (arquivo será criado no salvar imóvel)');
-                    setGistConnectionNote('Gist conectado sem arquivo remoto; clique em Salvar para criar.');
-                    return;
-                }
-
-                propertiesCache = [];
-                loadedFromRemote = false;
-                setSyncStatus('Sem conexão com Gist');
-                setGistConnectionNote(error.message || 'Sem conexão com Gist', true);
-            }
-        }
 
         function switchTab(tabName) {
             const isContrato = tabName === 'contrato';
@@ -2638,7 +2337,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         window.onload = async function () {
             clearLegacyLocalPersistence();
-            await bootstrapVersionsFromRemoteIfPossible();
             applyDataFromSource();
             toggleLocatariaConjugeVisibility();
             toggleFiador2Visibility();
@@ -2680,15 +2378,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('btn-excluir-versao').addEventListener('click', deleteSelectedVersion);
             document.getElementById('btn-json').addEventListener('click', resetToDefault);
             document.getElementById('btn-editor-name').addEventListener('click', setEditorNameManually);
-            document.getElementById('btn-save-config').addEventListener('click', function () {
-                const config = getConfigFromFields();
-                setConfigFields(config);
-                applyUrlRuntimeConfig(config);
-                alert('Configuração do Gist aplicada nesta URL.');
-            });
-
-            document.getElementById('btn-connect-token').addEventListener('click', connectAndTestToken);
-            document.getElementById('btn-logout-token').addEventListener('click', logoutToken);
             document.getElementById('btn-export-backup').addEventListener('click', exportBackupJson);
             document.getElementById('btn-import-backup').addEventListener('click', function () {
                 document.getElementById('backup-import-input').click();
