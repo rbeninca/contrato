@@ -43,21 +43,36 @@ async function upsertVersion(ownerId, version) {
   const fb = await waitForFirebase();
   const safeVersion = normalizeVersionPayload(version);
   const ref = fb.doc(fb.db, 'contracts', safeVersion.id);
-  await fb.setDoc(ref, {
+
+  const payload = {
     ownerId,
     name: safeVersion.name,
     savedAt: safeVersion.savedAt,
     editorName: safeVersion.editorName,
     data: safeVersion.data,
     source: 'legacy-version',
-    updatedAt: fb.serverTimestamp(),
-    createdAt: fb.serverTimestamp()
-  }, { merge: true });
+    updatedAt: fb.serverTimestamp()
+  };
+
+  if (!version?.createdAt) {
+    payload.createdAt = fb.serverTimestamp();
+  }
+
+  await fb.setDoc(ref, payload, { merge: true });
 }
 
 async function deleteVersion(ownerId, versionId) {
   const fb = await waitForFirebase();
   const ref = fb.doc(fb.db, 'contracts', versionId);
+
+  const current = await fb.getDoc(ref);
+  if (!current.exists()) return;
+
+  const currentData = current.data();
+  if (currentData?.ownerId !== ownerId) {
+    throw new Error('Você não tem permissão para excluir esta versão.');
+  }
+
   await fb.deleteDoc(ref);
 }
 

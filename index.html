@@ -1425,15 +1425,15 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
         }
 
-        function buildRemoteState(nextVersions = versionsCache, nextProperties = propertiesCache) {
+        function buildRemoteState(nextProperties = propertiesCache) {
             return {
                 schemaVersion: GIST_SCHEMA_VERSION,
                 properties: nextProperties,
-                versions: nextVersions
+                versions: []
             };
         }
 
-        async function persistRemoteState(nextVersions = versionsCache, nextProperties = propertiesCache) {
+        async function persistRemoteState(nextProperties = propertiesCache) {
             const config = getConfigFromFields();
             if (!config.gistId) {
                 loadedFromRemote = false;
@@ -1454,7 +1454,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             try {
-                await gistSaveState(config, token, buildRemoteState(nextVersions, nextProperties));
+                await gistSaveState(config, token, buildRemoteState(nextProperties));
                 loadedFromRemote = true;
                 setSyncStatus('Fonte: remoto sincronizado');
                 setGistConnectionNote('Conectado ao Gist');
@@ -1979,7 +1979,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             try {
-                const ok = await persistRemoteState(versionsCache, nextProperties);
+                const ok = await persistRemoteState(nextProperties);
                 if (!ok) return;
                 propertiesCache = nextProperties;
                 currentPropertyId = nextProperty.id;
@@ -2010,7 +2010,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             const nextProperties = [...propertiesCache, copy];
             try {
-                const ok = await persistRemoteState(versionsCache, nextProperties);
+                const ok = await persistRemoteState(nextProperties);
                 if (!ok) return;
                 propertiesCache = nextProperties;
                 currentPropertyId = copy.id;
@@ -2034,7 +2034,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             const nextProperties = propertiesCache.filter((item) => item.id !== source.id);
             try {
-                const ok = await persistRemoteState(versionsCache, nextProperties);
+                const ok = await persistRemoteState(nextProperties);
                 if (!ok) return;
                 propertiesCache = nextProperties;
                 if (fieldValue('f-property-selected') === source.id) {
@@ -2505,7 +2505,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 refreshPropertyList();
                 refreshPropertySelectInContract();
                 if (remoteState.migrated) {
-                    await persistRemoteState(remoteState.state.versions || [], propertiesCache);
+                    await persistRemoteState(propertiesCache);
                 }
                 alert('Conexão com Gist validada (somente imóveis nesta etapa).');
             } catch (error) {
@@ -2606,7 +2606,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 setSyncStatus('Gist: imóveis carregados');
                 setGistConnectionNote('Imóveis carregados do Gist');
                 if (remoteState.migrated) {
-                    await persistRemoteState(remoteState.state.versions || [], propertiesCache);
+                    await persistRemoteState(propertiesCache);
                 }
             } catch (error) {
                 if (String(error.message || '').includes('Arquivo JSON não existe')) {
