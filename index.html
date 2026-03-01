@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +14,11 @@
             --bg-page: #f8fafc;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -33,7 +38,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             font-family: sans-serif;
             border-left: 4px solid var(--accent-blue);
         }
@@ -74,14 +79,17 @@
             transition: all 0.2s;
         }
 
-        .btn-print:hover { background: #334155; transform: translateY(-1px); }
+        .btn-print:hover {
+            background: #334155;
+            transform: translateY(-1px);
+        }
 
         .editor-panel {
             max-width: 900px;
             margin: 0 auto 20px;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
             border-left: 4px solid var(--primary-dark);
             padding: 18px 20px;
             font-family: sans-serif;
@@ -395,7 +403,7 @@
             margin: 0 auto;
             background: white;
             padding: 80px 90px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             min-height: 297mm;
         }
 
@@ -498,8 +506,17 @@
             margin-right: auto;
         }
 
-        .name { font-weight: bold; font-size: 11px; text-transform: uppercase; }
-        .role { font-size: 10px; font-style: italic; color: #475569; }
+        .name {
+            font-weight: bold;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .role {
+            font-size: 10px;
+            font-style: italic;
+            color: #475569;
+        }
 
         .witnesses {
             margin-top: 40px;
@@ -542,10 +559,25 @@
 
         /* Ajustes de Impressão */
         @media print {
-            body { background: white; padding: 0; margin: 0; }
-            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .toolbar { display: none; }
-            .editor-panel { display: none; }
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .toolbar {
+                display: none;
+            }
+
+            .editor-panel {
+                display: none;
+            }
+
             .var-text {
                 background: #e0f2fe !important;
                 border-radius: 3px;
@@ -554,16 +586,22 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            .document-page { 
-                box-shadow: none; 
-                padding: 10mm 15mm; 
-                margin: 0; 
+
+            .document-page {
+                box-shadow: none;
+                padding: 10mm 15mm;
+                margin: 0;
                 width: 100%;
             }
-            @page { size: A4; margin: 12mm; }
+
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class="toolbar">
@@ -572,6 +610,9 @@
             <span style="font-size: 12px; margin-left: 10px; color: #64748b;"></span>
         </div>
         <div class="toolbar-right">
+            <span id="auth-status" class="sync-status">Auth: desconectado</span>
+            <button class="btn-toolbar" id="btn-login" type="button">Entrar</button>
+            <button class="btn-toolbar" id="btn-logout-auth" type="button">Sair (Auth)</button>
             <span id="sync-status" class="sync-status">Sem conexão com Gist</span>
             <button class="btn-toolbar" id="btn-editor-name" type="button">Nome do Editor</button>
             <button class="btn-toolbar" id="btn-export-backup" type="button">Exportar backup JSON</button>
@@ -581,7 +622,8 @@
     </div>
     <input id="backup-import-input" type="file" accept="application/json" class="hidden">
 
-    <div id="save-mode-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="save-mode-title">
+    <div id="save-mode-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="save-mode-title">
         <div class="modal-card">
             <div id="save-mode-title" class="modal-title">Salvar versão</div>
             <div class="modal-text">Escolha como deseja salvar os dados atuais do contrato.</div>
@@ -594,286 +636,440 @@
     </div>
 
     <div class="content-layout">
-    <div class="editor-panel">
-        <h3>Dados do Contrato (não aparece na impressão)</h3>
-        <div id="gist-connection-note" class="status-note">Conectando ao Gist...</div>
-        <div class="tabs-wrap">
-            <button class="tab-btn active" id="tab-btn-contrato" type="button">Contrato</button>
-            <button class="tab-btn" id="tab-btn-imoveis" type="button">Imóveis</button>
+        <div class="editor-panel">
+            <h3>Dados do Contrato (não aparece na impressão)</h3>
+            <div id="gist-connection-note" class="status-note">Conectando ao Gist...</div>
+            <div class="tabs-wrap">
+                <button class="tab-btn active" id="tab-btn-contrato" type="button">Contrato</button>
+                <button class="tab-btn" id="tab-btn-imoveis" type="button">Imóveis</button>
+            </div>
+
+            <div id="tab-contrato" class="tab-content">
+
+                <div class="editor-grid">
+                    <div class="editor-field"><label for="f-locador-nome">Locador - Nome</label><input
+                            id="f-locador-nome" type="text"></div>
+                    <div class="editor-field"><label for="f-locataria-nome">Locatária - Nome</label><input
+                            id="f-locataria-nome" type="text"></div>
+                    <div class="editor-field"><label for="f-locador-telefone">Locador - Telefone de
+                            contato</label><input id="f-locador-telefone" type="text"></div>
+                    <div class="editor-field"><label for="f-locador-usa-procurador">Locador atua como
+                            procurador?</label><select id="f-locador-usa-procurador">
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select></div>
+                    <div class="editor-field full"><label for="f-locador-qualificacao">Locador -
+                            Qualificação</label><textarea id="f-locador-qualificacao"></textarea></div>
+                    <div class="editor-field">
+                        <label for="f-locataria-estado-civil">Locatária - Estado civil</label>
+                        <select id="f-locataria-estado-civil">
+                            <option value="casado">Casada</option>
+                            <option value="solteiro">Solteira</option>
+                            <option value="divorciado">Divorciada</option>
+                        </select>
+                    </div>
+                    <div class="editor-field full"><label for="f-locataria-qualificacao">Locatária -
+                            Qualificação</label><textarea id="f-locataria-qualificacao"></textarea></div>
+                    <div class="editor-field full locataria-conjuge-field"><label
+                            for="f-locataria-conjuge-qualificacao">Locatária (casada) - Qualificação do
+                            cônjuge</label><textarea id="f-locataria-conjuge-qualificacao"></textarea></div>
+
+                    <div class="editor-field full"><label for="f-imovel-endereco">Endereço do imóvel</label><input
+                            id="f-imovel-endereco" type="text"></div>
+                    <div class="editor-field full"><label for="f-property-selected">Imóvel cadastrado
+                            (opcional)</label><select id="f-property-selected">
+                            <option value="">(Digitar manualmente)</option>
+                        </select></div>
+                    <div class="editor-field"><label for="f-imovel-proprietario">Proprietário</label><input
+                            id="f-imovel-proprietario" type="text"></div>
+                    <div class="editor-field"><label for="f-foro">Foro (comarca/cidade)</label><input id="f-foro"
+                            type="text"></div>
+                    <div class="editor-field"><label for="f-financeiro-valor">Valor aluguel (R$)</label><input
+                            id="f-financeiro-valor" type="text"></div>
+                    <div class="editor-field"><label for="f-financeiro-extenso">Valor por extenso</label><input
+                            id="f-financeiro-extenso" type="text"></div>
+                    <div class="editor-field"><label for="f-financeiro-prazo">Prazo (meses)</label><input
+                            id="f-financeiro-prazo" type="text"></div>
+                    <div class="editor-field"><label for="f-financeiro-inicio">Início</label><input
+                            id="f-financeiro-inicio" type="text"></div>
+                    <div class="editor-field"><label for="f-financeiro-termino">Término</label><input
+                            id="f-financeiro-termino" type="text"></div>
+                    <div class="editor-field">
+                        <label for="f-financeiro-assinatura">Data assinatura</label>
+                        <div class="field-inline">
+                            <input id="f-financeiro-assinatura" type="text">
+                            <button class="btn-secondary" id="btn-hoje-assinatura" type="button">Hoje</button>
+                        </div>
+                    </div>
+
+                    <div class="editor-field"><label for="f-pagamento-nome">PIX - Favorecida</label><input
+                            id="f-pagamento-nome" type="text"></div>
+                    <div class="editor-field"><label for="f-pagamento-chave">PIX - Chave</label><input
+                            id="f-pagamento-chave" type="text"></div>
+                    <div class="editor-field"><label for="f-pagamento-cpf">PIX - CPF</label><input id="f-pagamento-cpf"
+                            type="text"></div>
+                    <div class="editor-field"><label for="f-pagamento-banco">Banco/Conta</label><input
+                            id="f-pagamento-banco" type="text"></div>
+
+                    <div class="editor-field"><label for="f-fiador1-nome">Fiador 1 - Nome</label><input
+                            id="f-fiador1-nome" type="text"></div>
+                    <div class="editor-field">
+                        <label for="f-fiador1-estado-civil">Fiador 1 - Estado civil</label>
+                        <select id="f-fiador1-estado-civil">
+                            <option value="casado">Casado</option>
+                            <option value="solteiro">Solteiro</option>
+                            <option value="divorciado">Divorciado</option>
+                        </select>
+                    </div>
+                    <div class="editor-field"><label for="f-fiador1-papel">Fiador 1 - Papel</label><input
+                            id="f-fiador1-papel" type="text"></div>
+                    <div class="editor-field full"><label for="f-fiador1-desc">Fiador 1 - Descrição</label><textarea
+                            id="f-fiador1-desc"></textarea></div>
+
+                    <div class="editor-field fiador2-field"><label for="f-fiador2-nome">Fiador 2 - Nome</label><input
+                            id="f-fiador2-nome" type="text"></div>
+                    <div class="editor-field fiador2-field"><label for="f-fiador2-papel">Fiador 2 - Papel</label><input
+                            id="f-fiador2-papel" type="text"></div>
+                    <div class="editor-field full fiador2-field"><label for="f-fiador2-desc">Fiador 2 -
+                            Descrição</label><textarea id="f-fiador2-desc"></textarea></div>
+                </div>
+
+                <div class="editor-actions">
+                    <button class="btn-secondary" id="btn-atualizar" type="button">Atualizar Contrato</button>
+                    <button class="btn-primary" id="btn-salvar" type="button">Salvar</button>
+                    <button class="btn-secondary" id="btn-json" type="button">Voltar ao JSON padrão</button>
+                </div>
+
+                <div class="config-wrap tech-panel">
+                    <div class="tech-title">Painel técnico (Gist)</div>
+                    <div class="tech-note">Estas configurações são técnicas (GIST_ID, GIST_FILE e TOKEN). </div>
+                    <div class="editor-grid">
+                        <div class="editor-field full"><label for="f-gist-id">GIST_ID</label><input id="f-gist-id"
+                                type="text" placeholder="Ex.: 0123456789abcdef0123456789abcdef"></div>
+                        <div class="editor-field"><label for="f-gist-file">GIST_FILE</label><input id="f-gist-file"
+                                type="text" value="contratos.json"></div>
+                        <div class="editor-field"><label>&nbsp;</label><button class="btn-secondary"
+                                id="btn-save-config" type="button">Aplicar config</button></div>
+                        <div class="editor-field full"><label>TOKEN (sessão atual)</label>
+                            <div class="editor-actions" style="margin-top: 0;"><button class="btn-secondary"
+                                    id="btn-connect-token" type="button">Conectar/Informar token</button><button
+                                    class="btn-secondary" id="btn-logout-token" type="button">Remover token da
+                                    sessão</button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="version-wrap">
+                    <h4>Versões salvas</h4>
+                    <div class="editor-grid">
+                        <div class="editor-field full">
+                            <label for="version-list">Lista de versões</label>
+                            <select id="version-list" size="6"></select>
+                        </div>
+                    </div>
+                    <div class="editor-actions" style="margin-top: 10px;">
+                        <button class="btn-secondary" id="btn-carregar" type="button">Abrir versão selecionada</button>
+                        <button class="btn-secondary" id="btn-excluir-versao" type="button">Excluir versão
+                            selecionada</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="tab-imoveis" class="tab-content hidden">
+                <div class="property-note">Cadastre imóveis para reaproveitar endereço, proprietário e memorial
+                    descritivo nos contratos.</div>
+                <div class="editor-grid">
+                    <div class="editor-field full"><label for="property-list">Imóveis cadastrados</label><select
+                            id="property-list" size="6"></select></div>
+                </div>
+                <div class="editor-actions" style="margin-top: 10px;">
+                    <button class="btn-secondary" id="btn-property-new" type="button">Novo</button>
+                    <button class="btn-primary" id="btn-property-save" type="button">Salvar imóvel</button>
+                    <button class="btn-secondary" id="btn-property-duplicate" type="button">Duplicar</button>
+                    <button class="btn-secondary" id="btn-property-delete" type="button">Excluir</button>
+                </div>
+
+                <div class="editor-grid" style="margin-top: 12px;">
+                    <div class="editor-field full"><label for="p-label">Nome do imóvel (label)</label><input
+                            id="p-label" type="text" placeholder="Ex.: Casa 2482 - Jardim Universitário"></div>
+                    <div class="editor-field"><label for="p-cidade">Cidade</label><input id="p-cidade" type="text">
+                    </div>
+                    <div class="editor-field"><label for="p-estado">Estado</label><input id="p-estado" type="text"
+                            placeholder="PR"></div>
+                    <div class="editor-field"><label for="p-bairro">Bairro</label><input id="p-bairro" type="text">
+                    </div>
+                    <div class="editor-field"><label for="p-rua">Rua</label><input id="p-rua" type="text"></div>
+                    <div class="editor-field"><label for="p-numero">Número</label><input id="p-numero" type="text">
+                    </div>
+                    <div class="editor-field"><label for="p-complemento">Complemento</label><input id="p-complemento"
+                            type="text"></div>
+                    <div class="editor-field"><label for="p-cep">CEP</label><input id="p-cep" type="text"></div>
+                    <div class="editor-field full"><label for="p-proprietario">Proprietário (opcional)</label><input
+                            id="p-proprietario" type="text"></div>
+                    <div class="editor-field full"><label><input id="p-memorial-enabled" type="checkbox"> Anexar
+                            memorial ao contrato</label></div>
+                    <div class="editor-field full"><label><input id="p-memorial-page-break" type="checkbox"> Iniciar
+                            memorial em nova página</label></div>
+                    <div class="editor-field full"><label for="p-memorial-title">Título do memorial</label><input
+                            id="p-memorial-title" type="text" value="MEMORIAL DESCRITIVO"></div>
+                    <div class="editor-field full"><label for="p-memorial-text">Memorial descritivo</label><textarea
+                            id="p-memorial-text"></textarea></div>
+                    <div class="editor-field full"><label for="p-memorial-note">Observação anexos</label><input
+                            id="p-memorial-note" type="text" placeholder="FOTOS ENVIADAS POR E-MAIL (xxxxxx@gmail.com)">
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div id="tab-contrato" class="tab-content">
+        <div class="document-page">
+            <header>
+                <h1>Instrumento Particular de Locação Residencial</h1>
+                <h2>Contrato Particular de Locação de Imóvel Residencial</h2>
+            </header>
 
-        <div class="editor-grid">
-            <div class="editor-field"><label for="f-locador-nome">Locador - Nome</label><input id="f-locador-nome" type="text"></div>
-            <div class="editor-field"><label for="f-locataria-nome">Locatária - Nome</label><input id="f-locataria-nome" type="text"></div>
-            <div class="editor-field"><label for="f-locador-telefone">Locador - Telefone de contato</label><input id="f-locador-telefone" type="text"></div>
-            <div class="editor-field"><label for="f-locador-usa-procurador">Locador atua como procurador?</label><select id="f-locador-usa-procurador"><option value="sim">Sim</option><option value="nao">Não</option></select></div>
-            <div class="editor-field full"><label for="f-locador-qualificacao">Locador - Qualificação</label><textarea id="f-locador-qualificacao"></textarea></div>
-            <div class="editor-field">
-                <label for="f-locataria-estado-civil">Locatária - Estado civil</label>
-                <select id="f-locataria-estado-civil">
-                    <option value="casado">Casada</option>
-                    <option value="solteiro">Solteira</option>
-                    <option value="divorciado">Divorciada</option>
-                </select>
-            </div>
-            <div class="editor-field full"><label for="f-locataria-qualificacao">Locatária - Qualificação</label><textarea id="f-locataria-qualificacao"></textarea></div>
-            <div class="editor-field full locataria-conjuge-field"><label for="f-locataria-conjuge-qualificacao">Locatária (casada) - Qualificação do cônjuge</label><textarea id="f-locataria-conjuge-qualificacao"></textarea></div>
+            <div class="content">
+                <!-- Introdução Injetada -->
+                <div id="intro-partes" style="margin-bottom: 25px;"></div>
 
-            <div class="editor-field full"><label for="f-imovel-endereco">Endereço do imóvel</label><input id="f-imovel-endereco" type="text"></div>
-            <div class="editor-field full"><label for="f-property-selected">Imóvel cadastrado (opcional)</label><select id="f-property-selected"><option value="">(Digitar manualmente)</option></select></div>
-            <div class="editor-field"><label for="f-imovel-proprietario">Proprietário</label><input id="f-imovel-proprietario" type="text"></div>
-            <div class="editor-field"><label for="f-foro">Foro (comarca/cidade)</label><input id="f-foro" type="text"></div>
-            <div class="editor-field"><label for="f-financeiro-valor">Valor aluguel (R$)</label><input id="f-financeiro-valor" type="text"></div>
-            <div class="editor-field"><label for="f-financeiro-extenso">Valor por extenso</label><input id="f-financeiro-extenso" type="text"></div>
-            <div class="editor-field"><label for="f-financeiro-prazo">Prazo (meses)</label><input id="f-financeiro-prazo" type="text"></div>
-            <div class="editor-field"><label for="f-financeiro-inicio">Início</label><input id="f-financeiro-inicio" type="text"></div>
-            <div class="editor-field"><label for="f-financeiro-termino">Término</label><input id="f-financeiro-termino" type="text"></div>
-            <div class="editor-field">
-                <label for="f-financeiro-assinatura">Data assinatura</label>
-                <div class="field-inline">
-                    <input id="f-financeiro-assinatura" type="text">
-                    <button class="btn-secondary" id="btn-hoje-assinatura" type="button">Hoje</button>
+                <div class="clause">
+                    <span class="clause-title">Cláusula I</span>
+                    O IMÓVEL, OBJETO DA LOCAÇÃO ACORDADA PELO PRESENTE INSTRUMENTO, ESTÁ SITUADO À <strong
+                        id="txt-endereco-imovel" class="var-text"></strong>, SENDO O LOCADOR, ISOLADAMENTE, DE ACORDO
+                    COM O CÓDIGO CIVIL E/OU LEIS COMPLEMENTARES AFINS, ALÉM DE DOCUMENTOS COMPROBATÓRIOS EM SEU
+                    PODER<span id="txt-procurador-frase"></span><strong id="txt-proprietario"
+                        class="var-text"></strong>.
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula II</span>
+                    O PRAZO DETERMINADO PARA A LOCAÇÃO DESTE CONTRATO É DE <strong id="txt-prazo"
+                        class="var-text"></strong> MESES A INICIAR-SE EM <strong id="txt-inicio"
+                        class="var-text"></strong> E A TERMINAR EM <strong id="txt-termino" class="var-text"></strong>
+                    INDEPENDENTEMENTE DE QUALQUER AVISO, NOTIFICAÇÃO OU INTERPELAÇÃO JUDICIAL OU EXTRAJUDICIAL, QUANDO
+                    ENTÃO O LOCATÁRIO DEVERÁ RESTITUIR O IMÓVEL ORA LOCADO NAS MESMAS CONDIÇÕES EM QUE O RECEBEU SOB
+                    PENA DE PROPOSITURA DE AÇÃO DE DESPEJO E RESPONDER PELAS PERDAS E DANOS QUE CAUSAR.
+
+                    <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> O PRAZO DE LOCAÇÃO PODERÁ SER
+                        PRORROGADO ATRAVÉS DO CONSENTIMENTO DE AMBAS AS PARTES;</span>
+
+                    <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> A NÃO SER POR MUTUO ACORDO, O LOCADOR
+                        NÃO PODERÁ, ANTES DO VENCIMENTO DO PRAZO ESTIPULADO NO "CAPUT" DESTA CLÁUSULA II, REAVER O
+                        PRÉDIO LOCADO, NEM O LOCATÁRIO PODERÁ DEVOLVÊ-LO SENÃO PAGANDO A MULTA CORRESPONDENTE A 03
+                        (TRÊS) MESES DE ALUGUEL VIGENTE NA DATA DO COMETIMENTO DA INFRAÇÃO, PROPORCIONAL AO PERÍODO DO
+                        CUMPRIMENTO DO CONTRATO.</span>
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula III</span>
+                    O ALUGUEL INICIAL, PARA O PRAZO A QUE SE REFERE À CLÁUSULA II, É DE <strong>R$ <span id="txt-valor"
+                            class="var-text"></span> (<span id="txt-valor-extenso" class="var-text"></span>)</strong>
+                    MENSAIS.
+
+                    <div class="payment-box">
+                        <strong>FORMA DE PAGAMENTO:</strong> O ALUGUEL SERÁ PAGO IMPRETERIVELMENTE ATÉ O DIA 10 (DEZ) DO
+                        MÊS ATRAVÉS DE PIX PARA:
+                        <ul style="margin-top: 8px; list-style: none; padding-left: 0;">
+                            <li>• <strong>Favorecida:</strong> <strong id="txt-pix-titular" class="var-text"></strong>
+                            </li>
+                            <li>• <strong>Chave PIX (CPF):</strong> <span id="txt-pix-chave" class="var-text"></span>
+                            </li>
+                            <li>• <strong>CPF do Recebedor:</strong> <span id="txt-pix-cpf" class="var-text"></span>
+                            </li>
+                            <li>• <strong>Instituição/Conta:</strong> <span id="txt-banco-detalhe"
+                                    class="var-text"></span></li>
+                        </ul>
+                    </div>
+
+                    <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> O LOCATÁRIO SOFRERÁ A MULTA DE 2% (DOIS
+                        POR CENTO) ALÉM DA INCIDÊNCIA DE JUROS LEGAIS DE 1% (HUM POR CENTO) AO MÊS E A DEVIDA CORREÇÃO
+                        MONETÁRIA PELO PERÍODO EM ATRASO CASO O PAGAMENTO SEJA FEITO NA DATA APRAZADA.</span>
+
+                    <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> O ALUGUEL SERÁ "REAJUSTADO" A CADA
+                        PERÍODO DE 12 (DOZE) MESES CONSECUTIVOS, MEDIANTE A APLICAÇÃO DA VARIAÇÃO DO IPCA OU IGPM (O QUE
+                        FOR MAIOR).</span>
+
+                    <span class="paragraph"><strong>PARÁGRAFO TERCEIRO:</strong> EXCLUI-SE DO VALOR DO ALUGUEL A TAXA DE
+                        IMPOSTO PREDIAL, CONTA DE ÁGUA E LUZ, AS QUAIS SERÃO PAGAS PELO LOCATÁRIO.</span>
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula IV</span>
+                    O LOCATÁRIO TAMBÉM SE OBRIGA A:
+                    <ol class="clause-list">
+                        <li>MANTER O IMÓVEL LOCADO EM PERFEITO ESTADO DE CONSERVAÇÃO, HIGIENE E LIMPEZA, ZELANDO
+                            SOBREMANEIRA PELO BOM ESTADO E INTEGRIDADE DOS SEUS PERTENCES, PARTES INTEGRANTES OU
+                            ACESSÓRIOS DO IMÓVEL LOCADO;</li>
+                        <li>RECUPERAR, AS SUAS EXPENSAS, TODO E QUALQUER DANO QUE TENHA SIDO CAUSADO NAS DEPENDÊNCIAS DO
+                            IMÓVEL LOCADO;</li>
+                        <li>CUMPRIR TODAS AS EXIGÊNCIAS DOS PODERES PÚBLICOS CONSTITUIDOS, SEM DIREITO A QUALQUER
+                            INDENIZAÇÃO PELO LOCADOR, RELATIVAS A ORDEM E LIMPEZA DO IMÓVEL; </li>
+                        <li>FACULTAR O LOCADOR, QUANDO ESTE ENTENDER CONVENIENTE, EXAMINAR OU VISTORIAR O IMÓVEL LOCADO,
+                            PESSOALMENTE, POR SEU REPRESENTANTE OU PESSOAS AUTORIZADAS, MEDIANTE PRÉVIO AVISO DA HORA
+                            DESIGNADA PARA A VISITA.</li>
+                        <li>ENTREGAR E/OU COMUNICAR O LOCADOR, OU SEU REPRESENTANTE CONSTITUÍDO, ASSIM QUE RECEBER,
+                            TODOS OS AVISOS DE0 IMPOSTOS OU TAXAS, E AINDA, QUALQUER NOTIFICAÇÃO FISCAL OU
+                            CORRESPONDÊNCIA, RESPONDENDO POR DANO CAUSADO NA HIPÓTESE DE OMISSÃO.</li>
+                    </ol>
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula V</span>
+                    O LOCATÁRIO SE OBRIGA A SERVIR-SE DO IMÓVEL LOCADO EXCLUSIVAMENTE PARA FINS RESIDÊNCIAIS, DEVENDO
+                    TRATÁ-LO COMO SE O MESMO FOSSE DE SUA PROPRIEDADE.
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula VI</span>
+                    AO LOCATÁRIO É VEDADO CEDER OU TRANSFERIR O PRESENTE CONTRATO, AINDA QUE GRATUITAMENTE, SEM O
+                    CONSENTIMENTO EXPRESSO E POR ESCRITO DO LOCADOR, NO TODO OU EM PARTE, OU DAR EM COMODATO O OBJETO
+                    IMÓVEL DA PRESENTE LOCAÇÃO.
+
+                    <span class="paragraph"><strong>A:</strong> EM CASO DE OCORRER MOROSIDADE, POR PARTE DO LOCADOR, EM
+                        EXPOR OFICIALMENTE SUA POSIÇÃO COM RELAÇÃO AO CAPUT DESTA CLÁUSULA, AQUELA NÃO DEVERÁ SER
+                        ENTENDIDA COMO AUTORIZAÇÃO OU CONSENTIMENTO AO DISPOSTO NA REFERIDA CLÁUSULA.</span>
+
+                    <span class="paragraph"><strong>B:</strong> NO CASO DE CONSENTIMENTO DO LOCADOR, O LOCATÁRIO DEVERÁ
+                        PROVIDENCIAR, DEVIDA E OPORTUNAMENTE, JUNTO AOS OCUPANTES, A FIM DE QUE O IMÓVEL ESTEJA
+                        TOTALMENTE LIVRE E DESOCUPADO, AO FINDAR A LOCAÇÃO SOB PENA DE RESPONDER PELA MULTA DA CLÁUSULA
+                        IX.</span>
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula VII</span>
+                    É EXPRESSAMENTE PROIBIDO AO LOCATÁRIO TER NO IMÓVEL, EMBORA EM CARÁTER TEMPORÁRIO, A GUARDA OU O
+                    DEPÓSITO DE EXPLOSIVOS OU INFLAMÁVEIS, EXCETO OS BOTIJÕES DE GÁS PARA USO DE COZINHA (GLP).
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula VIII</span>
+                    O LOCATÁRIO NÃO PODERÁ MODIFICAR A ESTRUTURA E DIVISÕES DO IMÓVEL, BEM COMO FAZER QUAISQUER
+                    REFORMAS, OU MODIFICAÇÕES ESTRUTURAIS SEM PRÉVIO CONSENTIMENTO, POR ESCRITO, DO LOCADOR, SOB PENA DE
+                    PODER, ESTE, EXIGIR A RESTAURAÇÃO DO IMÓVEL EM SEU ESTADO ANTERIOR, SEM PREJUÍZO DA FACULDADE DE
+                    RESCINDIR O CONTRATO.
+
+                    <span class="paragraph"><strong>PARÁGRAFO ÚNICO:</strong> QUAISQUER BENFEITORIAS QUE SEJAM
+                        REALIZADAS, MESMO COM AUTORIZAÇÃO DO LOCADOR, FICARÃO INCORPORADAS DESDE LOGO AO IMÓVEL.</span>
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula IX</span>
+                    OS CONTRATANTES SE OBRIGAM MUTUAMENTE A RESPEITAR O PRESENTE CONTRATO, FICANDO A PARTE INFRATORA
+                    SUJEITA AO PAGAMENTO DA MULTA CONTRATUAL DE 03 (TRÊS) ALUGUÉIS VIGENTES DA ÉPOCA EM QUE OCORRER A
+                    INFRAÇÃO.
+
+                    <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> A MULTA ORA PREVISTA SERÁ DEVIDA EM
+                        QUALQUER ÉPOCA, MESMO NO CASO DE PRORROGAÇÃO DO PRESENTE CONTRATO POR TEMPO INDETERMINADO,
+                        INDEPENDENTEMENTE DA ÉPOCA DA OCORRÊNCIA DA INFRAÇÃO OU CONSTATAÇÃO DA MESMA, E DE QUALQUER
+                        AVISO OU INTERPELAÇÃO.</span>
+
+                    <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> A MULTA SERÁ COBRADA POR INTERMÉDIO DE
+                        PROCESSO DE EXECUÇÃO DE TÍTULO EXTRAJUDICIAL, SE, A PARTE INFRATORA SE FURTAR AO PAGAMENTO
+                        AMIGÁVEL.</span>
+
+                    <span class="paragraph"><strong>PARÁGRAFO TERCEIRO:</strong> A COBRANÇA DA MULTA NÃO OBSTARÁ A QUE A
+                        PARTE INOCENTE, SE LHE CONVIER, CONSIDERE RESCINDIDO O CONTRATO, SEM MAIS FORMALIDADES.</span>
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula X</span>
+                    NÃO PODERÃO OS CONTRATANTES PLEITEAR A COBRANÇA DE MULTA, SE OS MOTIVOS DA RESCISÃO CONTRATUAL,
+                    FOREM POR:
+
+                    <ol class="clause-list">
+                        <li>DESAPROPRIAÇÃO;</li>
+                        <li>INCÊNDIO OU DESABAMENTO, SEM CULPA DE QUALQUER DAS PARTES, FORÇA MAIOR OU CASOS FORTUITOS
+                            QUE IMPEÇAM O USO NORMAL DO IMÓVEL.</li>
+                    </ol>
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula XI - Fiança</span>
+                    ASSINAM TAMBÉM O PRESENTE CONTRATO COMO <strong>FIADORES</strong> E PRINCIPAIS PAGADORES,
+                    SOLIDARIAMENTE RESPONSÁVEIS:
+                    <div id="txt-lista-fiadores"
+                        style="margin-top: 10px; padding: 12px; border: 1px solid #f1f5f9; border-radius: 4px;"></div>
+                    <span class="paragraph"><strong>PARÁGRAFO ÚNICO:</strong> O FIADOR E PRINCIPAL PAGADOR FICAM TAMBÉM
+                        RESPONSÁVEIS PELAS CUSTAS JUDICIAIS E HONORÁRIOS ADVOCATÍCIOS A QUE VIER A SER CONDENADA O
+                        LOCATÁRIO EM AÇÃO DE DESPEJO OU QUALQUER OUTRA MEDIDA JUDICIAL QUE FOR INTENTADA PELO LOCADOR
+                        PARA PREVALECER SEUS DIREITOS E INTERESSES, DESDE QUE OS FIADORES SEJAM NOTIFICADOS, SENDO QUE O
+                        FIADOR RENUNCIA EXPRESSAMENTE O BENEFÍCIO DE ORDEM ESTIPULADO NO ARTIGO 827 DO CÓDIGO
+                        CIVIL.</span>
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula XII - Da Titularidade das Contas de Consumo</span>
+                    O LOCATÁRIO OBRIGA-SE A PROVIDENCIAR,<mark> NO PRAZO MÁXIMO DO PRIMEIRO MÊS DE VIGÊNCIA DA LOCAÇÃO,
+                        A TRANSFERÊNCIA PARA SEU NOME DAS CONTAS DE ÁGUA E ENERGIA ELÉTRICA RELATIVAS AO IMÓVEL
+                        LOCADO</mark>, DEVENDO, AINDA, ENCAMINHAR AO LOCADOR O COMPROVANTE FORMAL DA EFETIVA ALTERAÇÃO
+                    DE TITULARIDADE.
+
+                    <span class="paragraph"><strong>PARÁGRAFO PRELIMINAR:</strong> O COMPROVANTE DA ALTERAÇÃO DE
+                        TITULARIDADE DEVERÁ SER ENVIADO PELO LOCATÁRIO AO TELEFONE DE CONTATO DO LOCADOR, QUAL SEJA,
+                        <strong><span id="txt-locador-telefone" class="var-text"></span></strong>.</span>
+
+                    <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> O DESCUMPRIMENTO DO PRAZO ESTABELECIDO
+                        NO CAPUT DESTA CLÁUSULA SUJEITARÁ O LOCATÁRIO À MULTA IMEDIATA E NÃO COMPENSATÓRIA
+                        CORRESPONDENTE A 10% (DEZ POR CENTO) DO VALOR DO ALUGUEL VIGENTE, QUAL SEJA, <strong>R$ <span
+                                id="txt-valor-clausula12" class="var-text"></span></strong>, SEM PREJUÍZO DAS DEMAIS
+                        COMINAÇÕES CONTRATUAIS E LEGAIS.</span>
+
+                    <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> PERMANECENDO A IRREGULARIDADE APÓS
+                        NOTIFICAÇÃO FORMAL DO LOCADOR, FICARÁ CARACTERIZADA INFRAÇÃO CONTRATUAL GRAVE, FACULTANDO-SE AO
+                        LOCADOR A RESCISÃO ANTECIPADA DO CONTRATO, COM A INCIDÊNCIA DA MULTA RESCISÓRIA PREVISTA NA
+                        CLÁUSULA IX.</span>
+                </div>
+
+                <div class="clause">
+                    <span class="clause-title">Cláusula XIV - Do Foro</span>
+                    TUDO QUANTO FOR DEVIDO EM RAZÃO DESTE CONTRATO SERÁ COBRADO EM PROCESSO EXECUTIVO, OU EM AÇÃO
+                    APROPRIADA, NO FORO DA COMARCA DE <strong id="txt-foro" class="var-text">PALOTINA - PR</strong>.
+                </div>
+
+                <p style="margin-top: 40px; text-align: right;"><span id="txt-local-assinatura"
+                        class="var-text">PALOTINA - PR</span>, <span id="txt-data-assinatura" class="var-text"></span>.
+                </p>
+
+                <div class="signatures-grid" id="container-assinaturas"></div>
+
+                <div class="witnesses">
+                    <div class="signature-item">
+                        <div class="line"></div>
+                        <div class="role">Testemunha 1</div>
+                    </div>
+                    <div class="signature-item">
+                        <div class="line"></div>
+                        <div class="role">Testemunha 2</div>
+                    </div>
+                </div>
+
+                <div id="memorial-section" class="memorial-section hidden">
+                    <div id="memorial-title" class="memorial-title">MEMORIAL DESCRITIVO</div>
+                    <div id="memorial-note" class="memorial-note hidden"></div>
+                    <div id="memorial-text" class="memorial-text"></div>
                 </div>
             </div>
 
-            <div class="editor-field"><label for="f-pagamento-nome">PIX - Favorecida</label><input id="f-pagamento-nome" type="text"></div>
-            <div class="editor-field"><label for="f-pagamento-chave">PIX - Chave</label><input id="f-pagamento-chave" type="text"></div>
-            <div class="editor-field"><label for="f-pagamento-cpf">PIX - CPF</label><input id="f-pagamento-cpf" type="text"></div>
-            <div class="editor-field"><label for="f-pagamento-banco">Banco/Conta</label><input id="f-pagamento-banco" type="text"></div>
-
-            <div class="editor-field"><label for="f-fiador1-nome">Fiador 1 - Nome</label><input id="f-fiador1-nome" type="text"></div>
-            <div class="editor-field">
-                <label for="f-fiador1-estado-civil">Fiador 1 - Estado civil</label>
-                <select id="f-fiador1-estado-civil">
-                    <option value="casado">Casado</option>
-                    <option value="solteiro">Solteiro</option>
-                    <option value="divorciado">Divorciado</option>
-                </select>
-            </div>
-            <div class="editor-field"><label for="f-fiador1-papel">Fiador 1 - Papel</label><input id="f-fiador1-papel" type="text"></div>
-            <div class="editor-field full"><label for="f-fiador1-desc">Fiador 1 - Descrição</label><textarea id="f-fiador1-desc"></textarea></div>
-
-            <div class="editor-field fiador2-field"><label for="f-fiador2-nome">Fiador 2 - Nome</label><input id="f-fiador2-nome" type="text"></div>
-            <div class="editor-field fiador2-field"><label for="f-fiador2-papel">Fiador 2 - Papel</label><input id="f-fiador2-papel" type="text"></div>
-            <div class="editor-field full fiador2-field"><label for="f-fiador2-desc">Fiador 2 - Descrição</label><textarea id="f-fiador2-desc"></textarea></div>
-        </div>
-
-        <div class="editor-actions">
-            <button class="btn-secondary" id="btn-atualizar" type="button">Atualizar Contrato</button>
-            <button class="btn-primary" id="btn-salvar" type="button">Salvar</button>
-            <button class="btn-secondary" id="btn-json" type="button">Voltar ao JSON padrão</button>
-        </div>
-
-        <div class="config-wrap tech-panel">
-            <div class="tech-title">Painel técnico (Gist)</div>
-            <div class="tech-note">Estas configurações são técnicas (GIST_ID, GIST_FILE e TOKEN). </div>
-            <div class="editor-grid">
-                <div class="editor-field full"><label for="f-gist-id">GIST_ID</label><input id="f-gist-id" type="text" placeholder="Ex.: 0123456789abcdef0123456789abcdef"></div>
-                <div class="editor-field"><label for="f-gist-file">GIST_FILE</label><input id="f-gist-file" type="text" value="contratos.json"></div>
-                <div class="editor-field"><label>&nbsp;</label><button class="btn-secondary" id="btn-save-config" type="button">Aplicar config</button></div>
-                <div class="editor-field full"><label>TOKEN (sessão atual)</label><div class="editor-actions" style="margin-top: 0;"><button class="btn-secondary" id="btn-connect-token" type="button">Conectar/Informar token</button><button class="btn-secondary" id="btn-logout-token" type="button">Remover token da sessão</button></div></div>
-            </div>
-        </div>
-
-        <div class="version-wrap">
-            <h4>Versões salvas</h4>
-            <div class="editor-grid">
-                <div class="editor-field full">
-                    <label for="version-list">Lista de versões</label>
-                    <select id="version-list" size="6"></select>
-                </div>
-            </div>
-            <div class="editor-actions" style="margin-top: 10px;">
-                <button class="btn-secondary" id="btn-carregar" type="button">Abrir versão selecionada</button>
-                <button class="btn-secondary" id="btn-excluir-versao" type="button">Excluir versão selecionada</button>
-            </div>
-        </div>
-
-        </div>
-
-        <div id="tab-imoveis" class="tab-content hidden">
-            <div class="property-note">Cadastre imóveis para reaproveitar endereço, proprietário e memorial descritivo nos contratos.</div>
-            <div class="editor-grid">
-                <div class="editor-field full"><label for="property-list">Imóveis cadastrados</label><select id="property-list" size="6"></select></div>
-            </div>
-            <div class="editor-actions" style="margin-top: 10px;">
-                <button class="btn-secondary" id="btn-property-new" type="button">Novo</button>
-                <button class="btn-primary" id="btn-property-save" type="button">Salvar imóvel</button>
-                <button class="btn-secondary" id="btn-property-duplicate" type="button">Duplicar</button>
-                <button class="btn-secondary" id="btn-property-delete" type="button">Excluir</button>
-            </div>
-
-            <div class="editor-grid" style="margin-top: 12px;">
-                <div class="editor-field full"><label for="p-label">Nome do imóvel (label)</label><input id="p-label" type="text" placeholder="Ex.: Casa 2482 - Jardim Universitário"></div>
-                <div class="editor-field"><label for="p-cidade">Cidade</label><input id="p-cidade" type="text"></div>
-                <div class="editor-field"><label for="p-estado">Estado</label><input id="p-estado" type="text" placeholder="PR"></div>
-                <div class="editor-field"><label for="p-bairro">Bairro</label><input id="p-bairro" type="text"></div>
-                <div class="editor-field"><label for="p-rua">Rua</label><input id="p-rua" type="text"></div>
-                <div class="editor-field"><label for="p-numero">Número</label><input id="p-numero" type="text"></div>
-                <div class="editor-field"><label for="p-complemento">Complemento</label><input id="p-complemento" type="text"></div>
-                <div class="editor-field"><label for="p-cep">CEP</label><input id="p-cep" type="text"></div>
-                <div class="editor-field full"><label for="p-proprietario">Proprietário (opcional)</label><input id="p-proprietario" type="text"></div>
-                <div class="editor-field full"><label><input id="p-memorial-enabled" type="checkbox"> Anexar memorial ao contrato</label></div>
-                <div class="editor-field full"><label><input id="p-memorial-page-break" type="checkbox"> Iniciar memorial em nova página</label></div>
-                <div class="editor-field full"><label for="p-memorial-title">Título do memorial</label><input id="p-memorial-title" type="text" value="MEMORIAL DESCRITIVO"></div>
-                <div class="editor-field full"><label for="p-memorial-text">Memorial descritivo</label><textarea id="p-memorial-text"></textarea></div>
-                <div class="editor-field full"><label for="p-memorial-note">Observação anexos</label><input id="p-memorial-note" type="text" placeholder="FOTOS ENVIADAS POR E-MAIL (xxxxxx@gmail.com)"></div>
-            </div>
+            <footer>
+                Página 1 de 1 • Contrato de locação residencial
+            </footer>
         </div>
     </div>
 
-    <div class="document-page">
-        <header>
-            <h1>Instrumento Particular de Locação Residencial</h1>
-            <h2>Contrato Particular de Locação de Imóvel Residencial</h2>
-        </header>
-
-        <div class="content">
-            <!-- Introdução Injetada -->
-            <div id="intro-partes" style="margin-bottom: 25px;"></div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula I</span>
-                O IMÓVEL, OBJETO DA LOCAÇÃO ACORDADA PELO PRESENTE INSTRUMENTO, ESTÁ SITUADO À <strong id="txt-endereco-imovel" class="var-text"></strong>, SENDO O LOCADOR, ISOLADAMENTE, DE ACORDO COM O CÓDIGO CIVIL E/OU LEIS COMPLEMENTARES AFINS, ALÉM DE DOCUMENTOS COMPROBATÓRIOS EM SEU PODER<span id="txt-procurador-frase"></span><strong id="txt-proprietario" class="var-text"></strong>.
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula II</span>
-                O PRAZO DETERMINADO PARA A LOCAÇÃO DESTE CONTRATO É DE <strong id="txt-prazo" class="var-text"></strong> MESES A INICIAR-SE EM <strong id="txt-inicio" class="var-text"></strong> E A TERMINAR EM <strong id="txt-termino" class="var-text"></strong> INDEPENDENTEMENTE DE QUALQUER AVISO, NOTIFICAÇÃO OU INTERPELAÇÃO JUDICIAL OU EXTRAJUDICIAL, QUANDO ENTÃO O LOCATÁRIO DEVERÁ RESTITUIR O IMÓVEL ORA LOCADO NAS MESMAS CONDIÇÕES EM QUE O RECEBEU SOB PENA DE PROPOSITURA DE AÇÃO DE DESPEJO E RESPONDER PELAS PERDAS E DANOS QUE CAUSAR.
-                
-                <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> O PRAZO DE LOCAÇÃO PODERÁ SER PRORROGADO ATRAVÉS DO CONSENTIMENTO DE AMBAS AS PARTES;</span>
-                
-                <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> A NÃO SER POR MUTUO ACORDO, O LOCADOR NÃO PODERÁ, ANTES DO VENCIMENTO DO PRAZO ESTIPULADO NO "CAPUT" DESTA CLÁUSULA II, REAVER O PRÉDIO LOCADO, NEM O LOCATÁRIO PODERÁ DEVOLVÊ-LO SENÃO PAGANDO A MULTA CORRESPONDENTE A 03 (TRÊS) MESES DE ALUGUEL VIGENTE NA DATA DO COMETIMENTO DA INFRAÇÃO, PROPORCIONAL AO PERÍODO DO CUMPRIMENTO DO CONTRATO.</span>
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula III</span>
-                O ALUGUEL INICIAL, PARA O PRAZO A QUE SE REFERE À CLÁUSULA II, É DE <strong>R$ <span id="txt-valor" class="var-text"></span> (<span id="txt-valor-extenso" class="var-text"></span>)</strong> MENSAIS.
-                
-                <div class="payment-box">
-                    <strong>FORMA DE PAGAMENTO:</strong> O ALUGUEL SERÁ PAGO IMPRETERIVELMENTE ATÉ O DIA 10 (DEZ) DO MÊS ATRAVÉS DE PIX PARA:
-                    <ul style="margin-top: 8px; list-style: none; padding-left: 0;">
-                        <li>• <strong>Favorecida:</strong> <strong id="txt-pix-titular" class="var-text"></strong></li>
-                        <li>• <strong>Chave PIX (CPF):</strong> <span id="txt-pix-chave" class="var-text"></span></li>
-                        <li>• <strong>CPF do Recebedor:</strong> <span id="txt-pix-cpf" class="var-text"></span></li>
-                        <li>• <strong>Instituição/Conta:</strong> <span id="txt-banco-detalhe" class="var-text"></span></li>
-                    </ul>
-                </div>
-
-                <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> O LOCATÁRIO SOFRERÁ A MULTA DE 2% (DOIS POR CENTO) ALÉM DA INCIDÊNCIA DE JUROS LEGAIS DE 1% (HUM POR CENTO) AO MÊS E A DEVIDA CORREÇÃO MONETÁRIA PELO PERÍODO EM ATRASO CASO O PAGAMENTO SEJA FEITO NA DATA APRAZADA.</span>
-                
-                <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> O ALUGUEL SERÁ "REAJUSTADO" A CADA PERÍODO DE 12 (DOZE) MESES CONSECUTIVOS, MEDIANTE A APLICAÇÃO DA VARIAÇÃO DO IPCA OU IGPM (O QUE FOR MAIOR).</span>
-                
-                <span class="paragraph"><strong>PARÁGRAFO TERCEIRO:</strong> EXCLUI-SE DO VALOR DO ALUGUEL A TAXA DE IMPOSTO PREDIAL, CONTA DE ÁGUA E LUZ, AS QUAIS SERÃO PAGAS PELO LOCATÁRIO.</span>
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula IV</span>
-                O LOCATÁRIO TAMBÉM SE OBRIGA A:
-                <ol class="clause-list">
-                    <li>MANTER O IMÓVEL LOCADO EM PERFEITO ESTADO DE CONSERVAÇÃO, HIGIENE E LIMPEZA, ZELANDO SOBREMANEIRA PELO BOM ESTADO E INTEGRIDADE DOS SEUS PERTENCES, PARTES INTEGRANTES OU ACESSÓRIOS DO IMÓVEL LOCADO;</li>
-                    <li>RECUPERAR, AS SUAS EXPENSAS, TODO E QUALQUER DANO QUE TENHA SIDO CAUSADO NAS DEPENDÊNCIAS DO IMÓVEL LOCADO;</li>
-                    <li>CUMPRIR TODAS AS EXIGÊNCIAS DOS PODERES PÚBLICOS CONSTITUIDOS, SEM DIREITO A QUALQUER INDENIZAÇÃO PELO LOCADOR, RELATIVAS A ORDEM E LIMPEZA DO IMÓVEL;  </li>
-                    <li>FACULTAR O LOCADOR, QUANDO ESTE ENTENDER CONVENIENTE, EXAMINAR OU VISTORIAR O IMÓVEL LOCADO, PESSOALMENTE, POR SEU REPRESENTANTE OU PESSOAS AUTORIZADAS, MEDIANTE PRÉVIO AVISO DA HORA DESIGNADA PARA A VISITA.</li>
-                    <li>ENTREGAR E/OU COMUNICAR O LOCADOR, OU SEU REPRESENTANTE CONSTITUÍDO, ASSIM QUE RECEBER, TODOS OS AVISOS DE0 IMPOSTOS OU TAXAS, E AINDA, QUALQUER NOTIFICAÇÃO FISCAL OU CORRESPONDÊNCIA, RESPONDENDO POR DANO CAUSADO NA HIPÓTESE DE OMISSÃO.</li>
-                </ol>
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula V</span>
-                O LOCATÁRIO SE OBRIGA A SERVIR-SE DO IMÓVEL LOCADO EXCLUSIVAMENTE PARA FINS RESIDÊNCIAIS, DEVENDO TRATÁ-LO COMO SE O MESMO FOSSE DE SUA PROPRIEDADE.
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula VI</span>
-                AO LOCATÁRIO É VEDADO CEDER OU TRANSFERIR O PRESENTE CONTRATO, AINDA QUE GRATUITAMENTE, SEM O CONSENTIMENTO EXPRESSO E POR ESCRITO DO LOCADOR, NO TODO OU EM PARTE, OU DAR EM COMODATO O OBJETO IMÓVEL DA PRESENTE LOCAÇÃO.
-
-                <span class="paragraph"><strong>A:</strong> EM CASO DE OCORRER MOROSIDADE, POR PARTE DO LOCADOR, EM EXPOR OFICIALMENTE SUA POSIÇÃO COM RELAÇÃO AO CAPUT DESTA CLÁUSULA, AQUELA NÃO DEVERÁ SER ENTENDIDA COMO AUTORIZAÇÃO OU CONSENTIMENTO AO DISPOSTO NA REFERIDA CLÁUSULA.</span>
-
-                <span class="paragraph"><strong>B:</strong> NO CASO DE CONSENTIMENTO DO LOCADOR, O LOCATÁRIO DEVERÁ PROVIDENCIAR, DEVIDA E OPORTUNAMENTE, JUNTO AOS OCUPANTES, A FIM DE QUE O IMÓVEL ESTEJA TOTALMENTE LIVRE E DESOCUPADO, AO FINDAR A LOCAÇÃO SOB PENA DE RESPONDER PELA MULTA DA CLÁUSULA IX.</span>
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula VII</span>
-                É EXPRESSAMENTE PROIBIDO AO LOCATÁRIO TER NO IMÓVEL, EMBORA EM CARÁTER TEMPORÁRIO, A GUARDA OU O DEPÓSITO DE EXPLOSIVOS OU INFLAMÁVEIS, EXCETO OS BOTIJÕES DE GÁS PARA USO DE COZINHA (GLP).
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula VIII</span>
-                O LOCATÁRIO NÃO PODERÁ MODIFICAR A ESTRUTURA E DIVISÕES DO IMÓVEL, BEM COMO FAZER QUAISQUER REFORMAS, OU MODIFICAÇÕES ESTRUTURAIS SEM PRÉVIO CONSENTIMENTO, POR ESCRITO, DO LOCADOR, SOB PENA DE PODER, ESTE, EXIGIR A RESTAURAÇÃO DO IMÓVEL EM SEU ESTADO ANTERIOR, SEM PREJUÍZO DA FACULDADE DE RESCINDIR O CONTRATO.
-
-                <span class="paragraph"><strong>PARÁGRAFO ÚNICO:</strong> QUAISQUER BENFEITORIAS QUE SEJAM REALIZADAS, MESMO COM AUTORIZAÇÃO DO LOCADOR, FICARÃO INCORPORADAS DESDE LOGO AO IMÓVEL.</span>
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula IX</span>
-                OS CONTRATANTES SE OBRIGAM MUTUAMENTE A RESPEITAR O PRESENTE CONTRATO, FICANDO A PARTE INFRATORA SUJEITA AO PAGAMENTO DA MULTA CONTRATUAL DE 03 (TRÊS) ALUGUÉIS VIGENTES DA ÉPOCA EM QUE OCORRER A INFRAÇÃO.
-
-                <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> A MULTA ORA PREVISTA SERÁ DEVIDA EM QUALQUER ÉPOCA, MESMO NO CASO DE PRORROGAÇÃO DO PRESENTE CONTRATO POR TEMPO INDETERMINADO, INDEPENDENTEMENTE DA ÉPOCA DA OCORRÊNCIA DA INFRAÇÃO OU CONSTATAÇÃO DA MESMA, E DE QUALQUER AVISO OU INTERPELAÇÃO.</span>
-
-                <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> A MULTA SERÁ COBRADA POR INTERMÉDIO DE PROCESSO DE EXECUÇÃO DE TÍTULO EXTRAJUDICIAL, SE, A PARTE INFRATORA SE FURTAR AO PAGAMENTO AMIGÁVEL.</span>
-
-                <span class="paragraph"><strong>PARÁGRAFO TERCEIRO:</strong> A COBRANÇA DA MULTA NÃO OBSTARÁ A QUE A PARTE INOCENTE, SE LHE CONVIER, CONSIDERE RESCINDIDO O CONTRATO, SEM MAIS FORMALIDADES.</span>
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula X</span>
-                NÃO PODERÃO OS CONTRATANTES PLEITEAR A COBRANÇA DE MULTA, SE OS MOTIVOS DA RESCISÃO CONTRATUAL, FOREM POR:
-
-                <ol class="clause-list">
-                    <li>DESAPROPRIAÇÃO;</li>
-                    <li>INCÊNDIO OU DESABAMENTO, SEM CULPA DE QUALQUER DAS PARTES, FORÇA MAIOR OU CASOS FORTUITOS QUE IMPEÇAM O USO NORMAL DO IMÓVEL.</li>
-                </ol>
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula XI - Fiança</span>
-                ASSINAM TAMBÉM O PRESENTE CONTRATO COMO <strong>FIADORES</strong> E PRINCIPAIS PAGADORES, SOLIDARIAMENTE RESPONSÁVEIS:
-                <div id="txt-lista-fiadores" style="margin-top: 10px; padding: 12px; border: 1px solid #f1f5f9; border-radius: 4px;"></div>
-                <span class="paragraph"><strong>PARÁGRAFO ÚNICO:</strong> O FIADOR E PRINCIPAL PAGADOR FICAM TAMBÉM RESPONSÁVEIS PELAS CUSTAS JUDICIAIS E HONORÁRIOS ADVOCATÍCIOS A QUE VIER A SER CONDENADA O LOCATÁRIO EM AÇÃO DE DESPEJO OU QUALQUER OUTRA MEDIDA JUDICIAL QUE FOR INTENTADA PELO LOCADOR PARA PREVALECER SEUS DIREITOS E INTERESSES, DESDE QUE OS FIADORES SEJAM NOTIFICADOS, SENDO QUE O FIADOR RENUNCIA EXPRESSAMENTE O BENEFÍCIO DE ORDEM ESTIPULADO NO ARTIGO 827 DO CÓDIGO CIVIL.</span>
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula XII - Da Titularidade das Contas de Consumo</span>
-                O LOCATÁRIO OBRIGA-SE A PROVIDENCIAR,<mark> NO PRAZO MÁXIMO DO PRIMEIRO MÊS DE VIGÊNCIA DA LOCAÇÃO, A TRANSFERÊNCIA PARA SEU NOME DAS CONTAS DE ÁGUA E ENERGIA ELÉTRICA RELATIVAS AO IMÓVEL LOCADO</mark>, DEVENDO, AINDA, ENCAMINHAR AO LOCADOR O COMPROVANTE FORMAL DA EFETIVA ALTERAÇÃO DE TITULARIDADE.
-
-                <span class="paragraph"><strong>PARÁGRAFO PRELIMINAR:</strong> O COMPROVANTE DA ALTERAÇÃO DE TITULARIDADE DEVERÁ SER ENVIADO PELO LOCATÁRIO AO TELEFONE DE CONTATO DO LOCADOR, QUAL SEJA, <strong><span id="txt-locador-telefone" class="var-text"></span></strong>.</span>
-
-                <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> O DESCUMPRIMENTO DO PRAZO ESTABELECIDO NO CAPUT DESTA CLÁUSULA SUJEITARÁ O LOCATÁRIO À MULTA IMEDIATA E NÃO COMPENSATÓRIA CORRESPONDENTE A 10% (DEZ POR CENTO) DO VALOR DO ALUGUEL VIGENTE, QUAL SEJA, <strong>R$ <span id="txt-valor-clausula12" class="var-text"></span></strong>, SEM PREJUÍZO DAS DEMAIS COMINAÇÕES CONTRATUAIS E LEGAIS.</span>
-
-                <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> PERMANECENDO A IRREGULARIDADE APÓS NOTIFICAÇÃO FORMAL DO LOCADOR, FICARÁ CARACTERIZADA INFRAÇÃO CONTRATUAL GRAVE, FACULTANDO-SE AO LOCADOR A RESCISÃO ANTECIPADA DO CONTRATO, COM A INCIDÊNCIA DA MULTA RESCISÓRIA PREVISTA NA CLÁUSULA IX.</span>
-            </div>
-
-            <div class="clause">
-                <span class="clause-title">Cláusula XIV - Do Foro</span>
-                TUDO QUANTO FOR DEVIDO EM RAZÃO DESTE CONTRATO SERÁ COBRADO EM PROCESSO EXECUTIVO, OU EM AÇÃO APROPRIADA, NO FORO DA COMARCA DE <strong id="txt-foro" class="var-text">PALOTINA - PR</strong>.
-            </div>
-
-            <p style="margin-top: 40px; text-align: right;"><span id="txt-local-assinatura" class="var-text">PALOTINA - PR</span>, <span id="txt-data-assinatura" class="var-text"></span>.</p>
-
-            <div class="signatures-grid" id="container-assinaturas"></div>
-
-            <div class="witnesses">
-                <div class="signature-item"><div class="line"></div><div class="role">Testemunha 1</div></div>
-                <div class="signature-item"><div class="line"></div><div class="role">Testemunha 2</div></div>
-            </div>
-
-            <div id="memorial-section" class="memorial-section hidden">
-                <div id="memorial-title" class="memorial-title">MEMORIAL DESCRITIVO</div>
-                <div id="memorial-note" class="memorial-note hidden"></div>
-                <div id="memorial-text" class="memorial-text"></div>
-            </div>
-        </div>
-
-        <footer>
-            Página 1 de 1 • Contrato de locação residencial
-        </footer>
-    </div>
-    </div>
-
+    <script type="module" src="./js/firebase-init.js"></script>
+    <script type="module" src="./js/repositories/contractsRepo.js"></script>
+    <script type="module" src="./js/auth.js"></script>
     <script>
+        window.FIREBASE_CONFIG = window.FIREBASE_CONFIG || {
+            apiKey: "AIzaSyD-LLEzHlZ6_HgEZOnRWrKa8JWuYBHC7Ts",
+            authDomain: "contratos-59638.firebaseapp.com",
+            projectId: "contratos-59638",
+            storageBucket: "contratos-59638.firebasestorage.app",
+            messagingSenderId: "113531890497",
+            appId: "1:113531890497:web:510139eed937777bf84fc0",
+            measurementId: "G-1KTHVXWV3S"
+        };
+
         // Dados de exemplo até carregar do Gist
         const defaultDb = {
             locador: {
@@ -952,6 +1148,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         let lastPropertySelectionId = '';
         let isApplyingPropertySelection = false;
         let runtimeToken = '';
+        let currentAuthUser = null;
 
         // === Configuração por URL (token/gist_id/gist_file) ===
         function getUrlRuntimeConfig() {
@@ -989,6 +1186,65 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const el = document.getElementById('sync-status');
             if (el) el.textContent = message;
         }
+
+        async function loadVersionsFromFirestore() {
+            if (!currentAuthUser?.uid || !window.ContractsRepo) {
+                versionsCache = [];
+                openedVersionId = null;
+                refreshVersionList();
+                return;
+            }
+
+            const remoteVersions = await window.ContractsRepo.listVersions(currentAuthUser.uid);
+            versionsCache = remoteVersions;
+            openedVersionId = null;
+            applyDataFromSource();
+            setSyncStatus('Fonte: Firestore');
+            setGistConnectionNote('Versões carregadas do Firestore');
+        }
+
+        async function saveVersionToFirestore(version) {
+            if (!currentAuthUser?.uid || !window.ContractsRepo) {
+                throw new Error('Faça login para salvar versões no Firestore.');
+            }
+            await window.ContractsRepo.upsertVersion(currentAuthUser.uid, version);
+        }
+
+        async function deleteVersionFromFirestore(versionId) {
+            if (!currentAuthUser?.uid || !window.ContractsRepo) {
+                throw new Error('Faça login para excluir versões no Firestore.');
+            }
+            await window.ContractsRepo.deleteVersion(currentAuthUser.uid, versionId);
+        }
+
+        async function importVersionsToFirestore(versions) {
+            if (!currentAuthUser?.uid || !window.ContractsRepo) {
+                throw new Error('Faça login para importar versões no Firestore.');
+            }
+
+            for (const version of versions) {
+                await window.ContractsRepo.upsertVersion(currentAuthUser.uid, version);
+            }
+        }
+
+        window.handleFirebaseAuthChanged = async function (user) {
+            currentAuthUser = user || null;
+            if (!currentAuthUser) {
+                versionsCache = [];
+                openedVersionId = null;
+                refreshVersionList();
+                setSyncStatus('Sem login Firebase');
+                setGistConnectionNote('Faça login para carregar versões do Firestore.', true);
+                return;
+            }
+
+            try {
+                await loadVersionsFromFirestore();
+            } catch (error) {
+                setSyncStatus('Erro Firestore');
+                setGistConnectionNote(error.message || 'Falha ao carregar versões do Firestore.', true);
+            }
+        };
 
         // === Identificação de editor/dispositivo ===
         function getEditorName() {
@@ -2125,17 +2381,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     };
 
                     try {
-                        const ok = await persistRemoteState(nextVersions, propertiesCache);
-                        if (!ok) {
-                            alert('Sem conexão com Gist. Não foi possível salvar a versão.');
-                            return;
-                        }
+                        await saveVersionToFirestore(nextVersions[index]);
                         versionsCache = nextVersions;
                         openedVersionId = nextOpenedId;
                         refreshVersionList();
                         alert('Versão aberta sobrescrita com sucesso.');
                     } catch (error) {
-                        alert(error.message || 'Falhou sincronizar com o Gist.');
+                        alert(error.message || 'Falhou ao salvar versão no Firestore.');
                     }
                     return;
                 }
@@ -2153,17 +2405,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             nextOpenedId = id;
 
             try {
-                const ok = await persistRemoteState(nextVersions, propertiesCache);
-                if (!ok) {
-                    alert('Sem conexão com Gist. Não foi possível salvar a versão.');
-                    return;
-                }
+                await saveVersionToFirestore(version);
                 versionsCache = nextVersions;
                 openedVersionId = nextOpenedId;
                 refreshVersionList();
                 alert(`Nova versão salva (${formatted}).`);
             } catch (error) {
-                alert(error.message || 'Falhou sincronizar com o Gist.');
+                alert(error.message || 'Falhou ao salvar versão no Firestore.');
             }
         }
 
@@ -2209,16 +2457,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             try {
-                const ok = await persistRemoteState(updatedVersions, propertiesCache);
-                if (!ok) {
-                    alert('Sem conexão com Gist. Não foi possível excluir a versão.');
-                    return;
-                }
+                await deleteVersionFromFirestore(id);
                 versionsCache = updatedVersions;
                 refreshVersionList();
                 alert('Versão excluída com sucesso.');
             } catch (error) {
-                alert(error.message || 'Falhou sincronizar exclusão com o Gist.');
+                alert(error.message || 'Falhou ao excluir versão no Firestore.');
             }
         }
 
@@ -2254,33 +2498,31 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             try {
                 const remoteState = await gistLoadState(config, token);
-                versionsCache = remoteState.state.versions;
                 propertiesCache = remoteState.state.properties;
                 loadedFromRemote = true;
-                setSyncStatus('Fonte: remoto conectado');
-                setGistConnectionNote('Conectado ao Gist');
-                applyDataFromSource();
+                setSyncStatus('Gist conectado (imóveis)');
+                setGistConnectionNote('Conectado ao Gist para imóveis');
+                refreshPropertyList();
+                refreshPropertySelectInContract();
                 if (remoteState.migrated) {
-                    await persistRemoteState(versionsCache, propertiesCache);
+                    await persistRemoteState(remoteState.state.versions || [], propertiesCache);
                 }
-                alert('Conexão com Gist validada com sucesso.');
+                alert('Conexão com Gist validada (somente imóveis nesta etapa).');
             } catch (error) {
                 if (String(error.message || '').includes('Arquivo JSON não existe')) {
-                    versionsCache = [];
                     propertiesCache = [];
                     loadedFromRemote = true;
-                    setSyncStatus('Gist conectado; arquivo será criado ao salvar');
+                    setSyncStatus('Gist conectado; imóveis serão criados ao salvar');
                     setGistConnectionNote('Gist conectado sem arquivo remoto; clique em Salvar para criar.');
-                    applyDataFromSource();
-                    alert('Conexão com Gist validada. O arquivo configurado ainda não existe e será criado ao salvar a primeira versão.');
+                    refreshPropertyList();
+                    refreshPropertySelectInContract();
+                    alert('Conexão com Gist validada. O arquivo será criado ao salvar o primeiro imóvel.');
                     return;
                 }
                 loadedFromRemote = false;
-                versionsCache = [];
                 propertiesCache = [];
                 setSyncStatus('Sem conexão com Gist');
                 setGistConnectionNote(error.message || 'Sem conexão com Gist', true);
-                refreshVersionList();
                 refreshPropertyList();
                 refreshPropertySelectInContract();
                 alert(error.message || 'Falha na conexão com Gist.');
@@ -2290,11 +2532,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         function logoutToken() {
             clearStoredToken();
             loadedFromRemote = false;
-            versionsCache = [];
             propertiesCache = [];
             setSyncStatus('Sem conexão com Gist');
             setGistConnectionNote('Sem conexão com Gist', true);
-            refreshVersionList();
             refreshPropertyList();
             refreshPropertySelectInContract();
             alert('Token removido da sessão atual.');
@@ -2330,17 +2570,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             try {
-                const ok = await persistRemoteState(parsed, propertiesCache);
-                if (!ok) {
-                    alert('Sem conexão com Gist. Importação não persistida.');
-                    return;
-                }
+                await importVersionsToFirestore(parsed);
                 versionsCache = parsed;
                 openedVersionId = null;
                 applyDataFromSource();
-                alert('Backup importado e sincronizado no remoto.');
+                alert('Backup importado para o Firestore.');
             } catch (error) {
-                alert(error.message || 'Falhou sincronizar importação com o Gist.');
+                alert(error.message || 'Falhou na importação para o Firestore.');
             }
         }
 
@@ -2357,7 +2593,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const token = getStoredToken();
             if (!config.gistId || !token) {
                 loadedFromRemote = false;
-                versionsCache = [];
                 propertiesCache = [];
                 setSyncStatus('Sem conexão com Gist');
                 setGistConnectionNote('Sem conexão com Gist', true);
@@ -2366,25 +2601,22 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             try {
                 const remoteState = await gistLoadState(config, token);
-                versionsCache = remoteState.state.versions;
                 propertiesCache = remoteState.state.properties;
                 loadedFromRemote = true;
-                setSyncStatus('Fonte: remoto');
-                setGistConnectionNote('Conectado ao Gist');
+                setSyncStatus('Gist: imóveis carregados');
+                setGistConnectionNote('Imóveis carregados do Gist');
                 if (remoteState.migrated) {
-                    await persistRemoteState(versionsCache, propertiesCache);
+                    await persistRemoteState(remoteState.state.versions || [], propertiesCache);
                 }
             } catch (error) {
                 if (String(error.message || '').includes('Arquivo JSON não existe')) {
-                    versionsCache = [];
                     propertiesCache = [];
                     loadedFromRemote = true;
-                    setSyncStatus('Fonte: remoto (arquivo será criado no salvar)');
+                    setSyncStatus('Gist conectado (arquivo será criado no salvar imóvel)');
                     setGistConnectionNote('Gist conectado sem arquivo remoto; clique em Salvar para criar.');
                     return;
                 }
 
-                versionsCache = [];
                 propertiesCache = [];
                 loadedFromRemote = false;
                 setSyncStatus('Sem conexão com Gist');
@@ -2533,4 +2765,5 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         };
     </script>
 </body>
+
 </html>
