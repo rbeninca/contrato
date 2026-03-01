@@ -234,6 +234,33 @@
             padding-top: 12px;
         }
 
+        .tabs-wrap {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tab-btn {
+            border: 1px solid var(--border-color);
+            background: #f8fafc;
+            color: #334155;
+            padding: 8px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .tab-btn.active {
+            background: #dbeafe;
+            border-color: #93c5fd;
+            color: #1e3a8a;
+        }
+
+        .tab-content.hidden {
+            display: none;
+        }
+
         .tech-panel {
             background: #fff7ed;
             border: 1px solid #fed7aa;
@@ -255,6 +282,69 @@
             color: #7c2d12;
             margin-bottom: 10px;
             line-height: 1.4;
+        }
+
+        .property-note {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .memorial-section {
+            margin-top: 30px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 14px 16px;
+            background: #f8fafc;
+        }
+
+        .memorial-title {
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .memorial-note {
+            display: inline-block;
+            font-size: 11px;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+            background: #dbeafe;
+            border: 1px solid #bfdbfe;
+            border-radius: 999px;
+            padding: 2px 8px;
+        }
+
+        .memorial-text {
+            font-size: 12.5px;
+            line-height: 1.65;
+            color: #0f172a;
+        }
+
+        .memorial-text p {
+            margin: 0 0 8px;
+        }
+
+        .memorial-text ul,
+        .memorial-text ol {
+            margin: 0 0 10px 22px;
+            padding-left: 12px;
+        }
+
+        .memorial-text li {
+            margin-bottom: 4px;
+        }
+
+        .memorial-text strong {
+            color: #0f172a;
+        }
+
+        .memorial-page-break {
+            page-break-before: always;
+            break-before: page;
         }
 
         .version-wrap h4 {
@@ -507,11 +597,18 @@
     <div class="editor-panel">
         <h3>Dados do Contrato (não aparece na impressão)</h3>
         <div id="gist-connection-note" class="status-note">Conectando ao Gist...</div>
+        <div class="tabs-wrap">
+            <button class="tab-btn active" id="tab-btn-contrato" type="button">Contrato</button>
+            <button class="tab-btn" id="tab-btn-imoveis" type="button">Imóveis</button>
+        </div>
+
+        <div id="tab-contrato" class="tab-content">
 
         <div class="editor-grid">
             <div class="editor-field"><label for="f-locador-nome">Locador - Nome</label><input id="f-locador-nome" type="text"></div>
             <div class="editor-field"><label for="f-locataria-nome">Locatária - Nome</label><input id="f-locataria-nome" type="text"></div>
             <div class="editor-field"><label for="f-locador-telefone">Locador - Telefone de contato</label><input id="f-locador-telefone" type="text"></div>
+            <div class="editor-field"><label for="f-locador-usa-procurador">Locador atua como procurador?</label><select id="f-locador-usa-procurador"><option value="sim">Sim</option><option value="nao">Não</option></select></div>
             <div class="editor-field full"><label for="f-locador-qualificacao">Locador - Qualificação</label><textarea id="f-locador-qualificacao"></textarea></div>
             <div class="editor-field">
                 <label for="f-locataria-estado-civil">Locatária - Estado civil</label>
@@ -525,6 +622,7 @@
             <div class="editor-field full locataria-conjuge-field"><label for="f-locataria-conjuge-qualificacao">Locatária (casada) - Qualificação do cônjuge</label><textarea id="f-locataria-conjuge-qualificacao"></textarea></div>
 
             <div class="editor-field full"><label for="f-imovel-endereco">Endereço do imóvel</label><input id="f-imovel-endereco" type="text"></div>
+            <div class="editor-field full"><label for="f-property-selected">Imóvel cadastrado (opcional)</label><select id="f-property-selected"><option value="">(Digitar manualmente)</option></select></div>
             <div class="editor-field"><label for="f-imovel-proprietario">Proprietário</label><input id="f-imovel-proprietario" type="text"></div>
             <div class="editor-field"><label for="f-foro">Foro (comarca/cidade)</label><input id="f-foro" type="text"></div>
             <div class="editor-field"><label for="f-financeiro-valor">Valor aluguel (R$)</label><input id="f-financeiro-valor" type="text"></div>
@@ -592,6 +690,38 @@
                 <button class="btn-secondary" id="btn-excluir-versao" type="button">Excluir versão selecionada</button>
             </div>
         </div>
+
+        </div>
+
+        <div id="tab-imoveis" class="tab-content hidden">
+            <div class="property-note">Cadastre imóveis para reaproveitar endereço, proprietário e memorial descritivo nos contratos.</div>
+            <div class="editor-grid">
+                <div class="editor-field full"><label for="property-list">Imóveis cadastrados</label><select id="property-list" size="6"></select></div>
+            </div>
+            <div class="editor-actions" style="margin-top: 10px;">
+                <button class="btn-secondary" id="btn-property-new" type="button">Novo</button>
+                <button class="btn-primary" id="btn-property-save" type="button">Salvar imóvel</button>
+                <button class="btn-secondary" id="btn-property-duplicate" type="button">Duplicar</button>
+                <button class="btn-secondary" id="btn-property-delete" type="button">Excluir</button>
+            </div>
+
+            <div class="editor-grid" style="margin-top: 12px;">
+                <div class="editor-field full"><label for="p-label">Nome do imóvel (label)</label><input id="p-label" type="text" placeholder="Ex.: Casa 2482 - Jardim Universitário"></div>
+                <div class="editor-field"><label for="p-cidade">Cidade</label><input id="p-cidade" type="text"></div>
+                <div class="editor-field"><label for="p-estado">Estado</label><input id="p-estado" type="text" placeholder="PR"></div>
+                <div class="editor-field"><label for="p-bairro">Bairro</label><input id="p-bairro" type="text"></div>
+                <div class="editor-field"><label for="p-rua">Rua</label><input id="p-rua" type="text"></div>
+                <div class="editor-field"><label for="p-numero">Número</label><input id="p-numero" type="text"></div>
+                <div class="editor-field"><label for="p-complemento">Complemento</label><input id="p-complemento" type="text"></div>
+                <div class="editor-field"><label for="p-cep">CEP</label><input id="p-cep" type="text"></div>
+                <div class="editor-field full"><label for="p-proprietario">Proprietário (opcional)</label><input id="p-proprietario" type="text"></div>
+                <div class="editor-field full"><label><input id="p-memorial-enabled" type="checkbox"> Anexar memorial ao contrato</label></div>
+                <div class="editor-field full"><label><input id="p-memorial-page-break" type="checkbox"> Iniciar memorial em nova página</label></div>
+                <div class="editor-field full"><label for="p-memorial-title">Título do memorial</label><input id="p-memorial-title" type="text" value="MEMORIAL DESCRITIVO"></div>
+                <div class="editor-field full"><label for="p-memorial-text">Memorial descritivo</label><textarea id="p-memorial-text"></textarea></div>
+                <div class="editor-field full"><label for="p-memorial-note">Observação anexos</label><input id="p-memorial-note" type="text" placeholder="FOTOS ENVIADAS POR E-MAIL (xxxxxx@gmail.com)"></div>
+            </div>
+        </div>
     </div>
 
     <div class="document-page">
@@ -606,7 +736,7 @@
 
             <div class="clause">
                 <span class="clause-title">Cláusula I</span>
-                O IMÓVEL, OBJETO DA LOCAÇÃO ACORDADA PELO PRESENTE INSTRUMENTO, ESTÁ SITUADO À <strong id="txt-endereco-imovel" class="var-text"></strong>, SENDO O LOCADOR, ISOLADAMENTE, DE ACORDO COM O CÓDIGO CIVIL E/OU LEIS COMPLEMENTARES AFINS, ALÉM DE DOCUMENTOS COMPROBATÓRIOS EM SEU PODER, PROCURADOR DE SEU LEGÍTIMO PROPRIETÁRIO, <strong id="txt-proprietario" class="var-text"></strong>.
+                O IMÓVEL, OBJETO DA LOCAÇÃO ACORDADA PELO PRESENTE INSTRUMENTO, ESTÁ SITUADO À <strong id="txt-endereco-imovel" class="var-text"></strong>, SENDO O LOCADOR, ISOLADAMENTE, DE ACORDO COM O CÓDIGO CIVIL E/OU LEIS COMPLEMENTARES AFINS, ALÉM DE DOCUMENTOS COMPROBATÓRIOS EM SEU PODER<span id="txt-procurador-frase"></span><strong id="txt-proprietario" class="var-text"></strong>.
             </div>
 
             <div class="clause">
@@ -729,6 +859,12 @@
                 <div class="signature-item"><div class="line"></div><div class="role">Testemunha 1</div></div>
                 <div class="signature-item"><div class="line"></div><div class="role">Testemunha 2</div></div>
             </div>
+
+            <div id="memorial-section" class="memorial-section hidden">
+                <div id="memorial-title" class="memorial-title">MEMORIAL DESCRITIVO</div>
+                <div id="memorial-note" class="memorial-note hidden"></div>
+                <div id="memorial-text" class="memorial-text"></div>
+            </div>
         </div>
 
         <footer>
@@ -743,6 +879,7 @@
             locador: {
                 nome: "FULANO DE TAL",
                 telefone: "(00) 90000-0000",
+                usa_procurador: true,
                 qualificacao: "brasileiro, casado, profissão exemplo, portador do RG 0.000.000-0/SSP-UF e CPF 000.000.000-00, residente e domiciliado à Rua Exemplo, 100, Centro, Cidade/UF"
             },
             locataria: {
@@ -782,8 +919,18 @@
                     desc: "brasileira, profissão exemplo, portadora do RG 0.000.000-0/SSP-UF e CPF 000.000.000-00",
                     papel: "Cônjuge Anuente"
                 }
-            ]
+            ],
+            selectedPropertyId: ""
         };
+
+        const GIST_SCHEMA_VERSION = 1;
+        const DEFAULT_MEMORIAL_TEXT = `Paredes internas: Tinta Acrílica Premium Coral Semi Brilho cor Meditação.
+Teto: Tinta Acrílica Premium Branco Gelo.
+Portas e rodapés: acabamento em bom estado.
+Pisos: cerâmica íntegra e limpa.
+Banheiro: box, espelho, torneiras e saboneteira.
+Área de serviço: tanque e torneira funcionando.
+Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fixos conforme vistoria.`;
 
         // A única persistência local é o nome do editor. Todo o resto fica no Gist.
         const EDITOR_NAME_KEY = 'contratoEditorName_v1';
@@ -798,6 +945,12 @@
         let openedVersionId = null;
         let loadedFromRemote = false;
         let versionsCache = [];
+        // propertiesCache: lista de imóveis em memória, sincronizada exclusivamente com o Gist.
+        let propertiesCache = [];
+        let currentPropertyId = null;
+        let propertyFormDirty = false;
+        let lastPropertySelectionId = '';
+        let isApplyingPropertySelection = false;
         let runtimeToken = '';
 
         // === Configuração por URL (token/gist_id/gist_file) ===
@@ -918,8 +1071,45 @@
             };
         }
 
+        // === Schema remoto (Gist): { schemaVersion, properties, versions } ===
+        function normalizeRemoteState(parsed) {
+            if (Array.isArray(parsed)) {
+                return {
+                    migrated: true,
+                    state: {
+                        schemaVersion: GIST_SCHEMA_VERSION,
+                        properties: [],
+                        versions: parsed
+                    }
+                };
+            }
+
+            if (!parsed || typeof parsed !== 'object') {
+                return {
+                    migrated: true,
+                    state: {
+                        schemaVersion: GIST_SCHEMA_VERSION,
+                        properties: [],
+                        versions: []
+                    }
+                };
+            }
+
+            const properties = Array.isArray(parsed.properties) ? parsed.properties : [];
+            const versions = Array.isArray(parsed.versions) ? parsed.versions : [];
+
+            return {
+                migrated: !Array.isArray(parsed.properties) || !Array.isArray(parsed.versions) || parsed.schemaVersion !== GIST_SCHEMA_VERSION,
+                state: {
+                    schemaVersion: GIST_SCHEMA_VERSION,
+                    properties,
+                    versions
+                }
+            };
+        }
+
         // === gistLoad / gistSave ===
-        async function gistLoadVersions(config, token) {
+        async function gistLoadState(config, token) {
             if (!config?.gistId) throw new Error('GIST_ID não configurado.');
             const response = await fetch(`https://api.github.com/gists/${config.gistId}`, {
                 method: 'GET',
@@ -949,19 +1139,15 @@
                 throw new Error('Conteúdo JSON inválido no arquivo remoto.');
             }
 
-            if (!Array.isArray(parsed)) {
-                throw new Error('Formato remoto inválido: esperado array de versões.');
-            }
-
-            return parsed;
+            return normalizeRemoteState(parsed);
         }
 
-        async function gistSaveVersions(config, token, versions) {
+        async function gistSaveState(config, token, state) {
             if (!config?.gistId) throw new Error('GIST_ID não configurado.');
             const payload = {
                 files: {
                     [config.gistFile]: {
-                        content: JSON.stringify(versions, null, 2)
+                        content: JSON.stringify(state, null, 2)
                     }
                 }
             };
@@ -979,11 +1165,19 @@
                 throw new Error('Gist não encontrado para gravação.');
             }
             if (!response.ok) {
-                throw new Error('Falha ao gravar versões no Gist.');
+                throw new Error('Falha ao gravar dados no Gist.');
             }
         }
 
-        async function trySyncRemote(versions) {
+        function buildRemoteState(nextVersions = versionsCache, nextProperties = propertiesCache) {
+            return {
+                schemaVersion: GIST_SCHEMA_VERSION,
+                properties: nextProperties,
+                versions: nextVersions
+            };
+        }
+
+        async function persistRemoteState(nextVersions = versionsCache, nextProperties = propertiesCache) {
             const config = getConfigFromFields();
             if (!config.gistId) {
                 loadedFromRemote = false;
@@ -1004,7 +1198,7 @@
             }
 
             try {
-                await gistSaveVersions(config, token, versions);
+                await gistSaveState(config, token, buildRemoteState(nextVersions, nextProperties));
                 loadedFromRemote = true;
                 setSyncStatus('Fonte: remoto sincronizado');
                 setGistConnectionNote('Conectado ao Gist');
@@ -1020,6 +1214,63 @@
         function getLatestVersion(versions) {
             if (!versions.length) return null;
             return [...versions].sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt))[0] || null;
+        }
+
+        function buildPropertyAddressLine(property) {
+            const address = property?.address || {};
+            const parts = [
+                address.rua,
+                address.numero,
+                address.bairro,
+                address.cidade && address.estado ? `${address.cidade}/${address.estado}` : (address.cidade || address.estado),
+                address.cep
+            ].filter(Boolean);
+            return parts.join(' - ');
+        }
+
+        function refreshPropertyList() {
+            const list = document.getElementById('property-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            if (!propertiesCache.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Nenhum imóvel cadastrado';
+                list.appendChild(option);
+                return;
+            }
+
+            propertiesCache.forEach((property, index) => {
+                const option = document.createElement('option');
+                option.value = property.id;
+                option.textContent = `${index + 1}. ${property.label || `Imóvel ${index + 1}`} — ${buildPropertyAddressLine(property)}`;
+                if (property.id === currentPropertyId) option.selected = true;
+                list.appendChild(option);
+            });
+        }
+
+        function refreshPropertySelectInContract() {
+            const select = document.getElementById('f-property-selected');
+            if (!select) return;
+            const current = db?.selectedPropertyId || select.value || '';
+
+            select.innerHTML = '';
+            const manualOption = document.createElement('option');
+            manualOption.value = '';
+            manualOption.textContent = '(Digitar manualmente)';
+            select.appendChild(manualOption);
+
+            propertiesCache.forEach((property) => {
+                const option = document.createElement('option');
+                option.value = property.id;
+                option.textContent = property.label || buildPropertyAddressLine(property) || property.id;
+                select.appendChild(option);
+            });
+
+            select.value = propertiesCache.some((item) => item.id === current) ? current : '';
+            if (!select.value) db.selectedPropertyId = '';
+            lastPropertySelectionId = select.value;
         }
 
         function refreshVersionList() {
@@ -1057,6 +1308,8 @@
                 syncValorExtensoFromValor();
                 render();
                 refreshVersionList();
+                refreshPropertySelectInContract();
+                refreshPropertyList();
                 setGistConnectionNote('Dados carregados do Gist');
                 return;
             }
@@ -1066,6 +1319,8 @@
             syncValorExtensoFromValor();
             render();
             refreshVersionList();
+            refreshPropertySelectInContract();
+            refreshPropertyList();
             setGistConnectionNote('Dados de exemplo (nenhuma versão no Gist)');
         }
 
@@ -1253,6 +1508,7 @@
                 locador: {
                     nome: fieldValue('f-locador-nome'),
                     telefone: fieldValue('f-locador-telefone'),
+                    usa_procurador: fieldValue('f-locador-usa-procurador') !== 'nao',
                     qualificacao: fieldValue('f-locador-qualificacao')
                 },
                 locataria: {
@@ -1265,6 +1521,7 @@
                     endereco: fieldValue('f-imovel-endereco'),
                     proprietario: fieldValue('f-imovel-proprietario')
                 },
+                selectedPropertyId: fieldValue('f-property-selected'),
                 foro: fieldValue('f-foro'),
                 financeiro: {
                     valor: fieldValue('f-financeiro-valor'),
@@ -1298,6 +1555,7 @@
         function setFormData(data) {
             setFieldValue('f-locador-nome', data.locador?.nome || '');
             setFieldValue('f-locador-telefone', data.locador?.telefone || '');
+            setFieldValue('f-locador-usa-procurador', data.locador?.usa_procurador === false ? 'nao' : 'sim');
             setFieldValue('f-locador-qualificacao', data.locador?.qualificacao || '');
             setFieldValue('f-locataria-nome', data.locataria?.nome || '');
             setFieldValue('f-locataria-estado-civil', data.locataria?.estado_civil || 'solteiro');
@@ -1305,6 +1563,7 @@
             setFieldValue('f-locataria-conjuge-qualificacao', data.locataria?.conjuge_qualificacao || '');
             setFieldValue('f-imovel-endereco', data.imovel?.endereco || '');
             setFieldValue('f-imovel-proprietario', data.imovel?.proprietario || '');
+            setFieldValue('f-property-selected', data.selectedPropertyId || '');
             setFieldValue('f-foro', data.foro || 'PALOTINA - PR');
             setFieldValue('f-financeiro-valor', data.financeiro?.valor || '');
             setFieldValue('f-financeiro-extenso', data.financeiro?.extenso || '');
@@ -1323,6 +1582,8 @@
             setFieldValue('f-fiador2-nome', data.fiadores?.[1]?.nome || '');
             setFieldValue('f-fiador2-desc', data.fiadores?.[1]?.desc || '');
             setFieldValue('f-fiador2-papel', data.fiadores?.[1]?.papel || '');
+            db.selectedPropertyId = data.selectedPropertyId || '';
+            refreshPropertySelectInContract();
             toggleLocatariaConjugeVisibility();
             toggleFiador2Visibility();
         }
@@ -1343,31 +1604,343 @@
             });
         }
 
-        function refreshVersionList() {
-            const select = document.getElementById('version-list');
-            select.innerHTML = '';
+        function generatePropertyId() {
+            return `prop-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+        }
 
-            if (!versionsCache.length) {
-                const option = document.createElement('option');
-                option.value = '';
-                option.textContent = 'Nenhuma versão no Gist';
-                select.appendChild(option);
+        function createEmptyProperty() {
+            return {
+                id: generatePropertyId(),
+                label: '',
+                owner: '',
+                address: {
+                    cidade: '',
+                    estado: '',
+                    bairro: '',
+                    rua: '',
+                    numero: '',
+                    complemento: '',
+                    cep: ''
+                },
+                memorial: {
+                    enabled: true,
+                    pageBreakBefore: false,
+                    title: 'MEMORIAL DESCRITIVO',
+                    text: DEFAULT_MEMORIAL_TEXT,
+                    attachmentsNote: 'FOTOS ENVIADAS POR E-MAIL (xxxxxx@gmail.com)'
+                },
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+        }
+
+        function setPropertyFormData(property) {
+            setFieldValue('p-label', property?.label || '');
+            setFieldValue('p-cidade', property?.address?.cidade || '');
+            setFieldValue('p-estado', property?.address?.estado || '');
+            setFieldValue('p-bairro', property?.address?.bairro || '');
+            setFieldValue('p-rua', property?.address?.rua || '');
+            setFieldValue('p-numero', property?.address?.numero || '');
+            setFieldValue('p-complemento', property?.address?.complemento || '');
+            setFieldValue('p-cep', property?.address?.cep || '');
+            setFieldValue('p-proprietario', property?.owner || '');
+            const enabled = property?.memorial?.enabled ?? true;
+            const pageBreakBefore = property?.memorial?.pageBreakBefore ?? false;
+            const checkbox = document.getElementById('p-memorial-enabled');
+            if (checkbox) checkbox.checked = !!enabled;
+            const pageBreakCheckbox = document.getElementById('p-memorial-page-break');
+            if (pageBreakCheckbox) pageBreakCheckbox.checked = !!pageBreakBefore;
+            setFieldValue('p-memorial-title', property?.memorial?.title || 'MEMORIAL DESCRITIVO');
+            setFieldValue('p-memorial-text', property?.memorial?.text || DEFAULT_MEMORIAL_TEXT);
+            setFieldValue('p-memorial-note', property?.memorial?.attachmentsNote || '');
+            propertyFormDirty = false;
+        }
+
+        function getPropertyFormData(baseProperty = null) {
+            const nowIso = new Date().toISOString();
+            return {
+                id: baseProperty?.id || generatePropertyId(),
+                label: fieldValue('p-label'),
+                owner: fieldValue('p-proprietario'),
+                address: {
+                    cidade: fieldValue('p-cidade'),
+                    estado: fieldValue('p-estado'),
+                    bairro: fieldValue('p-bairro'),
+                    rua: fieldValue('p-rua'),
+                    numero: fieldValue('p-numero'),
+                    complemento: fieldValue('p-complemento'),
+                    cep: fieldValue('p-cep')
+                },
+                memorial: {
+                    enabled: !!document.getElementById('p-memorial-enabled')?.checked,
+                    pageBreakBefore: !!document.getElementById('p-memorial-page-break')?.checked,
+                    title: fieldValue('p-memorial-title') || 'MEMORIAL DESCRITIVO',
+                    text: fieldValue('p-memorial-text'),
+                    attachmentsNote: fieldValue('p-memorial-note')
+                },
+                createdAt: baseProperty?.createdAt || nowIso,
+                updatedAt: nowIso
+            };
+        }
+
+        function selectPropertyForEditor(id) {
+            const property = propertiesCache.find((item) => item.id === id);
+            currentPropertyId = property ? property.id : null;
+            if (property) {
+                setPropertyFormData(property);
+            } else {
+                setPropertyFormData(createEmptyProperty());
+            }
+            refreshPropertyList();
+        }
+
+        function ensurePropertyFormCanChange() {
+            if (!propertyFormDirty) return true;
+            return window.confirm('Há alterações no imóvel não salvas. Deseja descartá-las?');
+        }
+
+        function beginNewProperty() {
+            if (!ensurePropertyFormCanChange()) return;
+            currentPropertyId = null;
+            setPropertyFormData(createEmptyProperty());
+            refreshPropertyList();
+        }
+
+        async function saveCurrentProperty() {
+            const existing = currentPropertyId ? propertiesCache.find((item) => item.id === currentPropertyId) : null;
+            const nextProperty = getPropertyFormData(existing);
+            if (!nextProperty.label) {
+                alert('Informe o nome (label) do imóvel.');
                 return;
             }
 
-            versionsCache.forEach((version, index) => {
-                const option = document.createElement('option');
-                option.value = version.id;
-                const when = new Date(version.savedAt).toLocaleString('pt-BR');
-                const endereco = version.data?.imovel?.endereco || 'Endereço não informado';
-                const inquilino = version.data?.locataria?.nome || 'Inquilino não informado';
-                const editorName = (version.editorName || 'DESCONHECIDO').toString().trim() || 'DESCONHECIDO';
-                option.textContent = `${index + 1}. ${endereco} — ${inquilino} • ${editorName} (${when})`;
-                if (version.id === openedVersionId) {
-                    option.selected = true;
+            const nextProperties = [...propertiesCache];
+            const index = existing ? nextProperties.findIndex((item) => item.id === existing.id) : -1;
+            if (index >= 0) {
+                nextProperties[index] = nextProperty;
+            } else {
+                nextProperties.push(nextProperty);
+            }
+
+            try {
+                const ok = await persistRemoteState(versionsCache, nextProperties);
+                if (!ok) return;
+                propertiesCache = nextProperties;
+                currentPropertyId = nextProperty.id;
+                propertyFormDirty = false;
+                refreshPropertyList();
+                refreshPropertySelectInContract();
+                alert('Imóvel salvo com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao salvar imóvel no Gist.');
+            }
+        }
+
+        async function duplicateCurrentProperty() {
+            const source = currentPropertyId ? propertiesCache.find((item) => item.id === currentPropertyId) : null;
+            if (!source) {
+                alert('Selecione um imóvel para duplicar.');
+                return;
+            }
+
+            const nowIso = new Date().toISOString();
+            const copy = {
+                ...source,
+                id: generatePropertyId(),
+                label: `${source.label} (cópia)`,
+                createdAt: nowIso,
+                updatedAt: nowIso
+            };
+
+            const nextProperties = [...propertiesCache, copy];
+            try {
+                const ok = await persistRemoteState(versionsCache, nextProperties);
+                if (!ok) return;
+                propertiesCache = nextProperties;
+                currentPropertyId = copy.id;
+                setPropertyFormData(copy);
+                refreshPropertyList();
+                refreshPropertySelectInContract();
+                alert('Imóvel duplicado com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao duplicar imóvel no Gist.');
+            }
+        }
+
+        async function deleteCurrentProperty() {
+            const source = currentPropertyId ? propertiesCache.find((item) => item.id === currentPropertyId) : null;
+            if (!source) {
+                alert('Selecione um imóvel para excluir.');
+                return;
+            }
+
+            if (!window.confirm(`Excluir o imóvel "${source.label}"?`)) return;
+
+            const nextProperties = propertiesCache.filter((item) => item.id !== source.id);
+            try {
+                const ok = await persistRemoteState(versionsCache, nextProperties);
+                if (!ok) return;
+                propertiesCache = nextProperties;
+                if (fieldValue('f-property-selected') === source.id) {
+                    setFieldValue('f-property-selected', '');
+                    db.selectedPropertyId = '';
                 }
-                select.appendChild(option);
+                currentPropertyId = null;
+                setPropertyFormData(createEmptyProperty());
+                refreshPropertyList();
+                refreshPropertySelectInContract();
+                render();
+                alert('Imóvel excluído com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao excluir imóvel no Gist.');
+            }
+        }
+
+        function applyPropertyToContractFields(property) {
+            const addressLine = buildPropertyAddressLine(property);
+            isApplyingPropertySelection = true;
+            setFieldValue('f-imovel-endereco', addressLine);
+            if (property.owner) setFieldValue('f-imovel-proprietario', property.owner);
+            setFieldValue('f-property-selected', property.id);
+            db.selectedPropertyId = property.id;
+            lastPropertySelectionId = property.id;
+            isApplyingPropertySelection = false;
+        }
+
+        function onContractPropertySelectionChange() {
+            const selectedId = fieldValue('f-property-selected');
+            if (!selectedId) {
+                db.selectedPropertyId = '';
+                lastPropertySelectionId = '';
+                render();
+                return;
+            }
+
+            const property = propertiesCache.find((item) => item.id === selectedId);
+            if (!property) {
+                setFieldValue('f-property-selected', '');
+                db.selectedPropertyId = '';
+                lastPropertySelectionId = '';
+                return;
+            }
+
+            const confirmOverwrite = window.confirm('Deseja sobrescrever os campos de imóvel do contrato com os dados cadastrados?');
+            if (!confirmOverwrite) {
+                setFieldValue('f-property-selected', lastPropertySelectionId || '');
+                return;
+            }
+
+            applyPropertyToContractFields(property);
+            render();
+        }
+
+        function handleManualPropertyFieldEdit() {
+            if (isApplyingPropertySelection) return;
+            const selectedId = fieldValue('f-property-selected');
+            if (!selectedId) return;
+
+            const keepLinked = window.confirm('Este contrato está vinculado a um imóvel cadastrado.\nOK = Desvincular e manter edição manual\nCancelar = restaurar dados do imóvel cadastrado');
+            if (keepLinked) {
+                setFieldValue('f-property-selected', '');
+                db.selectedPropertyId = '';
+                lastPropertySelectionId = '';
+                return;
+            }
+
+            const property = propertiesCache.find((item) => item.id === selectedId);
+            if (property) {
+                applyPropertyToContractFields(property);
+                render();
+            }
+        }
+
+        function renderMemorialSection() {
+            // Render do memorial descritivo anexado automaticamente ao final do contrato.
+            const container = document.getElementById('memorial-section');
+            const titleEl = document.getElementById('memorial-title');
+            const noteEl = document.getElementById('memorial-note');
+            const textEl = document.getElementById('memorial-text');
+            if (!container || !titleEl || !noteEl || !textEl) return;
+
+            const selectedId = db.selectedPropertyId;
+            const property = propertiesCache.find((item) => item.id === selectedId);
+            const memorial = property?.memorial;
+            const memorialText = (memorial?.text || '').trim();
+            const show = !!(memorial?.enabled && memorialText);
+
+            container.classList.toggle('hidden', !show);
+            if (!show) return;
+
+            titleEl.textContent = (memorial?.title || 'MEMORIAL DESCRITIVO').trim() || 'MEMORIAL DESCRITIVO';
+            textEl.innerHTML = formatMemorialText(memorialText);
+            const note = (memorial?.attachmentsNote || '').trim();
+            noteEl.classList.toggle('hidden', !note);
+            noteEl.textContent = note ? `(${note})` : '';
+            container.classList.toggle('memorial-page-break', !!memorial?.pageBreakBefore);
+        }
+
+        function escapeHtml(value) {
+            return value
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatMemorialText(text) {
+            const lines = text.split(/\r?\n/);
+            const chunks = [];
+            let currentListType = null;
+
+            const closeList = () => {
+                if (currentListType) {
+                    chunks.push(`</${currentListType}>`);
+                    currentListType = null;
+                }
+            };
+
+            const openList = (type) => {
+                if (currentListType !== type) {
+                    closeList();
+                    currentListType = type;
+                    chunks.push(`<${type}>`);
+                }
+            };
+
+            lines.forEach((rawLine) => {
+                const line = rawLine.trim();
+                if (!line) {
+                    closeList();
+                    return;
+                }
+
+                const bulletMatch = line.match(/^(?:[-*•])\s+(.+)$/);
+                if (bulletMatch) {
+                    openList('ul');
+                    chunks.push(`<li>${escapeHtml(bulletMatch[1])}</li>`);
+                    return;
+                }
+
+                const numberedMatch = line.match(/^\d+[\.)]\s+(.+)$/);
+                if (numberedMatch) {
+                    openList('ol');
+                    chunks.push(`<li>${escapeHtml(numberedMatch[1])}</li>`);
+                    return;
+                }
+
+                closeList();
+                const sectionMatch = line.match(/^([^:]{2,}):\s*(.+)$/);
+                if (sectionMatch) {
+                    chunks.push(`<p><strong>${escapeHtml(sectionMatch[1])}:</strong> ${escapeHtml(sectionMatch[2])}</p>`);
+                    return;
+                }
+
+                chunks.push(`<p>${escapeHtml(line)}</p>`);
             });
+
+            closeList();
+            return chunks.join('');
         }
 
         function render() {
@@ -1384,7 +1957,11 @@
             `;
 
             document.getElementById('txt-endereco-imovel').innerText = db.imovel.endereco.toUpperCase();
-            document.getElementById('txt-proprietario').innerText = db.imovel.proprietario.toUpperCase();
+            const usaProcurador = db.locador?.usa_procurador !== false;
+            const proprietarioEl = document.getElementById('txt-proprietario');
+            document.getElementById('txt-procurador-frase').innerText = usaProcurador ? ', PROCURADOR DE SEU LEGÍTIMO PROPRIETÁRIO, ' : '';
+            proprietarioEl.innerText = usaProcurador ? db.imovel.proprietario.toUpperCase() : '';
+            proprietarioEl.classList.toggle('hidden', !usaProcurador);
             const foro = (db.foro || 'PALOTINA - PR').toString().trim() || 'PALOTINA - PR';
             document.getElementById('txt-foro').innerText = foro.toUpperCase();
             document.getElementById('txt-local-assinatura').innerText = foro;
@@ -1420,6 +1997,8 @@
                     <div class="role">${signature.role}</div>
                 </div>
             `).join('');
+
+            renderMemorialSection();
         }
 
         function askSaveMode() {
@@ -1482,10 +2061,12 @@
             const map = {
                 'f-locador-nome': '#txt-locador-nome-intro',
                 'f-locador-telefone': '#txt-locador-telefone',
+                'f-locador-usa-procurador': '#txt-procurador-frase',
                 'f-locador-qualificacao': '#txt-locador-qualificacao-intro',
                 'f-locataria-nome': '#txt-locataria-nome-intro',
                 'f-locataria-qualificacao': '#txt-locataria-qualificacao-intro',
                 'f-locataria-conjuge-qualificacao': '#txt-locataria-conjuge-qualificacao-intro',
+                'f-property-selected': '#txt-endereco-imovel',
                 'f-imovel-endereco': '#txt-endereco-imovel',
                 'f-imovel-proprietario': '#txt-proprietario',
                 'f-foro': '#txt-foro',
@@ -1544,7 +2125,7 @@
                     };
 
                     try {
-                        const ok = await trySyncRemote(nextVersions);
+                        const ok = await persistRemoteState(nextVersions, propertiesCache);
                         if (!ok) {
                             alert('Sem conexão com Gist. Não foi possível salvar a versão.');
                             return;
@@ -1572,7 +2153,7 @@
             nextOpenedId = id;
 
             try {
-                const ok = await trySyncRemote(nextVersions);
+                const ok = await persistRemoteState(nextVersions, propertiesCache);
                 if (!ok) {
                     alert('Sem conexão com Gist. Não foi possível salvar a versão.');
                     return;
@@ -1628,7 +2209,7 @@
             }
 
             try {
-                const ok = await trySyncRemote(updatedVersions);
+                const ok = await persistRemoteState(updatedVersions, propertiesCache);
                 if (!ok) {
                     alert('Sem conexão com Gist. Não foi possível excluir a versão.');
                     return;
@@ -1672,16 +2253,21 @@
             }
 
             try {
-                const remoteVersions = await gistLoadVersions(config, token);
-                versionsCache = remoteVersions;
+                const remoteState = await gistLoadState(config, token);
+                versionsCache = remoteState.state.versions;
+                propertiesCache = remoteState.state.properties;
                 loadedFromRemote = true;
                 setSyncStatus('Fonte: remoto conectado');
                 setGistConnectionNote('Conectado ao Gist');
                 applyDataFromSource();
+                if (remoteState.migrated) {
+                    await persistRemoteState(versionsCache, propertiesCache);
+                }
                 alert('Conexão com Gist validada com sucesso.');
             } catch (error) {
                 if (String(error.message || '').includes('Arquivo JSON não existe')) {
                     versionsCache = [];
+                    propertiesCache = [];
                     loadedFromRemote = true;
                     setSyncStatus('Gist conectado; arquivo será criado ao salvar');
                     setGistConnectionNote('Gist conectado sem arquivo remoto; clique em Salvar para criar.');
@@ -1691,9 +2277,12 @@
                 }
                 loadedFromRemote = false;
                 versionsCache = [];
+                propertiesCache = [];
                 setSyncStatus('Sem conexão com Gist');
                 setGistConnectionNote(error.message || 'Sem conexão com Gist', true);
                 refreshVersionList();
+                refreshPropertyList();
+                refreshPropertySelectInContract();
                 alert(error.message || 'Falha na conexão com Gist.');
             }
         }
@@ -1702,9 +2291,12 @@
             clearStoredToken();
             loadedFromRemote = false;
             versionsCache = [];
+            propertiesCache = [];
             setSyncStatus('Sem conexão com Gist');
             setGistConnectionNote('Sem conexão com Gist', true);
             refreshVersionList();
+            refreshPropertyList();
+            refreshPropertySelectInContract();
             alert('Token removido da sessão atual.');
         }
 
@@ -1738,7 +2330,7 @@
             }
 
             try {
-                const ok = await trySyncRemote(parsed);
+                const ok = await persistRemoteState(parsed, propertiesCache);
                 if (!ok) {
                     alert('Sem conexão com Gist. Importação não persistida.');
                     return;
@@ -1766,20 +2358,26 @@
             if (!config.gistId || !token) {
                 loadedFromRemote = false;
                 versionsCache = [];
+                propertiesCache = [];
                 setSyncStatus('Sem conexão com Gist');
                 setGistConnectionNote('Sem conexão com Gist', true);
                 return;
             }
 
             try {
-                const remoteVersions = await gistLoadVersions(config, token);
-                versionsCache = remoteVersions;
+                const remoteState = await gistLoadState(config, token);
+                versionsCache = remoteState.state.versions;
+                propertiesCache = remoteState.state.properties;
                 loadedFromRemote = true;
                 setSyncStatus('Fonte: remoto');
                 setGistConnectionNote('Conectado ao Gist');
+                if (remoteState.migrated) {
+                    await persistRemoteState(versionsCache, propertiesCache);
+                }
             } catch (error) {
                 if (String(error.message || '').includes('Arquivo JSON não existe')) {
                     versionsCache = [];
+                    propertiesCache = [];
                     loadedFromRemote = true;
                     setSyncStatus('Fonte: remoto (arquivo será criado no salvar)');
                     setGistConnectionNote('Gist conectado sem arquivo remoto; clique em Salvar para criar.');
@@ -1787,10 +2385,23 @@
                 }
 
                 versionsCache = [];
+                propertiesCache = [];
                 loadedFromRemote = false;
                 setSyncStatus('Sem conexão com Gist');
                 setGistConnectionNote(error.message || 'Sem conexão com Gist', true);
             }
+        }
+
+        function switchTab(tabName) {
+            const isContrato = tabName === 'contrato';
+            if (isContrato && propertyFormDirty) {
+                const proceed = window.confirm('Há alterações de imóvel não salvas. Deseja sair da aba Imóveis mesmo assim?');
+                if (!proceed) return;
+            }
+            document.getElementById('tab-contrato').classList.toggle('hidden', !isContrato);
+            document.getElementById('tab-imoveis').classList.toggle('hidden', isContrato);
+            document.getElementById('tab-btn-contrato').classList.toggle('active', isContrato);
+            document.getElementById('tab-btn-imoveis').classList.toggle('active', !isContrato);
         }
 
         window.onload = async function () {
@@ -1825,6 +2436,13 @@
                 syncTerminoFromInicioPrazo();
                 render();
             });
+            document.getElementById('tab-btn-contrato').addEventListener('click', function () {
+                switchTab('contrato');
+            });
+            document.getElementById('tab-btn-imoveis').addEventListener('click', function () {
+                switchTab('imoveis');
+            });
+
             document.getElementById('btn-salvar').addEventListener('click', saveCurrentVersion);
             document.getElementById('btn-carregar').addEventListener('click', openSelectedVersion);
             document.getElementById('btn-excluir-versao').addEventListener('click', deleteSelectedVersion);
@@ -1858,6 +2476,51 @@
                 toggleLocatariaConjugeVisibility();
                 render();
             });
+
+            document.getElementById('f-locador-usa-procurador').addEventListener('change', function () {
+                render();
+            });
+
+            document.getElementById('f-property-selected').addEventListener('change', onContractPropertySelectionChange);
+            ['f-imovel-endereco', 'f-imovel-proprietario'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', handleManualPropertyFieldEdit);
+                }
+            });
+
+            const propertyFields = [
+                'p-label', 'p-cidade', 'p-estado', 'p-bairro', 'p-rua', 'p-numero', 'p-complemento', 'p-cep', 'p-proprietario',
+                'p-memorial-enabled', 'p-memorial-page-break', 'p-memorial-title', 'p-memorial-text', 'p-memorial-note'
+            ];
+            propertyFields.forEach((id) => {
+                const element = document.getElementById(id);
+                if (!element) return;
+                element.addEventListener('input', function () { propertyFormDirty = true; });
+                element.addEventListener('change', function () { propertyFormDirty = true; });
+            });
+
+            document.getElementById('property-list').addEventListener('change', function () {
+                const nextId = fieldValue('property-list');
+                if (!nextId) return;
+                if (!ensurePropertyFormCanChange()) {
+                    refreshPropertyList();
+                    return;
+                }
+                selectPropertyForEditor(nextId);
+            });
+
+            document.getElementById('btn-property-new').addEventListener('click', beginNewProperty);
+            document.getElementById('btn-property-save').addEventListener('click', saveCurrentProperty);
+            document.getElementById('btn-property-duplicate').addEventListener('click', duplicateCurrentProperty);
+            document.getElementById('btn-property-delete').addEventListener('click', deleteCurrentProperty);
+
+            if (propertiesCache.length) {
+                selectPropertyForEditor(propertiesCache[0].id);
+            } else {
+                setPropertyFormData(createEmptyProperty());
+            }
+            switchTab('contrato');
 
             document.querySelectorAll('.editor-panel input, .editor-panel textarea, .editor-panel select').forEach(field => {
                 field.addEventListener('focus', function () {
