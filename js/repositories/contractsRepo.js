@@ -50,25 +50,80 @@ function cloneSafeData(data) {
   }
 }
 
+function normalizeRefId(value) {
+  if (typeof value !== 'string') return '';
+  return value.trim();
+}
+
+function extractContractRefs(rawData, rawPayload) {
+  return {
+    propertyId: normalizeRefId(rawPayload?.propertyId || rawData?.selectedPropertyId || ''),
+    landlordId: normalizeRefId(rawPayload?.landlordId || rawData?.selectedLandlordId || ''),
+    tenantId: normalizeRefId(rawPayload?.tenantId || rawData?.selectedTenantId || '')
+  };
+}
+
+function normalizeVersionFilters(rawFilters = {}) {
+  return {
+    propertyId: normalizeRefId(rawFilters?.propertyId || ''),
+    landlordId: normalizeRefId(rawFilters?.landlordId || ''),
+    tenantId: normalizeRefId(rawFilters?.tenantId || '')
+  };
+}
+
+function applyVersionFilters(versions, filters) {
+  return versions.filter((version) => {
+    if (filters.propertyId && version.propertyId !== filters.propertyId) return false;
+    if (filters.landlordId && version.landlordId !== filters.landlordId) return false;
+    if (filters.tenantId && version.tenantId !== filters.tenantId) return false;
+    return true;
+  });
+}
+
 function normalizeVersionPayload(raw) {
   const isoSavedAt = toIsoDate(raw.savedAt) || new Date().toISOString();
+  const safeData = cloneSafeData(raw.data);
+  const refs = extractContractRefs(safeData, raw);
+
+  if (refs.propertyId && !safeData.selectedPropertyId) safeData.selectedPropertyId = refs.propertyId;
+  if (refs.landlordId && !safeData.selectedLandlordId) safeData.selectedLandlordId = refs.landlordId;
+  if (refs.tenantId && !safeData.selectedTenantId) safeData.selectedTenantId = refs.tenantId;
+
   return {
     id: raw.id || generateVersionId(),
     name: raw.name || 'Versão',
     savedAt: isoSavedAt,
     editorName: raw.editorName || 'DESCONHECIDO',
-    data: cloneSafeData(raw.data)
+    propertyId: refs.propertyId,
+    landlordId: refs.landlordId,
+    tenantId: refs.tenantId,
+    data: safeData
   };
 }
 
-async function listVersions(ownerId) {
+async function listVersions(ownerId, rawFilters = {}) {
   const fb = await waitForFirebase();
+  const filters = normalizeVersionFilters(rawFilters);
+
+  const queryParts = [
+    fb.collection(fb.db, 'contracts'),
+    fb.where('ownerId', '==', ownerId)
+  ];
+
+  if (filters.propertyId) {
+    queryParts.push(fb.where('propertyId', '==', filters.propertyId));
+  }
+  if (filters.landlordId) {
+    queryParts.push(fb.where('landlordId', '==', filters.landlordId));
+  }
+  if (filters.tenantId) {
+    queryParts.push(fb.where('tenantId', '==', filters.tenantId));
+  }
+
+  queryParts.push(fb.orderBy('savedAt', 'desc'));
+
   try {
-    const q = fb.query(
-      fb.collection(fb.db, 'contracts'),
-      fb.where('ownerId', '==', ownerId),
-      fb.orderBy('savedAt', 'desc')
-    );
+    const q = fb.query(...queryParts);
     const snap = await fb.getDocs(q);
     return snap.docs.map((item) => {
       const data = item.data();
@@ -80,12 +135,14 @@ async function listVersions(ownerId) {
       fb.where('ownerId', '==', ownerId)
     );
     const snapFallback = await fb.getDocs(qFallback);
-    return snapFallback.docs
+    const normalized = snapFallback.docs
       .map((item) => {
         const data = item.data();
         return normalizeVersionPayload({ ...data, id: item.id });
       })
       .sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
+
+    return applyVersionFilters(normalized, filters);
   }
 }
 
@@ -108,6 +165,9 @@ async function upsertVersion(ownerId, version) {
     name: safeVersion.name,
     savedAt: safeVersion.savedAt,
     editorName: safeVersion.editorName,
+    propertyId: safeVersion.propertyId || '',
+    landlordId: safeVersion.landlordId || '',
+    tenantId: safeVersion.tenantId || '',
     data: safeVersion.data,
     source: 'legacy-version',
     updatedAt: fb.serverTimestamp()
