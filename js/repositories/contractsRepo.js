@@ -35,7 +35,7 @@ function toIsoDate(value) {
   return null;
 }
 
-function generateVersionId() {
+function generateContractId() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
   }
@@ -55,56 +55,115 @@ function normalizeRefId(value) {
   return value.trim();
 }
 
-function extractContractRefs(rawData, rawPayload) {
+function normalizeParticipants(raw = {}) {
   return {
-    propertyId: normalizeRefId(rawPayload?.propertyId || rawData?.selectedPropertyId || ''),
-    landlordId: normalizeRefId(rawPayload?.landlordId || rawData?.selectedLandlordId || ''),
-    tenantId: normalizeRefId(rawPayload?.tenantId || rawData?.selectedTenantId || '')
+    landlordId: normalizeRefId(raw?.landlordId || ''),
+    tenantId: normalizeRefId(raw?.tenantId || ''),
+    ownerId: normalizeRefId(raw?.ownerId || ''),
+    pixPayeeId: normalizeRefId(raw?.pixPayeeId || ''),
+    guarantor1Id: normalizeRefId(raw?.guarantor1Id || ''),
+    guarantor1SpouseId: normalizeRefId(raw?.guarantor1SpouseId || ''),
+    guarantor2Id: normalizeRefId(raw?.guarantor2Id || ''),
+    guarantor2SpouseId: normalizeRefId(raw?.guarantor2SpouseId || '')
   };
 }
 
-function normalizeVersionFilters(rawFilters = {}) {
+function extractContractRefs(rawData, rawPayload) {
+  const participantsRaw = rawPayload?.participants && typeof rawPayload.participants === 'object'
+    ? rawPayload.participants
+    : {};
+
+  const dataParticipants = rawData?.participants && typeof rawData.participants === 'object'
+    ? rawData.participants
+    : {};
+
+  const selectedPeople = rawData?.selectedPeople && typeof rawData.selectedPeople === 'object'
+    ? rawData.selectedPeople
+    : {};
+
+  const legacyParticipants = {
+    landlordId: rawPayload?.landlordId || rawData?.selectedLandlordId || selectedPeople.landlordId || dataParticipants.landlordId || '',
+    tenantId: rawPayload?.tenantId || rawData?.selectedTenantId || selectedPeople.tenantId || dataParticipants.tenantId || '',
+    ownerId: participantsRaw.ownerId || dataParticipants.ownerId || '',
+    pixPayeeId: participantsRaw.pixPayeeId || dataParticipants.pixPayeeId || '',
+    guarantor1Id: participantsRaw.guarantor1Id || dataParticipants.guarantor1Id || '',
+    guarantor1SpouseId: participantsRaw.guarantor1SpouseId || dataParticipants.guarantor1SpouseId || '',
+    guarantor2Id: participantsRaw.guarantor2Id || dataParticipants.guarantor2Id || '',
+    guarantor2SpouseId: participantsRaw.guarantor2SpouseId || dataParticipants.guarantor2SpouseId || ''
+  };
+
+  const participants = normalizeParticipants(legacyParticipants);
+
+  return {
+    propertyId: normalizeRefId(rawPayload?.propertyId || rawData?.selectedPropertyId || ''),
+    participants
+  };
+}
+
+function normalizeContractFilters(rawFilters = {}) {
   return {
     propertyId: normalizeRefId(rawFilters?.propertyId || ''),
+    participantRole: normalizeRefId(rawFilters?.participantRole || ''),
+    participantId: normalizeRefId(rawFilters?.participantId || ''),
+    status: normalizeRefId(rawFilters?.status || ''),
     landlordId: normalizeRefId(rawFilters?.landlordId || ''),
     tenantId: normalizeRefId(rawFilters?.tenantId || '')
   };
 }
 
-function applyVersionFilters(versions, filters) {
-  return versions.filter((version) => {
-    if (filters.propertyId && version.propertyId !== filters.propertyId) return false;
-    if (filters.landlordId && version.landlordId !== filters.landlordId) return false;
-    if (filters.tenantId && version.tenantId !== filters.tenantId) return false;
+function getParticipantValue(contract, role) {
+  if (!role) return '';
+  return normalizeRefId(contract?.participants?.[role] || '');
+}
+
+function applyContractFilters(contracts, filters) {
+  return contracts.filter((contract) => {
+    if (filters.propertyId && contract.propertyId !== filters.propertyId) return false;
+    if (filters.status && contract.status !== filters.status) return false;
+
+    if (filters.participantRole && filters.participantId) {
+      const value = getParticipantValue(contract, filters.participantRole);
+      if (value !== filters.participantId) return false;
+    }
+
+    if (filters.landlordId && contract.participants.landlordId !== filters.landlordId) return false;
+    if (filters.tenantId && contract.participants.tenantId !== filters.tenantId) return false;
+
     return true;
   });
 }
 
-function normalizeVersionPayload(raw) {
-  const isoSavedAt = toIsoDate(raw.savedAt) || new Date().toISOString();
+function normalizeContractPayload(raw) {
   const safeData = cloneSafeData(raw.data);
   const refs = extractContractRefs(safeData, raw);
 
-  if (refs.propertyId && !safeData.selectedPropertyId) safeData.selectedPropertyId = refs.propertyId;
-  if (refs.landlordId && !safeData.selectedLandlordId) safeData.selectedLandlordId = refs.landlordId;
-  if (refs.tenantId && !safeData.selectedTenantId) safeData.selectedTenantId = refs.tenantId;
+  safeData.selectedPropertyId = refs.propertyId || '';
+  safeData.selectedLandlordId = refs.participants.landlordId || '';
+  safeData.selectedTenantId = refs.participants.tenantId || '';
+  safeData.participants = cloneSafeData(refs.participants);
+
+  const status = (raw.status || 'draft').toString();
+
+  const createdAtIso = toIsoDate(raw.createdAt) || new Date().toISOString();
+  const updatedAtIso = toIsoDate(raw.updatedAt) || toIsoDate(raw.savedAt) || createdAtIso;
 
   return {
-    id: raw.id || generateVersionId(),
-    name: raw.name || 'Versão',
-    savedAt: isoSavedAt,
-    editorName: raw.editorName || 'DESCONHECIDO',
+    id: raw.id || generateContractId(),
+    ownerId: (raw.ownerId || '').toString(),
+    name: (raw.name || 'Contrato').toString(),
+    editorName: (raw.editorName || 'DESCONHECIDO').toString(),
     propertyId: refs.propertyId,
-    landlordId: refs.landlordId,
-    tenantId: refs.tenantId,
-    data: safeData
+    participants: refs.participants,
+    data: safeData,
+    status,
+    createdAt: createdAtIso,
+    updatedAt: updatedAtIso,
+    savedAt: updatedAtIso,
+    source: (raw.source || 'contract').toString()
   };
 }
 
-async function listVersions(ownerId, rawFilters = {}) {
-  const fb = await waitForFirebase();
-  const filters = normalizeVersionFilters(rawFilters);
-
+function buildContractQueryParts(fb, ownerId, filters) {
   const queryParts = [
     fb.collection(fb.db, 'contracts'),
     fb.where('ownerId', '==', ownerId)
@@ -113,99 +172,123 @@ async function listVersions(ownerId, rawFilters = {}) {
   if (filters.propertyId) {
     queryParts.push(fb.where('propertyId', '==', filters.propertyId));
   }
+  if (filters.status) {
+    queryParts.push(fb.where('status', '==', filters.status));
+  }
+
+  if (filters.participantRole && filters.participantId) {
+    queryParts.push(fb.where(`participants.${filters.participantRole}`, '==', filters.participantId));
+  }
+
   if (filters.landlordId) {
-    queryParts.push(fb.where('landlordId', '==', filters.landlordId));
+    queryParts.push(fb.where('participants.landlordId', '==', filters.landlordId));
   }
   if (filters.tenantId) {
-    queryParts.push(fb.where('tenantId', '==', filters.tenantId));
+    queryParts.push(fb.where('participants.tenantId', '==', filters.tenantId));
   }
 
-  queryParts.push(fb.orderBy('savedAt', 'desc'));
+  queryParts.push(fb.orderBy('updatedAt', 'desc'));
+
+  return queryParts;
+}
+
+async function listContracts(ownerId, rawFilters = {}) {
+  const fb = await waitForFirebase();
+  const filters = normalizeContractFilters(rawFilters);
 
   try {
-    const q = fb.query(...queryParts);
+    const q = fb.query(...buildContractQueryParts(fb, ownerId, filters));
     const snap = await fb.getDocs(q);
-    return snap.docs.map((item) => {
-      const data = item.data();
-      return normalizeVersionPayload({ ...data, id: item.id });
-    });
-  } catch (error) {
+    return snap.docs.map((item) => normalizeContractPayload({ ...item.data(), id: item.id }));
+  } catch {
     const qFallback = fb.query(
       fb.collection(fb.db, 'contracts'),
       fb.where('ownerId', '==', ownerId)
     );
     const snapFallback = await fb.getDocs(qFallback);
     const normalized = snapFallback.docs
-      .map((item) => {
-        const data = item.data();
-        return normalizeVersionPayload({ ...data, id: item.id });
-      })
-      .sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
+      .map((item) => normalizeContractPayload({ ...item.data(), id: item.id }))
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
-    return applyVersionFilters(normalized, filters);
+    return applyContractFilters(normalized, filters);
   }
 }
 
-async function upsertVersion(ownerId, version) {
+async function upsertContract(ownerId, contract) {
   const fb = await waitForFirebase();
-  const safeVersion = normalizeVersionPayload(version);
-  const ref = fb.doc(fb.db, 'contracts', safeVersion.id);
+  const safeContract = normalizeContractPayload(contract);
+  const ref = fb.doc(fb.db, 'contracts', safeContract.id);
 
-  // Descobre se já existe
   const snap = await fb.getDoc(ref);
   const exists = snap.exists();
   const currentData = exists ? snap.data() : null;
 
   if (exists && currentData?.ownerId && currentData.ownerId !== ownerId) {
-    throw new Error('Você não tem permissão para alterar esta versão.');
+    throw new Error('Você não tem permissão para alterar este contrato.');
   }
 
   const payload = {
     ownerId,
-    name: safeVersion.name,
-    savedAt: safeVersion.savedAt,
-    editorName: safeVersion.editorName,
-    propertyId: safeVersion.propertyId || '',
-    landlordId: safeVersion.landlordId || '',
-    tenantId: safeVersion.tenantId || '',
-    data: safeVersion.data,
-    source: 'legacy-version',
-    updatedAt: fb.serverTimestamp()
+    name: safeContract.name,
+    editorName: safeContract.editorName,
+    propertyId: safeContract.propertyId || '',
+    participants: safeContract.participants,
+    data: safeContract.data,
+    status: safeContract.status,
+    source: safeContract.source || 'contract',
+    createdAt: exists ? (currentData?.createdAt || safeContract.createdAt) : safeContract.createdAt,
+    updatedAt: safeContract.updatedAt || new Date().toISOString(),
+    updatedAtServer: fb.serverTimestamp()
   };
 
-  // Só define createdAt se for novo
-  if (!exists) {
-    payload.createdAt = fb.serverTimestamp();
-  }
-
   await fb.setDoc(ref, payload, { merge: true });
-
-  return safeVersion;
+  return safeContract;
 }
 
-async function deleteVersion(ownerId, versionId) {
+async function deleteContract(ownerId, contractId) {
   const fb = await waitForFirebase();
-  const ref = fb.doc(fb.db, 'contracts', versionId);
+  const ref = fb.doc(fb.db, 'contracts', contractId);
 
   const current = await fb.getDoc(ref);
   if (!current.exists()) return;
 
   const currentData = current.data();
   if (currentData?.ownerId !== ownerId) {
-    throw new Error('Você não tem permissão para excluir esta versão.');
+    throw new Error('Você não tem permissão para excluir este contrato.');
   }
 
   await fb.deleteDoc(ref);
 }
 
-async function upsertManyVersions(ownerId, versions) {
-  const normalized = Array.isArray(versions) ? versions : [];
-  for (const version of normalized) {
-    await upsertVersion(ownerId, version);
+async function upsertManyContracts(ownerId, contracts) {
+  const normalized = Array.isArray(contracts) ? contracts : [];
+  for (const contract of normalized) {
+    await upsertContract(ownerId, contract);
   }
 }
 
+// Compatibilidade com o código legado
+async function listVersions(ownerId, filters = {}) {
+  return listContracts(ownerId, filters);
+}
+
+async function upsertVersion(ownerId, version) {
+  return upsertContract(ownerId, version);
+}
+
+async function upsertManyVersions(ownerId, versions) {
+  return upsertManyContracts(ownerId, versions);
+}
+
+async function deleteVersion(ownerId, versionId) {
+  return deleteContract(ownerId, versionId);
+}
+
 window.ContractsRepo = {
+  listContracts,
+  upsertContract,
+  upsertManyContracts,
+  deleteContract,
   listVersions,
   upsertVersion,
   upsertManyVersions,

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal do Locatário</title>
+  <title>Portal do Convidado</title>
   <style>
     body {
       margin: 0;
@@ -115,13 +115,49 @@
       color: #0f172a;
       word-break: break-word;
     }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-field label {
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .form-field input,
+    .form-field textarea {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+    }
+
+    .form-field textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
   </style>
 </head>
 
 <body>
   <main class="card">
-    <h1>Portal do Locatário</h1>
-    <p>Valide seu convite e entre com a conta correta para aceitar o contrato.</p>
+    <h1>Portal do Convidado</h1>
+    <p>Entre com a conta correta para validar o convite e preencher apenas os dados permitidos do seu papel.</p>
     <p class="warn" id="status">Lendo parâmetros do convite...</p>
     <p><strong>Autenticação</strong></p>
     <div class="mono" id="auth-status">Auth: aguardando...</div>
@@ -143,6 +179,120 @@
         <div class="summary-item"><strong>Valor mensal</strong><span id="sum-value">-</span></div>
         <div class="summary-item"><strong>Início</strong><span id="sum-start">-</span></div>
         <div class="summary-item"><strong>Término</strong><span id="sum-end">-</span></div>
+      </div>
+    </div>
+
+    <div id="invite-person-form" class="hidden">
+      <p><strong>Seu cadastro para este convite</strong></p>
+      <div class="mono" id="invite-role-label">Papel: -</div>
+      <div class="form-grid">
+        <div class="form-field full"><label for="person-name">Nome completo</label><input id="person-name" type="text" /></div>
+        <div class="form-field"><label for="person-phone">Telefone</label><input id="person-phone" type="text" /></div>
+        <div class="form-field"><label for="person-email">E-mail</label><input id="person-email" type="text" /></div>
+        <div class="form-field"><label for="person-cpfcnpj">CPF</label><input id="person-cpfcnpj" type="text" /></div>
+        <div class="form-field"><label for="person-rg">RG</label><input id="person-rg" type="text" /></div>
+        <div class="form-field"><label for="person-profession">Profissão</label><input id="person-profession" type="text" /></div>
+        <div class="form-field"><label for="person-marital-status">Estado civil</label>
+          <select id="person-marital-status">
+            <option value="">(Selecionar)</option>
+            <option value="solteiro">Solteiro(a)</option>
+            <option value="casado">Casado(a)</option>
+            <option value="divorciado">Divorciado(a)</option>
+            <option value="viuvo">Viúvo(a)</option>
+            <option value="uniao-estavel">União estável</option>
+          </select>
+        </div>
+        <div class="form-field"><label for="person-address-city">Cidade</label><input id="person-address-city" type="text" /></div>
+        <div class="form-field"><label for="person-address-state">Estado</label><input id="person-address-state" type="text" /></div>
+        <div class="form-field full"><label for="person-address-street">Rua</label><input id="person-address-street" type="text" /></div>
+        <div id="person-bank-pix-fields" class="form-grid full" style="display: contents;">
+          <div class="form-field"><label for="person-bank-account">Conta bancária</label><input id="person-bank-account" type="text" /></div>
+          <div class="form-field"><label for="person-pix-key">Chave PIX</label><input id="person-pix-key" type="text" /></div>
+        </div>
+        <div class="form-field full"><label for="person-qualification">Qualificação</label><textarea id="person-qualification"></textarea></div>
+        <div class="form-field full"><label for="person-notes">Observações</label><textarea id="person-notes"></textarea></div>
+      </div>
+
+      <div id="spouse-form" class="hidden">
+        <p><strong>Cônjuge (opcional)</strong></p>
+        <div class="form-grid">
+          <div class="form-field full"><label for="spouse-name">Nome completo</label><input id="spouse-name" type="text" /></div>
+          <div class="form-field"><label for="spouse-phone">Telefone</label><input id="spouse-phone" type="text" /></div>
+          <div class="form-field"><label for="spouse-email">E-mail</label><input id="spouse-email" type="text" /></div>
+          <div class="form-field"><label for="spouse-cpfcnpj">CPF</label><input id="spouse-cpfcnpj" type="text" /></div>
+          <div class="form-field"><label for="spouse-rg">RG</label><input id="spouse-rg" type="text" /></div>
+          <div class="form-field"><label for="spouse-profession">Profissão</label><input id="spouse-profession" type="text" /></div>
+          <div class="form-field"><label for="spouse-address-city">Cidade</label><input id="spouse-address-city" type="text" /></div>
+          <div class="form-field"><label for="spouse-address-state">Estado</label><input id="spouse-address-state" type="text" /></div>
+          <div class="form-field full"><label for="spouse-address-street">Rua</label><input id="spouse-address-street" type="text" /></div>
+          <div class="form-field full"><label for="spouse-qualification">Qualificação</label><textarea id="spouse-qualification"></textarea></div>
+          <div class="form-field full"><label for="spouse-notes">Observações</label><textarea id="spouse-notes"></textarea></div>
+        </div>
+      </div>
+
+      <div id="tenant-guarantors-form" class="hidden">
+        <p><strong>Fiador(es) do locatário</strong></p>
+        <div class="form-grid">
+          <div class="form-field full">
+            <label><input id="person-has-guarantors" type="checkbox" /> Vou usar fiador</label>
+          </div>
+        </div>
+
+        <div id="guarantor-1-form" class="hidden">
+          <p><strong>Fiador 1</strong></p>
+          <div class="form-grid">
+            <div class="form-field full"><label for="guarantor1-name">Nome completo</label><input id="guarantor1-name" type="text" /></div>
+            <div class="form-field"><label for="guarantor1-email">E-mail</label><input id="guarantor1-email" type="text" /></div>
+            <div class="form-field"><label for="guarantor1-phone">Telefone</label><input id="guarantor1-phone" type="text" /></div>
+            <div class="form-field"><label for="guarantor1-cpfcnpj">CPF</label><input id="guarantor1-cpfcnpj" type="text" /></div>
+            <div class="form-field"><label for="guarantor1-rg">RG</label><input id="guarantor1-rg" type="text" /></div>
+            <div class="form-field"><label for="guarantor1-profession">Profissão</label><input id="guarantor1-profession" type="text" /></div>
+            <div class="form-field"><label for="guarantor1-marital-status">Estado civil</label>
+              <select id="guarantor1-marital-status">
+                <option value="">(Selecionar)</option>
+                <option value="solteiro">Solteiro(a)</option>
+                <option value="casado">Casado(a)</option>
+                <option value="divorciado">Divorciado(a)</option>
+                <option value="viuvo">Viúvo(a)</option>
+                <option value="uniao-estavel">União estável</option>
+              </select>
+            </div>
+            <div class="form-field"><label for="guarantor1-address-city">Cidade</label><input id="guarantor1-address-city" type="text" /></div>
+            <div class="form-field"><label for="guarantor1-address-state">Estado</label><input id="guarantor1-address-state" type="text" /></div>
+            <div class="form-field full"><label for="guarantor1-address-street">Rua</label><input id="guarantor1-address-street" type="text" /></div>
+          </div>
+        </div>
+
+        <div id="guarantor-2-toggle" class="hidden">
+          <div class="form-grid">
+            <div class="form-field full"><label><input id="person-has-second-guarantor" type="checkbox" /> Informar 2º fiador</label></div>
+          </div>
+        </div>
+
+        <div id="guarantor-2-form" class="hidden">
+          <p><strong>Fiador 2</strong></p>
+          <div class="form-grid">
+            <div class="form-field full"><label for="guarantor2-name">Nome completo</label><input id="guarantor2-name" type="text" /></div>
+            <div class="form-field"><label for="guarantor2-email">E-mail</label><input id="guarantor2-email" type="text" /></div>
+            <div class="form-field"><label for="guarantor2-phone">Telefone</label><input id="guarantor2-phone" type="text" /></div>
+            <div class="form-field"><label for="guarantor2-cpfcnpj">CPF</label><input id="guarantor2-cpfcnpj" type="text" /></div>
+            <div class="form-field"><label for="guarantor2-rg">RG</label><input id="guarantor2-rg" type="text" /></div>
+            <div class="form-field"><label for="guarantor2-profession">Profissão</label><input id="guarantor2-profession" type="text" /></div>
+            <div class="form-field"><label for="guarantor2-marital-status">Estado civil</label>
+              <select id="guarantor2-marital-status">
+                <option value="">(Selecionar)</option>
+                <option value="solteiro">Solteiro(a)</option>
+                <option value="casado">Casado(a)</option>
+                <option value="divorciado">Divorciado(a)</option>
+                <option value="viuvo">Viúvo(a)</option>
+                <option value="uniao-estavel">União estável</option>
+              </select>
+            </div>
+            <div class="form-field"><label for="guarantor2-address-city">Cidade</label><input id="guarantor2-address-city" type="text" /></div>
+            <div class="form-field"><label for="guarantor2-address-state">Estado</label><input id="guarantor2-address-state" type="text" /></div>
+            <div class="form-field full"><label for="guarantor2-address-street">Rua</label><input id="guarantor2-address-street" type="text" /></div>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -181,6 +331,7 @@
       loginBtn.disabled = !state.canLogin;
       logoutBtn.disabled = !state.canLogout;
       acceptBtn.disabled = !state.canAccept;
+      acceptBtn.textContent = state.acceptLabel || 'Aceitar convite';
     }
 
     function waitForFirebase(timeoutMs = 10000) {
@@ -229,6 +380,132 @@
     let acceptanceResult = null;
     let contractSummary = null;
 
+    const roleLabels = {
+      tenantId: 'Locatário',
+      guarantor1Id: 'Fiador 1',
+      guarantor1SpouseId: 'Cônjuge do Fiador 1',
+      guarantor2Id: 'Fiador 2',
+      guarantor2SpouseId: 'Cônjuge do Fiador 2',
+      landlordId: 'Locador',
+      ownerId: 'Proprietário',
+      pixPayeeId: 'Beneficiário PIX'
+    };
+
+    function currentInviteRole() {
+      const role = inviteValidation?.invitation?.role || contractSummary?.invitationRole || 'tenantId';
+      return roleLabels[role] ? role : 'tenantId';
+    }
+
+    function roleNeedsSpouse(role) {
+      return role === 'guarantor1Id' || role === 'guarantor2Id';
+    }
+
+    function roleSkipsBankPix(role) {
+      return ['tenantId', 'guarantor1Id', 'guarantor1SpouseId', 'guarantor2Id', 'guarantor2SpouseId'].includes(role);
+    }
+
+    function roleCanRegisterGuarantors(role) {
+      return role === 'tenantId';
+    }
+
+    function shouldShowSpouseForm(role) {
+      if (roleNeedsSpouse(role)) return true;
+      const maritalStatus = getInputValue('person-marital-status');
+      return role === 'tenantId' && maritalStatus === 'casado';
+    }
+
+    function toggleInviteDynamicSections() {
+      const role = currentInviteRole();
+      const showBankPix = !roleSkipsBankPix(role);
+      const bankPixFields = document.getElementById('person-bank-pix-fields');
+      if (bankPixFields) {
+        bankPixFields.classList.toggle('hidden', !showBankPix);
+      }
+
+      const spouseForm = document.getElementById('spouse-form');
+      if (spouseForm) {
+        spouseForm.classList.toggle('hidden', !shouldShowSpouseForm(role));
+      }
+
+      const guarantorsWrap = document.getElementById('tenant-guarantors-form');
+      const canUseGuarantors = roleCanRegisterGuarantors(role);
+      if (guarantorsWrap) {
+        guarantorsWrap.classList.toggle('hidden', !canUseGuarantors);
+      }
+
+      const hasGuarantors = canUseGuarantors && !!document.getElementById('person-has-guarantors')?.checked;
+      document.getElementById('guarantor-1-form')?.classList.toggle('hidden', !hasGuarantors);
+      document.getElementById('guarantor-2-toggle')?.classList.toggle('hidden', !hasGuarantors);
+
+      const hasSecondGuarantor = hasGuarantors && !!document.getElementById('person-has-second-guarantor')?.checked;
+      document.getElementById('guarantor-2-form')?.classList.toggle('hidden', !hasSecondGuarantor);
+    }
+
+    function setFormVisibility(canShow) {
+      const form = document.getElementById('invite-person-form');
+      if (!form) return;
+      form.classList.toggle('hidden', !canShow);
+
+      const role = currentInviteRole();
+      document.getElementById('invite-role-label').textContent = `Papel: ${roleLabels[role] || role}`;
+      toggleInviteDynamicSections();
+    }
+
+    function setInputValue(id, value) {
+      const element = document.getElementById(id);
+      if (element) element.value = value || '';
+    }
+
+    function getInputValue(id) {
+      const element = document.getElementById(id);
+      return element ? (element.value || '').trim() : '';
+    }
+
+    function populatePersonForm() {
+      if (currentUser) {
+        setInputValue('person-name', currentUser.displayName || '');
+        setInputValue('person-email', currentUser.email || '');
+      }
+      toggleInviteDynamicSections();
+    }
+
+    function collectGuarantor(prefix) {
+      const name = getInputValue(`${prefix}-name`);
+      if (!name) return null;
+      return {
+        name,
+        email: getInputValue(`${prefix}-email`),
+        phone: getInputValue(`${prefix}-phone`),
+        cpfCnpj: getInputValue(`${prefix}-cpfcnpj`),
+        rg: getInputValue(`${prefix}-rg`),
+        profession: getInputValue(`${prefix}-profession`),
+        maritalStatus: getInputValue(`${prefix}-marital-status`),
+        address: {
+          cidade: getInputValue(`${prefix}-address-city`),
+          estado: getInputValue(`${prefix}-address-state`),
+          rua: getInputValue(`${prefix}-address-street`)
+        }
+      };
+    }
+
+    function collectGuarantorsFromForm() {
+      if (!roleCanRegisterGuarantors(currentInviteRole())) return [];
+      const hasGuarantors = !!document.getElementById('person-has-guarantors')?.checked;
+      if (!hasGuarantors) return [];
+
+      const guarantors = [];
+      const guarantor1 = collectGuarantor('guarantor1');
+      if (guarantor1) guarantors.push(guarantor1);
+
+      const hasSecond = !!document.getElementById('person-has-second-guarantor')?.checked;
+      if (hasSecond) {
+        const guarantor2 = collectGuarantor('guarantor2');
+        if (guarantor2) guarantors.push(guarantor2);
+      }
+
+      return guarantors;
+    }
+
     function setSummaryField(id, value) {
       const el = document.getElementById(id);
       if (!el) return;
@@ -271,6 +548,14 @@
     }
 
     async function validateInviteParams() {
+      if (!currentUser) {
+        setStatus('Faça login com Google para validar o convite.', 'warn');
+        setButtonsState({ canLogin: true, canLogout: false, canAccept: false, acceptLabel: 'Aceitar convite' });
+        renderContractSummary(null);
+        setFormVisibility(false);
+        return;
+      }
+
       if (acceptanceResult) {
         setButtonsState({ canLogin: !currentUser, canLogout: Boolean(currentUser), canAccept: false });
         if (!contractSummary) {
@@ -283,6 +568,7 @@
         inviteValidation = null;
         setStatus('Link inválido ou incompleto. Solicite um novo convite ao locador.', 'error');
         setButtonsState({ canLogin: false, canLogout: false, canAccept: false });
+        setFormVisibility(false);
         return;
       }
 
@@ -296,26 +582,42 @@
             'missing-params': 'Parâmetros do convite ausentes.',
             'not-found': 'Convite não encontrado.',
             'revoked': 'Este convite foi revogado.',
-            'accepted': 'Este convite já foi aceito.',
+            'accepted': 'Este convite já foi aceito. Você pode atualizar seus dados abaixo.',
             'inactive': 'Este convite não está ativo.',
             'expired': 'Este convite expirou.',
             'token-mismatch': 'Token de convite inválido.'
           };
-          setStatus(reasonMap[validation?.reason] || 'Convite inválido.', 'error');
-          setButtonsState({ canLogin: false, canLogout: Boolean(currentUser), canAccept: false });
-          renderContractSummary(null);
+          const isAccepted = validation?.reason === 'accepted';
+          setStatus(reasonMap[validation?.reason] || 'Convite inválido.', isAccepted ? 'warn' : 'error');
+          setButtonsState({
+            canLogin: !currentUser,
+            canLogout: Boolean(currentUser),
+            canAccept: isAccepted && Boolean(currentUser),
+            acceptLabel: isAccepted ? 'Salvar meus dados' : 'Aceitar convite'
+          });
+          if (isAccepted) {
+            await loadContractSummary();
+            setFormVisibility(Boolean(currentUser));
+            if (currentUser) populatePersonForm();
+          } else {
+            renderContractSummary(null);
+            setFormVisibility(false);
+          }
           return;
         }
 
         const exp = validation.invitation?.expiresAtIso ? new Date(validation.invitation.expiresAtIso).toLocaleString('pt-BR') : 'não informado';
         setStatus(`Convite válido. Expira em ${exp}. Faça login para aceitar.`, 'ok');
-        setButtonsState({ canLogin: !currentUser, canLogout: Boolean(currentUser), canAccept: Boolean(currentUser) });
+        setButtonsState({ canLogin: !currentUser, canLogout: Boolean(currentUser), canAccept: Boolean(currentUser), acceptLabel: 'Aceitar convite' });
         await loadContractSummary();
+        setFormVisibility(Boolean(currentUser));
+        if (currentUser) populatePersonForm();
       } catch (error) {
         inviteValidation = null;
         setStatus(error.message || 'Falha ao validar convite.', 'error');
         setButtonsState({ canLogin: false, canLogout: Boolean(currentUser), canAccept: false });
         renderContractSummary(null);
+        setFormVisibility(false);
       }
     }
 
@@ -325,8 +627,15 @@
         setStatus('Faça login para aceitar o convite.', 'warn');
         return;
       }
-      if (!inviteValidation?.ok) {
+      const canProceedWhenAccepted = inviteValidation?.reason === 'accepted' && inviteValidation?.invitation;
+      if (!inviteValidation?.ok && !canProceedWhenAccepted) {
         setStatus('Convite inválido. Solicite um novo link ao locador.', 'error');
+        return;
+      }
+
+      const personName = getInputValue('person-name');
+      if (!personName) {
+        setStatus('Informe seu nome para continuar.', 'warn');
         return;
       }
 
@@ -345,8 +654,39 @@
         const invitationsRepo = await waitForInvitationsRepo();
         await invitationsRepo.acceptInvitationLink(inviteId, plainToken, {
           uid: currentUser.uid,
-          email: currentUser.email || '',
-          name: currentUser.displayName || ''
+          email: getInputValue('person-email') || currentUser.email || '',
+          name: personName,
+          phone: getInputValue('person-phone'),
+          cpfCnpj: getInputValue('person-cpfcnpj'),
+          rg: getInputValue('person-rg'),
+          profession: getInputValue('person-profession'),
+          maritalStatus: getInputValue('person-marital-status'),
+          address: {
+            cidade: getInputValue('person-address-city'),
+            estado: getInputValue('person-address-state'),
+            rua: getInputValue('person-address-street')
+          },
+          bankAccount: getInputValue('person-bank-account'),
+          pixKey: getInputValue('person-pix-key'),
+          qualification: getInputValue('person-qualification'),
+          notes: getInputValue('person-notes'),
+          invitationRefId: inviteId,
+          spouse: shouldShowSpouseForm(currentInviteRole()) ? {
+            name: getInputValue('spouse-name'),
+            email: getInputValue('spouse-email'),
+            phone: getInputValue('spouse-phone'),
+            cpfCnpj: getInputValue('spouse-cpfcnpj'),
+            rg: getInputValue('spouse-rg'),
+            profession: getInputValue('spouse-profession'),
+            address: {
+              cidade: getInputValue('spouse-address-city'),
+              estado: getInputValue('spouse-address-state'),
+              rua: getInputValue('spouse-address-street')
+            },
+            qualification: getInputValue('spouse-qualification'),
+            notes: getInputValue('spouse-notes')
+          } : null,
+          guarantors: collectGuarantorsFromForm()
         });
 
         acceptanceResult = {
@@ -357,7 +697,7 @@
           reason: 'accepted',
           invitation: inviteValidation?.invitation || null
         };
-        setStatus('Convite aceito com sucesso. Seu cadastro de locatário foi vinculado ao contrato.', 'ok');
+        setStatus('Convite processado com sucesso. Seu cadastro foi vinculado ao papel autorizado no contrato.', 'ok');
         await loadContractSummary();
       } catch (error) {
         setStatus(error.message || 'Não foi possível aceitar o convite.', 'error');
@@ -410,11 +750,15 @@
       });
 
       document.getElementById('btn-accept').addEventListener('click', acceptInvite);
+      document.getElementById('person-marital-status')?.addEventListener('change', toggleInviteDynamicSections);
+      document.getElementById('person-has-guarantors')?.addEventListener('change', toggleInviteDynamicSections);
+      document.getElementById('person-has-second-guarantor')?.addEventListener('change', toggleInviteDynamicSections);
 
       fb.onAuthStateChanged(fb.auth, async function (user) {
         currentUser = user || null;
         if (currentUser) {
           setAuthStatus(`Auth: ${currentUser.email || currentUser.uid}`);
+          populatePersonForm();
         } else {
           setAuthStatus('Auth: desconectado');
         }
@@ -422,7 +766,9 @@
         await validateInviteParams();
       });
 
-      await validateInviteParams();
+      if (currentUser) {
+        await validateInviteParams();
+      }
     })();
   </script>
 </body>

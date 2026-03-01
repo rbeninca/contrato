@@ -9,7 +9,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "savedAt",
+          "fieldPath": "updatedAt",
           "order": "DESCENDING"
         }
       ]
@@ -55,11 +55,11 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "landlordId",
+          "fieldPath": "participants.landlordId",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "savedAt",
+          "fieldPath": "updatedAt",
           "order": "DESCENDING"
         }
       ]
@@ -73,11 +73,11 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "tenantId",
+          "fieldPath": "participants.tenantId",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "savedAt",
+          "fieldPath": "updatedAt",
           "order": "DESCENDING"
         }
       ]
@@ -97,21 +97,7 @@
       ]
     },
     {
-      "collectionGroup": "landlords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ownerId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "updatedAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "tenants",
+      "collectionGroup": "people",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -148,6 +134,10 @@
         },
         {
           "fieldPath": "contractId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "role",
           "order": "ASCENDING"
         },
         {

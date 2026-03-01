@@ -51,16 +51,40 @@ function normalizeInvitationPayload(raw) {
     id: raw?.id || generateId(),
     ownerId: (raw?.ownerId || '').toString(),
     contractId: (raw?.contractId || '').toString(),
+    role: (raw?.role || 'tenantId').toString(),
     invitedEmail: (raw?.invitedEmail || '').toString(),
     invitedEmailLower: (raw?.invitedEmailLower || '').toString(),
     invitedTenantUid: (raw?.invitedTenantUid || '').toString(),
     invitedTenantId: (raw?.invitedTenantId || '').toString(),
+    summaryPropertyAddress: (raw?.summaryPropertyAddress || '').toString(),
+    summaryLandlordName: (raw?.summaryLandlordName || '').toString(),
+    summaryTenantName: (raw?.summaryTenantName || '').toString(),
+    summaryMonthlyValue: (raw?.summaryMonthlyValue || '').toString(),
+    summaryStartDate: (raw?.summaryStartDate || '').toString(),
+    summaryEndDate: (raw?.summaryEndDate || '').toString(),
+    summaryTermMonths: (raw?.summaryTermMonths || '').toString(),
+    summaryForo: (raw?.summaryForo || '').toString(),
     tokenHash: (raw?.tokenHash || '').toString(),
     status: (raw?.status || 'active').toString(),
     createdAtIso,
     expiresAtIso,
     revokedAtIso
   };
+}
+
+function normalizeInvitationRole(role) {
+  const safe = (role || '').toString().trim();
+  const allowed = [
+    'tenantId',
+    'guarantor1Id',
+    'guarantor1SpouseId',
+    'guarantor2Id',
+    'guarantor2SpouseId',
+    'landlordId',
+    'ownerId',
+    'pixPayeeId'
+  ];
+  return allowed.includes(safe) ? safe : 'tenantId';
 }
 
 function normalizeFilters(rawFilters = {}) {
@@ -126,6 +150,7 @@ function buildContractSummaryPayload(invitation, contractRaw = {}) {
   return {
     invitationId: invitation.id,
     contractId: invitation.contractId,
+    invitationRole: invitation.role,
     invitationStatus: invitation.status,
     propertyAddress: (property.endereco || '').toString(),
     landlordName: (landlord.nome || '').toString(),
@@ -173,18 +198,33 @@ function cloneJsonSafe(value) {
 
 function normalizeTenantFromAuth(tenantData = {}) {
   const email = (tenantData?.email || '').toString().trim();
+  const address = tenantData?.address && typeof tenantData.address === 'object' ? tenantData.address : {};
   return {
     uid: (tenantData?.uid || '').toString().trim(),
     email,
     emailLower: email.toLowerCase(),
     name: (tenantData?.name || tenantData?.displayName || '').toString().trim(),
-    phone: (tenantData?.phone || tenantData?.phoneNumber || '').toString().trim()
+    phone: (tenantData?.phone || tenantData?.phoneNumber || '').toString().trim(),
+    cpfCnpj: (tenantData?.cpfCnpj || '').toString().trim(),
+    rg: (tenantData?.rg || '').toString().trim(),
+    profession: (tenantData?.profession || '').toString().trim(),
+    maritalStatus: (tenantData?.maritalStatus || '').toString().trim(),
+    address: {
+      cidade: (address?.cidade || '').toString().trim(),
+      estado: (address?.estado || '').toString().trim(),
+      rua: (address?.rua || '').toString().trim()
+    },
+    bankAccount: (tenantData?.bankAccount || '').toString().trim(),
+    pixKey: (tenantData?.pixKey || '').toString().trim(),
+    qualification: (tenantData?.qualification || '').toString().trim(),
+    notes: (tenantData?.notes || '').toString().trim(),
+    invitationRefId: (tenantData?.invitationRefId || '').toString().trim()
   };
 }
 
 async function findTenantByOwner(fb, ownerId, matcher) {
   const q = fb.query(
-    fb.collection(fb.db, 'tenants'),
+    fb.collection(fb.db, 'people'),
     fb.where('ownerId', '==', ownerId)
   );
   const snap = await fb.getDocs(q);
@@ -223,7 +263,7 @@ async function upsertInvitedTenant(fb, invitation, tenantData = {}) {
   }
 
   const tenantId = existing?.id || generateId();
-  const tenantRef = fb.doc(fb.db, 'tenants', tenantId);
+  const tenantRef = fb.doc(fb.db, 'people', tenantId);
 
   const payload = {
     ownerId,
@@ -231,10 +271,21 @@ async function upsertInvitedTenant(fb, invitation, tenantData = {}) {
     phone: tenantAuth.phone || existing?.phone || '',
     email: tenantAuth.email || existing?.email || '',
     emailLower: tenantAuth.emailLower || (existing?.emailLower || existing?.email || '').toString().toLowerCase(),
-    cpfCnpj: existing?.cpfCnpj || '',
-    qualification: existing?.qualification || '',
-    notes: existing?.notes || '',
+    cpfCnpj: tenantAuth.cpfCnpj || existing?.cpfCnpj || '',
+    rg: tenantAuth.rg || existing?.rg || '',
+    profession: tenantAuth.profession || existing?.profession || '',
+    maritalStatus: tenantAuth.maritalStatus || existing?.maritalStatus || '',
+    address: {
+      cidade: tenantAuth.address?.cidade || existing?.address?.cidade || '',
+      estado: tenantAuth.address?.estado || existing?.address?.estado || '',
+      rua: tenantAuth.address?.rua || existing?.address?.rua || ''
+    },
+    bankAccount: tenantAuth.bankAccount || existing?.bankAccount || '',
+    pixKey: tenantAuth.pixKey || existing?.pixKey || '',
+    qualification: tenantAuth.qualification || existing?.qualification || '',
+    notes: tenantAuth.notes || existing?.notes || '',
     tenantAuthUid: tenantAuth.uid || existing?.tenantAuthUid || '',
+    updatedByInvitationId: tenantAuth.invitationRefId || existing?.updatedByInvitationId || '',
     createdAt: existing?.createdAt || nowIso,
     updatedAt: nowIso,
     createdAtServer: fb.serverTimestamp(),
@@ -249,49 +300,80 @@ async function upsertInvitedTenant(fb, invitation, tenantData = {}) {
     phone: payload.phone,
     email: payload.email,
     emailLower: payload.emailLower,
+    rg: payload.rg,
+    profession: payload.profession,
+    maritalStatus: payload.maritalStatus,
+    address: payload.address,
+    bankAccount: payload.bankAccount,
+    pixKey: payload.pixKey,
     tenantAuthUid: payload.tenantAuthUid
   };
 }
 
-async function bindInvitationContractTenant(fb, invitation, tenant) {
+async function saveReportedGuarantors(fb, invitation, guarantors = []) {
+  const ownerId = (invitation.ownerId || '').toString().trim();
+  if (!ownerId || !Array.isArray(guarantors) || !guarantors.length) {
+    return [];
+  }
+
+  const ids = [];
+  for (const entry of guarantors.slice(0, 2)) {
+    const safe = entry && typeof entry === 'object' ? entry : {};
+    if (!safe.name) continue;
+    const person = await upsertInvitedTenant(fb, invitation, {
+      uid: '',
+      email: (safe.email || '').toString(),
+      name: (safe.name || '').toString(),
+      phone: (safe.phone || '').toString(),
+      cpfCnpj: (safe.cpfCnpj || '').toString(),
+      rg: (safe.rg || '').toString(),
+      profession: (safe.profession || '').toString(),
+      maritalStatus: (safe.maritalStatus || '').toString(),
+      address: {
+        cidade: (safe.address?.cidade || '').toString(),
+        estado: (safe.address?.estado || '').toString(),
+        rua: (safe.address?.rua || '').toString()
+      },
+      bankAccount: '',
+      pixKey: '',
+      invitationRefId: invitation.id
+    });
+    ids.push(person.id);
+  }
+
+  return ids;
+}
+
+async function bindInvitationContractParticipant(fb, invitation, person, spouse = null) {
   const contractId = (invitation.contractId || '').toString().trim();
   if (!contractId) {
     throw new Error('Convite sem referência de contrato.');
   }
 
+  const role = normalizeInvitationRole(invitation.role);
   const contractRef = fb.doc(fb.db, 'contracts', contractId);
-  const contractSnap = await fb.getDoc(contractRef);
-  if (!contractSnap.exists()) {
-    throw new Error('Contrato do convite não encontrado.');
-  }
-
-  const contractData = contractSnap.data() || {};
-  if ((contractData.ownerId || '').toString() !== invitation.ownerId) {
-    throw new Error('Convite sem permissão para vincular este contrato.');
-  }
-
-  const nextData = cloneJsonSafe(contractData.data);
-  nextData.selectedTenantId = tenant.id;
-  if (!nextData.locataria || typeof nextData.locataria !== 'object') {
-    nextData.locataria = {};
-  }
-  if (tenant.name && !nextData.locataria.nome) {
-    nextData.locataria.nome = tenant.name;
-  }
-  if (tenant.email && !nextData.locataria.email) {
-    nextData.locataria.email = tenant.email;
-  }
-
-  await fb.setDoc(contractRef, {
-    tenantId: tenant.id,
-    data: nextData,
+  const updatePayload = {
+    [`participants.${role}`]: person.id,
     updatedAt: fb.serverTimestamp(),
     updatedByInvitationId: invitation.id
-  }, { merge: true });
+  };
+
+  if (role === 'tenantId') {
+    updatePayload.tenantId = person.id;
+  }
+
+  if ((role === 'guarantor1Id' || role === 'guarantor2Id') && spouse && spouse.id) {
+    const spouseRole = role === 'guarantor1Id' ? 'guarantor1SpouseId' : 'guarantor2SpouseId';
+    updatePayload[`participants.${spouseRole}`] = spouse.id;
+  }
+
+  await fb.updateDoc(contractRef, updatePayload);
 
   return {
     contractId,
-    tenantId: tenant.id
+    participantRole: role,
+    participantId: person.id,
+    spouseId: spouse?.id || ''
   };
 }
 
@@ -322,11 +404,22 @@ async function listInvitations(ownerId, rawFilters = {}) {
   }
 }
 
-async function createInvitation(ownerId, payload) {
+async function createInvitation(ownerId, payloadOrContractId, roleArg, invitedEmailArg, expDaysArg) {
   const fb = await waitForFirebase();
+
+  const payload = typeof payloadOrContractId === 'object' && payloadOrContractId
+    ? payloadOrContractId
+    : {
+      contractId: payloadOrContractId,
+      role: roleArg,
+      invitedEmail: invitedEmailArg,
+      expiresInDays: expDaysArg
+    };
 
   const contractId = (payload?.contractId || '').toString().trim();
   if (!contractId) throw new Error('Contrato é obrigatório para gerar convite.');
+
+  const role = normalizeInvitationRole(payload?.role || 'tenantId');
 
   const invitedEmail = (payload?.invitedEmail || '').toString().trim();
   const invitedEmailLower = invitedEmail.toLowerCase();
@@ -339,14 +432,56 @@ async function createInvitation(ownerId, payload) {
   const invitationId = generateId();
   const plainToken = generateToken();
   const tokenHash = await sha256Hex(plainToken);
+  let storedSummary = {
+    summaryPropertyAddress: '',
+    summaryLandlordName: '',
+    summaryTenantName: '',
+    summaryMonthlyValue: '',
+    summaryStartDate: '',
+    summaryEndDate: '',
+    summaryTermMonths: '',
+    summaryForo: ''
+  };
+
+  try {
+    const contractRef = fb.doc(fb.db, 'contracts', contractId);
+    const contractSnap = await fb.getDoc(contractRef);
+    if (contractSnap.exists()) {
+      const contractData = contractSnap.data() || {};
+      const contractPayload = buildContractSummaryPayload({ id: invitationId, contractId, role, status: 'active' }, contractData);
+      storedSummary = {
+        summaryPropertyAddress: contractPayload.propertyAddress || '',
+        summaryLandlordName: contractPayload.landlordName || '',
+        summaryTenantName: contractPayload.tenantName || '',
+        summaryMonthlyValue: contractPayload.monthlyValue || '',
+        summaryStartDate: contractPayload.startDate || '',
+        summaryEndDate: contractPayload.endDate || '',
+        summaryTermMonths: contractPayload.termMonths || '',
+        summaryForo: contractPayload.foro || ''
+      };
+    }
+  } catch {
+    storedSummary = {
+      summaryPropertyAddress: '',
+      summaryLandlordName: '',
+      summaryTenantName: '',
+      summaryMonthlyValue: '',
+      summaryStartDate: '',
+      summaryEndDate: '',
+      summaryTermMonths: '',
+      summaryForo: ''
+    };
+  }
 
   const ref = fb.doc(fb.db, 'invitations', invitationId);
   await fb.setDoc(ref, {
     ownerId,
     contractId,
+    role,
     invitedEmail,
     invitedEmailLower,
     invitedTenantUid: '',
+    ...storedSummary,
     tokenHash,
     status: 'active',
     createdAt: now,
@@ -360,9 +495,11 @@ async function createInvitation(ownerId, payload) {
     id: invitationId,
     ownerId,
     contractId,
+    role,
     invitedEmail,
     invitedEmailLower,
     invitedTenantUid: '',
+    ...storedSummary,
     tokenHash,
     status: 'active',
     createdAt: now,
@@ -410,6 +547,30 @@ async function getInvitationContractSummary(invitationId, plainToken) {
   }
 
   const invitation = byToken.invitation;
+  if (
+    invitation.summaryPropertyAddress ||
+    invitation.summaryLandlordName ||
+    invitation.summaryTenantName ||
+    invitation.summaryMonthlyValue ||
+    invitation.summaryStartDate ||
+    invitation.summaryEndDate
+  ) {
+    return {
+      invitationId: invitation.id,
+      contractId: invitation.contractId,
+      invitationRole: invitation.role,
+      invitationStatus: invitation.status,
+      propertyAddress: invitation.summaryPropertyAddress,
+      landlordName: invitation.summaryLandlordName,
+      tenantName: invitation.summaryTenantName,
+      monthlyValue: invitation.summaryMonthlyValue,
+      startDate: invitation.summaryStartDate,
+      endDate: invitation.summaryEndDate,
+      termMonths: invitation.summaryTermMonths,
+      foro: invitation.summaryForo,
+      updatedAtIso: ''
+    };
+  }
   const contractId = (invitation.contractId || '').toString().trim();
   if (!contractId) {
     throw new Error('Convite sem referência de contrato.');
@@ -440,11 +601,21 @@ async function acceptInvitationLink(invitationId, plainToken, tenantData = {}) {
   }
 
   const validation = await verifyInvitationLink(invitationId, plainToken);
-  if (!validation.ok || !validation.invitation) {
+  let invitation = null;
+  if (validation.ok && validation.invitation) {
+    invitation = validation.invitation;
+  } else if (validation.reason === 'accepted' && validation.invitation) {
+    invitation = validation.invitation;
+  }
+
+  if (!invitation) {
     throw new Error('Convite inválido ou expirado.');
   }
 
-  const invitation = validation.invitation;
+  if (invitation.status === 'accepted' && invitation.invitedTenantUid && invitation.invitedTenantUid !== tenantUid) {
+    throw new Error('Este convite já foi aceito por outro usuário.');
+  }
+
   const invitedEmailLower = (invitation.invitedEmailLower || '').toLowerCase();
   const currentEmailLower = tenantEmail.toLowerCase();
   if (invitedEmailLower && currentEmailLower && invitedEmailLower !== currentEmailLower) {
@@ -452,7 +623,40 @@ async function acceptInvitationLink(invitationId, plainToken, tenantData = {}) {
   }
 
   const tenant = await upsertInvitedTenant(fb, invitation, tenantAuth);
-  const linkResult = await bindInvitationContractTenant(fb, invitation, tenant);
+  let spouse = null;
+  const role = normalizeInvitationRole(invitation.role);
+  let reportedSpouseId = '';
+  let reportedGuarantorIds = [];
+
+  const spouseData = tenantData?.spouse && typeof tenantData.spouse === 'object' ? tenantData.spouse : null;
+  if (spouseData?.name) {
+    spouse = await upsertInvitedTenant(fb, invitation, {
+      uid: role === 'guarantor1Id' || role === 'guarantor2Id' ? tenantUid : '',
+      email: (spouseData.email || '').toString(),
+      name: spouseData.name,
+      phone: (spouseData.phone || '').toString(),
+      cpfCnpj: (spouseData.cpfCnpj || '').toString(),
+      rg: (spouseData.rg || '').toString(),
+      profession: (spouseData.profession || '').toString(),
+      maritalStatus: (spouseData.maritalStatus || '').toString(),
+      address: {
+        cidade: (spouseData.address?.cidade || '').toString(),
+        estado: (spouseData.address?.estado || '').toString(),
+        rua: (spouseData.address?.rua || '').toString()
+      },
+      qualification: (spouseData.qualification || '').toString(),
+      notes: (spouseData.notes || '').toString(),
+      invitationRefId: invitation.id
+    });
+    reportedSpouseId = spouse?.id || '';
+  }
+
+  if (role === 'tenantId') {
+    const guarantors = Array.isArray(tenantData?.guarantors) ? tenantData.guarantors : [];
+    reportedGuarantorIds = await saveReportedGuarantors(fb, invitation, guarantors);
+  }
+
+  const linkResult = await bindInvitationContractParticipant(fb, invitation, tenant, spouse);
 
   const now = new Date();
   const ref = fb.doc(fb.db, 'invitations', invitation.id);
@@ -463,6 +667,11 @@ async function acceptInvitationLink(invitationId, plainToken, tenantData = {}) {
     invitedTenantEmail: tenantEmail,
     invitedTenantEmailLower: currentEmailLower,
     linkedContractId: linkResult.contractId,
+    linkedRole: linkResult.participantRole,
+    linkedParticipantId: linkResult.participantId,
+    linkedSpouseId: linkResult.spouseId,
+    reportedSpouseId,
+    reportedGuarantorIds,
     acceptedAt: now,
     acceptedAtIso: now.toISOString(),
     updatedAtServer: fb.serverTimestamp()
@@ -476,7 +685,12 @@ async function acceptInvitationLink(invitationId, plainToken, tenantData = {}) {
     invitedTenantEmail: tenantEmail,
     invitedTenantEmailLower: currentEmailLower,
     linkedContractId: linkResult.contractId,
-    linkedTenantId: tenant.id,
+    linkedTenantId: role === 'tenantId' ? tenant.id : '',
+    linkedRole: linkResult.participantRole,
+    linkedParticipantId: linkResult.participantId,
+    linkedSpouseId: linkResult.spouseId,
+    reportedSpouseId,
+    reportedGuarantorIds,
     acceptedAtIso: now.toISOString()
   };
 }
