@@ -642,6 +642,7 @@
             <div class="tabs-wrap">
                 <button class="tab-btn active" id="tab-btn-contrato" type="button">Contrato</button>
                 <button class="tab-btn" id="tab-btn-imoveis" type="button">Imóveis</button>
+                <button class="tab-btn" id="tab-btn-pessoas" type="button">Pessoas</button>
             </div>
 
             <div id="tab-contrato" class="tab-content">
@@ -808,6 +809,50 @@
                             id="p-memorial-text"></textarea></div>
                     <div class="editor-field full"><label for="p-memorial-note">Observação anexos</label><input
                             id="p-memorial-note" type="text" placeholder="FOTOS ENVIADAS POR E-MAIL (xxxxxx@gmail.com)">
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-pessoas" class="tab-content hidden">
+                <div class="property-note">Cadastros mínimos de Locadores e Locatários para vinculação nos contratos.</div>
+
+                <div class="version-wrap" style="margin-top: 10px;">
+                    <h4>Locadores</h4>
+                    <div class="editor-grid">
+                        <div class="editor-field full"><label for="landlord-list">Locadores cadastrados</label><select id="landlord-list" size="5"></select></div>
+                    </div>
+                    <div class="editor-actions" style="margin-top: 10px;">
+                        <button class="btn-secondary" id="btn-landlord-new" type="button">Novo</button>
+                        <button class="btn-primary" id="btn-landlord-save" type="button">Salvar locador</button>
+                        <button class="btn-secondary" id="btn-landlord-delete" type="button">Excluir</button>
+                    </div>
+                    <div class="editor-grid" style="margin-top: 12px;">
+                        <div class="editor-field full"><label for="l-name">Nome</label><input id="l-name" type="text"></div>
+                        <div class="editor-field"><label for="l-phone">Telefone</label><input id="l-phone" type="text"></div>
+                        <div class="editor-field"><label for="l-email">E-mail</label><input id="l-email" type="text"></div>
+                        <div class="editor-field"><label for="l-cpfcnpj">CPF/CNPJ</label><input id="l-cpfcnpj" type="text"></div>
+                        <div class="editor-field full"><label for="l-qualification">Qualificação</label><textarea id="l-qualification"></textarea></div>
+                        <div class="editor-field full"><label for="l-notes">Observações</label><textarea id="l-notes"></textarea></div>
+                    </div>
+                </div>
+
+                <div class="version-wrap" style="margin-top: 12px;">
+                    <h4>Locatários</h4>
+                    <div class="editor-grid">
+                        <div class="editor-field full"><label for="tenant-list">Locatários cadastrados</label><select id="tenant-list" size="5"></select></div>
+                    </div>
+                    <div class="editor-actions" style="margin-top: 10px;">
+                        <button class="btn-secondary" id="btn-tenant-new" type="button">Novo</button>
+                        <button class="btn-primary" id="btn-tenant-save" type="button">Salvar locatário</button>
+                        <button class="btn-secondary" id="btn-tenant-delete" type="button">Excluir</button>
+                    </div>
+                    <div class="editor-grid" style="margin-top: 12px;">
+                        <div class="editor-field full"><label for="t-name">Nome</label><input id="t-name" type="text"></div>
+                        <div class="editor-field"><label for="t-phone">Telefone</label><input id="t-phone" type="text"></div>
+                        <div class="editor-field"><label for="t-email">E-mail</label><input id="t-email" type="text"></div>
+                        <div class="editor-field"><label for="t-cpfcnpj">CPF/CNPJ</label><input id="t-cpfcnpj" type="text"></div>
+                        <div class="editor-field full"><label for="t-qualification">Qualificação</label><textarea id="t-qualification"></textarea></div>
+                        <div class="editor-field full"><label for="t-notes">Observações</label><textarea id="t-notes"></textarea></div>
                     </div>
                 </div>
             </div>
@@ -1047,10 +1092,6 @@
         </div>
     </div>
 
-    <script type="module" src="./js/firebase-init.js"></script>
-    <script type="module" src="./js/repositories/contractsRepo.js"></script>
-    <script type="module" src="./js/repositories/propertiesRepo.js"></script>
-    <script type="module" src="./js/auth.js"></script>
     <script>
         window.FIREBASE_CONFIG = window.FIREBASE_CONFIG || {
             apiKey: "AIzaSyD-LLEzHlZ6_HgEZOnRWrKa8JWuYBHC7Ts",
@@ -1061,6 +1102,15 @@
             appId: "1:113531890497:web:510139eed937777bf84fc0",
             measurementId: "G-1KTHVXWV3S"
         };
+
+    </script>
+    <script type="module" src="./js/firebase-init.js"></script>
+    <script type="module" src="./js/repositories/contractsRepo.js"></script>
+    <script type="module" src="./js/repositories/propertiesRepo.js"></script>
+    <script type="module" src="./js/repositories/landlordsRepo.js"></script>
+    <script type="module" src="./js/repositories/tenantsRepo.js"></script>
+    <script type="module" src="./js/auth.js"></script>
+    <script>
 
         // Dados de exemplo até carregar do Firestore
         const defaultDb = {
@@ -1129,7 +1179,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         let versionsCache = [];
         // propertiesCache: lista de imóveis em memória, sincronizada com o Firestore.
         let propertiesCache = [];
+        let landlordsCache = [];
+        let tenantsCache = [];
         let currentPropertyId = null;
+        let currentLandlordId = null;
+        let currentTenantId = null;
         let propertyFormDirty = false;
         let lastPropertySelectionId = '';
         let isApplyingPropertySelection = false;
@@ -1172,6 +1226,30 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             currentPropertyId = propertiesCache[0]?.id || null;
         }
 
+        async function loadLandlordsFromFirestore() {
+            if (!currentAuthUser?.uid || !window.LandlordsRepo) {
+                landlordsCache = [];
+                currentLandlordId = null;
+                return;
+            }
+
+            const remoteLandlords = await window.LandlordsRepo.listLandlords(currentAuthUser.uid);
+            landlordsCache = remoteLandlords;
+            currentLandlordId = landlordsCache[0]?.id || null;
+        }
+
+        async function loadTenantsFromFirestore() {
+            if (!currentAuthUser?.uid || !window.TenantsRepo) {
+                tenantsCache = [];
+                currentTenantId = null;
+                return;
+            }
+
+            const remoteTenants = await window.TenantsRepo.listTenants(currentAuthUser.uid);
+            tenantsCache = remoteTenants;
+            currentTenantId = tenantsCache[0]?.id || null;
+        }
+
         async function saveVersionToFirestore(version) {
             if (!currentAuthUser?.uid || !window.ContractsRepo) {
                 throw new Error('Faça login para salvar versões no Firestore.');
@@ -1189,6 +1267,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         async function importVersionsToFirestore(versions) {
             if (!currentAuthUser?.uid || !window.ContractsRepo) {
                 throw new Error('Faça login para importar versões no Firestore.');
+            }
+
+            if (typeof window.ContractsRepo.upsertManyVersions === 'function') {
+                await window.ContractsRepo.upsertManyVersions(currentAuthUser.uid, versions);
+                return;
             }
 
             for (const version of versions) {
@@ -1210,6 +1293,34 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             await window.PropertiesRepo.deleteProperty(currentAuthUser.uid, propertyId);
         }
 
+        async function saveLandlordToFirestore(landlord) {
+            if (!currentAuthUser?.uid || !window.LandlordsRepo) {
+                throw new Error('Faça login para salvar locadores no Firestore.');
+            }
+            await window.LandlordsRepo.upsertLandlord(currentAuthUser.uid, landlord);
+        }
+
+        async function deleteLandlordFromFirestore(landlordId) {
+            if (!currentAuthUser?.uid || !window.LandlordsRepo) {
+                throw new Error('Faça login para excluir locadores no Firestore.');
+            }
+            await window.LandlordsRepo.deleteLandlord(currentAuthUser.uid, landlordId);
+        }
+
+        async function saveTenantToFirestore(tenant) {
+            if (!currentAuthUser?.uid || !window.TenantsRepo) {
+                throw new Error('Faça login para salvar locatários no Firestore.');
+            }
+            await window.TenantsRepo.upsertTenant(currentAuthUser.uid, tenant);
+        }
+
+        async function deleteTenantFromFirestore(tenantId) {
+            if (!currentAuthUser?.uid || !window.TenantsRepo) {
+                throw new Error('Faça login para excluir locatários no Firestore.');
+            }
+            await window.TenantsRepo.deleteTenant(currentAuthUser.uid, tenantId);
+        }
+
         window.handleFirebaseAuthChanged = async function (user) {
             currentAuthUser = user || null;
             if (!currentAuthUser) {
@@ -1217,9 +1328,17 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 openedVersionId = null;
                 propertiesCache = [];
                 currentPropertyId = null;
+                landlordsCache = [];
+                currentLandlordId = null;
+                tenantsCache = [];
+                currentTenantId = null;
                 refreshVersionList();
                 refreshPropertyList();
                 refreshPropertySelectInContract();
+                refreshLandlordList();
+                refreshTenantList();
+                setLandlordFormData(createEmptyLandlord());
+                setTenantFormData(createEmptyTenant());
                 setPropertyFormData(createEmptyProperty());
                 setSyncStatus('Sem login Firebase');
                 setGistConnectionNote('Faça login para carregar versões e imóveis do Firestore.', true);
@@ -1229,7 +1348,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             try {
                 await Promise.all([
                     loadVersionsFromFirestore(),
-                    loadPropertiesFromFirestore()
+                    loadPropertiesFromFirestore(),
+                    loadLandlordsFromFirestore(),
+                    loadTenantsFromFirestore()
                 ]);
                 applyDataFromSource();
                 if (propertiesCache.length) {
@@ -1237,8 +1358,20 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 } else {
                     setPropertyFormData(createEmptyProperty());
                 }
+                refreshLandlordList();
+                refreshTenantList();
+                if (landlordsCache.length) {
+                    selectLandlordForEditor(landlordsCache[0].id);
+                } else {
+                    setLandlordFormData(createEmptyLandlord());
+                }
+                if (tenantsCache.length) {
+                    selectTenantForEditor(tenantsCache[0].id);
+                } else {
+                    setTenantFormData(createEmptyTenant());
+                }
                 setSyncStatus('Fonte: Firestore');
-                setGistConnectionNote('Versões e imóveis carregados do Firestore');
+                setGistConnectionNote('Versões, imóveis e pessoas carregados do Firestore');
             } catch (error) {
                 setSyncStatus('Erro Firestore');
                 setGistConnectionNote(error.message || 'Falha ao carregar dados do Firestore.', true);
@@ -1702,6 +1835,238 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
+        }
+
+        function generatePersonId(prefix) {
+            return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+        }
+
+        function createEmptyLandlord() {
+            return {
+                id: generatePersonId('landlord'),
+                name: '',
+                phone: '',
+                email: '',
+                cpfCnpj: '',
+                qualification: '',
+                notes: '',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+        }
+
+        function createEmptyTenant() {
+            return {
+                id: generatePersonId('tenant'),
+                name: '',
+                phone: '',
+                email: '',
+                cpfCnpj: '',
+                qualification: '',
+                notes: '',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+        }
+
+        function refreshLandlordList() {
+            const list = document.getElementById('landlord-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            if (!landlordsCache.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Nenhum locador cadastrado';
+                list.appendChild(option);
+                return;
+            }
+
+            landlordsCache.forEach((landlord, index) => {
+                const option = document.createElement('option');
+                option.value = landlord.id;
+                option.textContent = `${index + 1}. ${landlord.name || 'Sem nome'} — ${landlord.cpfCnpj || 'CPF/CNPJ não informado'}`;
+                if (landlord.id === currentLandlordId) option.selected = true;
+                list.appendChild(option);
+            });
+        }
+
+        function refreshTenantList() {
+            const list = document.getElementById('tenant-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            if (!tenantsCache.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Nenhum locatário cadastrado';
+                list.appendChild(option);
+                return;
+            }
+
+            tenantsCache.forEach((tenant, index) => {
+                const option = document.createElement('option');
+                option.value = tenant.id;
+                option.textContent = `${index + 1}. ${tenant.name || 'Sem nome'} — ${tenant.cpfCnpj || 'CPF/CNPJ não informado'}`;
+                if (tenant.id === currentTenantId) option.selected = true;
+                list.appendChild(option);
+            });
+        }
+
+        function setLandlordFormData(landlord) {
+            setFieldValue('l-name', landlord?.name || '');
+            setFieldValue('l-phone', landlord?.phone || '');
+            setFieldValue('l-email', landlord?.email || '');
+            setFieldValue('l-cpfcnpj', landlord?.cpfCnpj || '');
+            setFieldValue('l-qualification', landlord?.qualification || '');
+            setFieldValue('l-notes', landlord?.notes || '');
+        }
+
+        function setTenantFormData(tenant) {
+            setFieldValue('t-name', tenant?.name || '');
+            setFieldValue('t-phone', tenant?.phone || '');
+            setFieldValue('t-email', tenant?.email || '');
+            setFieldValue('t-cpfcnpj', tenant?.cpfCnpj || '');
+            setFieldValue('t-qualification', tenant?.qualification || '');
+            setFieldValue('t-notes', tenant?.notes || '');
+        }
+
+        function getLandlordFormData(base = null) {
+            const nowIso = new Date().toISOString();
+            return {
+                id: base?.id || generatePersonId('landlord'),
+                name: fieldValue('l-name'),
+                phone: fieldValue('l-phone'),
+                email: fieldValue('l-email'),
+                cpfCnpj: fieldValue('l-cpfcnpj'),
+                qualification: fieldValue('l-qualification'),
+                notes: fieldValue('l-notes'),
+                createdAt: base?.createdAt || nowIso,
+                updatedAt: nowIso
+            };
+        }
+
+        function getTenantFormData(base = null) {
+            const nowIso = new Date().toISOString();
+            return {
+                id: base?.id || generatePersonId('tenant'),
+                name: fieldValue('t-name'),
+                phone: fieldValue('t-phone'),
+                email: fieldValue('t-email'),
+                cpfCnpj: fieldValue('t-cpfcnpj'),
+                qualification: fieldValue('t-qualification'),
+                notes: fieldValue('t-notes'),
+                createdAt: base?.createdAt || nowIso,
+                updatedAt: nowIso
+            };
+        }
+
+        function selectLandlordForEditor(id) {
+            const landlord = landlordsCache.find((item) => item.id === id);
+            currentLandlordId = landlord ? landlord.id : null;
+            setLandlordFormData(landlord || createEmptyLandlord());
+            refreshLandlordList();
+        }
+
+        function selectTenantForEditor(id) {
+            const tenant = tenantsCache.find((item) => item.id === id);
+            currentTenantId = tenant ? tenant.id : null;
+            setTenantFormData(tenant || createEmptyTenant());
+            refreshTenantList();
+        }
+
+        function beginNewLandlord() {
+            currentLandlordId = null;
+            setLandlordFormData(createEmptyLandlord());
+            refreshLandlordList();
+        }
+
+        function beginNewTenant() {
+            currentTenantId = null;
+            setTenantFormData(createEmptyTenant());
+            refreshTenantList();
+        }
+
+        async function saveCurrentLandlord() {
+            const existing = currentLandlordId ? landlordsCache.find((item) => item.id === currentLandlordId) : null;
+            const next = getLandlordFormData(existing);
+            if (!next.name) {
+                alert('Informe o nome do locador.');
+                return;
+            }
+
+            try {
+                await saveLandlordToFirestore(next);
+                const index = landlordsCache.findIndex((item) => item.id === next.id);
+                if (index >= 0) landlordsCache[index] = next;
+                else landlordsCache.push(next);
+                currentLandlordId = next.id;
+                refreshLandlordList();
+                alert('Locador salvo com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao salvar locador no Firestore.');
+            }
+        }
+
+        async function saveCurrentTenant() {
+            const existing = currentTenantId ? tenantsCache.find((item) => item.id === currentTenantId) : null;
+            const next = getTenantFormData(existing);
+            if (!next.name) {
+                alert('Informe o nome do locatário.');
+                return;
+            }
+
+            try {
+                await saveTenantToFirestore(next);
+                const index = tenantsCache.findIndex((item) => item.id === next.id);
+                if (index >= 0) tenantsCache[index] = next;
+                else tenantsCache.push(next);
+                currentTenantId = next.id;
+                refreshTenantList();
+                alert('Locatário salvo com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao salvar locatário no Firestore.');
+            }
+        }
+
+        async function deleteCurrentLandlord() {
+            const current = currentLandlordId ? landlordsCache.find((item) => item.id === currentLandlordId) : null;
+            if (!current) {
+                alert('Selecione um locador para excluir.');
+                return;
+            }
+            if (!window.confirm(`Excluir o locador "${current.name}"?`)) return;
+
+            try {
+                await deleteLandlordFromFirestore(current.id);
+                landlordsCache = landlordsCache.filter((item) => item.id !== current.id);
+                currentLandlordId = null;
+                setLandlordFormData(createEmptyLandlord());
+                refreshLandlordList();
+                alert('Locador excluído com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao excluir locador no Firestore.');
+            }
+        }
+
+        async function deleteCurrentTenant() {
+            const current = currentTenantId ? tenantsCache.find((item) => item.id === currentTenantId) : null;
+            if (!current) {
+                alert('Selecione um locatário para excluir.');
+                return;
+            }
+            if (!window.confirm(`Excluir o locatário "${current.name}"?`)) return;
+
+            try {
+                await deleteTenantFromFirestore(current.id);
+                tenantsCache = tenantsCache.filter((item) => item.id !== current.id);
+                currentTenantId = null;
+                setTenantFormData(createEmptyTenant());
+                refreshTenantList();
+                alert('Locatário excluído com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao excluir locatário no Firestore.');
+            }
         }
 
         function setPropertyFormData(property) {
@@ -2324,15 +2689,20 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
 
         function switchTab(tabName) {
-            const isContrato = tabName === 'contrato';
-            if (isContrato && propertyFormDirty) {
+            const leavingImoveis = !document.getElementById('tab-imoveis').classList.contains('hidden') && tabName !== 'imoveis';
+            if (leavingImoveis && propertyFormDirty) {
                 const proceed = window.confirm('Há alterações de imóvel não salvas. Deseja sair da aba Imóveis mesmo assim?');
                 if (!proceed) return;
             }
+            const isContrato = tabName === 'contrato';
+            const isImoveis = tabName === 'imoveis';
+            const isPessoas = tabName === 'pessoas';
             document.getElementById('tab-contrato').classList.toggle('hidden', !isContrato);
-            document.getElementById('tab-imoveis').classList.toggle('hidden', isContrato);
+            document.getElementById('tab-imoveis').classList.toggle('hidden', !isImoveis);
+            document.getElementById('tab-pessoas').classList.toggle('hidden', !isPessoas);
             document.getElementById('tab-btn-contrato').classList.toggle('active', isContrato);
-            document.getElementById('tab-btn-imoveis').classList.toggle('active', !isContrato);
+            document.getElementById('tab-btn-imoveis').classList.toggle('active', isImoveis);
+            document.getElementById('tab-btn-pessoas').classList.toggle('active', isPessoas);
         }
 
         window.onload = async function () {
@@ -2371,6 +2741,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             });
             document.getElementById('tab-btn-imoveis').addEventListener('click', function () {
                 switchTab('imoveis');
+            });
+            document.getElementById('tab-btn-pessoas').addEventListener('click', function () {
+                switchTab('pessoas');
             });
 
             document.getElementById('btn-salvar').addEventListener('click', saveCurrentVersion);
@@ -2436,10 +2809,40 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('btn-property-duplicate').addEventListener('click', duplicateCurrentProperty);
             document.getElementById('btn-property-delete').addEventListener('click', deleteCurrentProperty);
 
+            document.getElementById('landlord-list').addEventListener('change', function () {
+                const nextId = fieldValue('landlord-list');
+                if (!nextId) return;
+                selectLandlordForEditor(nextId);
+            });
+            document.getElementById('tenant-list').addEventListener('change', function () {
+                const nextId = fieldValue('tenant-list');
+                if (!nextId) return;
+                selectTenantForEditor(nextId);
+            });
+
+            document.getElementById('btn-landlord-new').addEventListener('click', beginNewLandlord);
+            document.getElementById('btn-landlord-save').addEventListener('click', saveCurrentLandlord);
+            document.getElementById('btn-landlord-delete').addEventListener('click', deleteCurrentLandlord);
+            document.getElementById('btn-tenant-new').addEventListener('click', beginNewTenant);
+            document.getElementById('btn-tenant-save').addEventListener('click', saveCurrentTenant);
+            document.getElementById('btn-tenant-delete').addEventListener('click', deleteCurrentTenant);
+
             if (propertiesCache.length) {
                 selectPropertyForEditor(propertiesCache[0].id);
             } else {
                 setPropertyFormData(createEmptyProperty());
+            }
+            if (landlordsCache.length) {
+                selectLandlordForEditor(landlordsCache[0].id);
+            } else {
+                setLandlordFormData(createEmptyLandlord());
+                refreshLandlordList();
+            }
+            if (tenantsCache.length) {
+                selectTenantForEditor(tenantsCache[0].id);
+            } else {
+                setTenantFormData(createEmptyTenant());
+                refreshTenantList();
             }
             switchTab('contrato');
 

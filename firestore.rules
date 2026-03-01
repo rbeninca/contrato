@@ -9,6 +9,49 @@ service cloud.firestore {
       return isSignedIn() && data.ownerId == request.auth.uid;
     }
 
+    function keepsImmutableOwnership() {
+      return request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    match /users/{uid} {
+      allow read: if isSignedIn() && request.auth.uid == uid;
+
+      allow create: if isSignedIn()
+        && request.auth.uid == uid;
+
+      allow update: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if false;
+    }
+
+    match /landlords/{landlordId} {
+      allow read: if isOwner(resource.data);
+
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid;
+
+      allow update: if isOwner(resource.data)
+        && keepsImmutableOwnership();
+
+      allow delete: if isOwner(resource.data);
+    }
+
+    match /tenants/{tenantId} {
+      allow read: if isOwner(resource.data);
+
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid;
+
+      allow update: if isOwner(resource.data)
+        && keepsImmutableOwnership();
+
+      allow delete: if isOwner(resource.data);
+    }
+
     match /contracts/{contractId} {
       allow read: if isOwner(resource.data);
 
@@ -16,8 +59,7 @@ service cloud.firestore {
         && request.resource.data.ownerId == request.auth.uid;
 
       allow update: if isOwner(resource.data)
-        && request.resource.data.ownerId == resource.data.ownerId
-        && request.resource.data.createdAt == resource.data.createdAt;
+        && keepsImmutableOwnership();
 
       allow delete: if isOwner(resource.data);
     }
@@ -29,8 +71,7 @@ service cloud.firestore {
         && request.resource.data.ownerId == request.auth.uid;
 
       allow update: if isOwner(resource.data)
-        && request.resource.data.ownerId == resource.data.ownerId
-        && request.resource.data.createdAt == resource.data.createdAt;
+        && keepsImmutableOwnership();
 
       allow delete: if isOwner(resource.data);
     }
