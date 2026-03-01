@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrato de Locação Residencial - Versão Final</title>
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --accent-blue: #2563eb;
+            --text-main: #1e293b;
+            --border-color: #cbd5e1;
+            --bg-page: #f8fafc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 30px 15px;
+        }
+
+        /* Barra de Ferramentas */
+        .toolbar {
+            max-width: 900px;
+            margin: 0 auto 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            font-family: sans-serif;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .btn-toolbar {
+            border: 1px solid var(--border-color);
+            background: #f8fafc;
+            color: #334155;
+            padding: 7px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .sync-status {
+            font-size: 11px;
+            color: #64748b;
+            margin-right: 4px;
+        }
+
+        .btn-print {
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-print:hover { background: #334155; transform: translateY(-1px); }
+
+        .editor-panel {
+            max-width: 900px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary-dark);
+            padding: 18px 20px;
+            font-family: sans-serif;
+        }
+
+        .editor-panel h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: var(--primary-dark);
+        }
+
+        .status-note {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .status-note.error {
+            color: #b91c1c;
+        }
+
+        .editor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 14px;
+        }
+
+        .editor-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .editor-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .editor-field label {
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .editor-field input,
+        .editor-field textarea,
+        .editor-field select {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .editor-field textarea {
+            min-height: 64px;
+            resize: vertical;
+        }
+
+        .field-inline {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .field-inline input {
+            flex: 1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 420px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            font-family: sans-serif;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .modal-text {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 14px;
+            line-height: 1.45;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .editor-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--border-color);
+            background: #f8fafc;
+            color: #334155;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            border: none;
+            background: var(--accent-blue);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .version-wrap {
+            margin-top: 14px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+        }
+
+        .config-wrap {
+            margin-top: 14px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+        }
+
+        .tech-panel {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .tech-title {
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: #9a3412;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .tech-note {
+            font-size: 12px;
+            color: #7c2d12;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .version-wrap h4 {
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        #version-list {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        #version-list option {
+            padding: 6px 8px;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        #version-list option:nth-child(odd) {
+            background: #f8fafc;
+        }
+
+        #version-list option:nth-child(even) {
+            background: #ffffff;
+        }
+
+        #version-list option:checked {
+            background: #dbeafe;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .content-layout {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Papel A4 */
+        .document-page {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 80px 90px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            min-height: 297mm;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--primary-dark);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-family: sans-serif;
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .content {
+            text-align: justify;
+            font-size: 13.5px;
+            hyphens: auto;
+        }
+
+        .clause {
+            margin-bottom: 18px;
+        }
+
+        .clause-title {
+            font-weight: bold;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .paragraph {
+            display: block;
+            margin-top: 8px;
+            text-indent: 40px;
+        }
+
+        .clause-list {
+            margin-top: 8px;
+            margin-left: 24px;
+            padding-left: 18px;
+            list-style-type: upper-alpha;
+        }
+
+        .clause-list li {
+            margin-bottom: 6px;
+        }
+
+        .var-text {
+            background: #e0f2fe;
+            border-radius: 3px;
+            padding: 0 3px;
+            font-weight: bold;
+        }
+
+        .var-focus {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+            transition: outline 0.2s ease;
+        }
+
+        .payment-box {
+            background: #fdfdfd;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        /* Área de Assinaturas */
+        .signatures-grid {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px 40px;
+        }
+
+        .signature-item {
+            text-align: center;
+        }
+
+        .line {
+            border-top: 1px solid #000;
+            margin-bottom: 6px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .name { font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        .role { font-size: 10px; font-style: italic; color: #475569; }
+
+        .witnesses {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 9px;
+            color: #94a3b8;
+            text-align: center;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 15px;
+        }
+
+        @media screen and (min-width: 1500px) {
+            .content-layout {
+                max-width: 1360px;
+                display: flex;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .document-page {
+                margin: 0;
+                flex: 0 0 900px;
+            }
+
+            .editor-panel {
+                margin: 0;
+                flex: 0 0 440px;
+                position: sticky;
+                top: 20px;
+                max-height: calc(100vh - 40px);
+                overflow: auto;
+            }
+        }
+
+        /* Ajustes de Impressão */
+        @media print {
+            body { background: white; padding: 0; margin: 0; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .toolbar { display: none; }
+            .editor-panel { display: none; }
+            .var-text {
+                background: #e0f2fe !important;
+                border-radius: 3px;
+                padding: 0 3px;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .document-page { 
+                box-shadow: none; 
+                padding: 10mm 15mm; 
+                margin: 0; 
+                width: 100%;
+            }
+            @page { size: A4; margin: 12mm; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <div>
+            <strong style="color: var(--accent-blue)">Gerador de Contrato</strong>
+            <span style="font-size: 12px; margin-left: 10px; color: #64748b;"></span>
+        </div>
+        <div class="toolbar-right">
+            <span id="sync-status" class="sync-status">Sem conexão com Gist</span>
+            <button class="btn-toolbar" id="btn-editor-name" type="button">Nome do Editor</button>
+            <button class="btn-toolbar" id="btn-export-backup" type="button">Exportar backup JSON</button>
+            <button class="btn-toolbar" id="btn-import-backup" type="button">Importar backup JSON</button>
+            <button class="btn-print" onclick="window.print()">Imprimir Contrato</button>
+        </div>
+    </div>
+    <input id="backup-import-input" type="file" accept="application/json" class="hidden">
+
+    <div id="save-mode-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="save-mode-title">
+        <div class="modal-card">
+            <div id="save-mode-title" class="modal-title">Salvar versão</div>
+            <div class="modal-text">Escolha como deseja salvar os dados atuais do contrato.</div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-save-mode-cancel" type="button">Cancelar</button>
+                <button class="btn-secondary" id="btn-save-mode-overwrite" type="button">Sobrescrever aberta</button>
+                <button class="btn-primary" id="btn-save-mode-new" type="button">Nova versão</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-layout">
+    <div class="editor-panel">
+        <h3>Dados do Contrato (não aparece na impressão)</h3>
+        <div id="gist-connection-note" class="status-note">Conectando ao Gist...</div>
+
+        <div class="editor-grid">
+            <div class="editor-field"><label for="f-locador-nome">Locador - Nome</label><input id="f-locador-nome" type="text"></div>
+            <div class="editor-field"><label for="f-locataria-nome">Locatária - Nome</label><input id="f-locataria-nome" type="text"></div>
+            <div class="editor-field"><label for="f-locador-telefone">Locador - Telefone de contato</label><input id="f-locador-telefone" type="text"></div>
+            <div class="editor-field full"><label for="f-locador-qualificacao">Locador - Qualificação</label><textarea id="f-locador-qualificacao"></textarea></div>
+            <div class="editor-field">
+                <label for="f-locataria-estado-civil">Locatária - Estado civil</label>
+                <select id="f-locataria-estado-civil">
+                    <option value="casado">Casada</option>
+                    <option value="solteiro">Solteira</option>
+                    <option value="divorciado">Divorciada</option>
+                </select>
+            </div>
+            <div class="editor-field full"><label for="f-locataria-qualificacao">Locatária - Qualificação</label><textarea id="f-locataria-qualificacao"></textarea></div>
+            <div class="editor-field full locataria-conjuge-field"><label for="f-locataria-conjuge-qualificacao">Locatária (casada) - Qualificação do cônjuge</label><textarea id="f-locataria-conjuge-qualificacao"></textarea></div>
+
+            <div class="editor-field full"><label for="f-imovel-endereco">Endereço do imóvel</label><input id="f-imovel-endereco" type="text"></div>
+            <div class="editor-field"><label for="f-imovel-proprietario">Proprietário</label><input id="f-imovel-proprietario" type="text"></div>
+            <div class="editor-field"><label for="f-foro">Foro (comarca/cidade)</label><input id="f-foro" type="text"></div>
+            <div class="editor-field"><label for="f-financeiro-valor">Valor aluguel (R$)</label><input id="f-financeiro-valor" type="text"></div>
+            <div class="editor-field"><label for="f-financeiro-extenso">Valor por extenso</label><input id="f-financeiro-extenso" type="text"></div>
+            <div class="editor-field"><label for="f-financeiro-prazo">Prazo (meses)</label><input id="f-financeiro-prazo" type="text"></div>
+            <div class="editor-field"><label for="f-financeiro-inicio">Início</label><input id="f-financeiro-inicio" type="text"></div>
+            <div class="editor-field"><label for="f-financeiro-termino">Término</label><input id="f-financeiro-termino" type="text"></div>
+            <div class="editor-field">
+                <label for="f-financeiro-assinatura">Data assinatura</label>
+                <div class="field-inline">
+                    <input id="f-financeiro-assinatura" type="text">
+                    <button class="btn-secondary" id="btn-hoje-assinatura" type="button">Hoje</button>
+                </div>
+            </div>
+
+            <div class="editor-field"><label for="f-pagamento-nome">PIX - Favorecida</label><input id="f-pagamento-nome" type="text"></div>
+            <div class="editor-field"><label for="f-pagamento-chave">PIX - Chave</label><input id="f-pagamento-chave" type="text"></div>
+            <div class="editor-field"><label for="f-pagamento-cpf">PIX - CPF</label><input id="f-pagamento-cpf" type="text"></div>
+            <div class="editor-field"><label for="f-pagamento-banco">Banco/Conta</label><input id="f-pagamento-banco" type="text"></div>
+
+            <div class="editor-field"><label for="f-fiador1-nome">Fiador 1 - Nome</label><input id="f-fiador1-nome" type="text"></div>
+            <div class="editor-field">
+                <label for="f-fiador1-estado-civil">Fiador 1 - Estado civil</label>
+                <select id="f-fiador1-estado-civil">
+                    <option value="casado">Casado</option>
+                    <option value="solteiro">Solteiro</option>
+                    <option value="divorciado">Divorciado</option>
+                </select>
+            </div>
+            <div class="editor-field"><label for="f-fiador1-papel">Fiador 1 - Papel</label><input id="f-fiador1-papel" type="text"></div>
+            <div class="editor-field full"><label for="f-fiador1-desc">Fiador 1 - Descrição</label><textarea id="f-fiador1-desc"></textarea></div>
+
+            <div class="editor-field fiador2-field"><label for="f-fiador2-nome">Fiador 2 - Nome</label><input id="f-fiador2-nome" type="text"></div>
+            <div class="editor-field fiador2-field"><label for="f-fiador2-papel">Fiador 2 - Papel</label><input id="f-fiador2-papel" type="text"></div>
+            <div class="editor-field full fiador2-field"><label for="f-fiador2-desc">Fiador 2 - Descrição</label><textarea id="f-fiador2-desc"></textarea></div>
+        </div>
+
+        <div class="editor-actions">
+            <button class="btn-secondary" id="btn-atualizar" type="button">Atualizar Contrato</button>
+            <button class="btn-primary" id="btn-salvar" type="button">Salvar</button>
+            <button class="btn-secondary" id="btn-json" type="button">Voltar ao JSON padrão</button>
+        </div>
+
+        <div class="config-wrap tech-panel">
+            <div class="tech-title">Painel técnico (Gist)</div>
+            <div class="tech-note">Estas configurações são técnicas (GIST_ID, GIST_FILE e TOKEN). </div>
+            <div class="editor-grid">
+                <div class="editor-field full"><label for="f-gist-id">GIST_ID</label><input id="f-gist-id" type="text" placeholder="Ex.: 0123456789abcdef0123456789abcdef"></div>
+                <div class="editor-field"><label for="f-gist-file">GIST_FILE</label><input id="f-gist-file" type="text" value="contratos.json"></div>
+                <div class="editor-field"><label>&nbsp;</label><button class="btn-secondary" id="btn-save-config" type="button">Aplicar config</button></div>
+                <div class="editor-field full"><label>TOKEN (sessão atual)</label><div class="editor-actions" style="margin-top: 0;"><button class="btn-secondary" id="btn-connect-token" type="button">Conectar/Informar token</button><button class="btn-secondary" id="btn-logout-token" type="button">Remover token da sessão</button></div></div>
+            </div>
+        </div>
+
+        <div class="version-wrap">
+            <h4>Versões salvas</h4>
+            <div class="editor-grid">
+                <div class="editor-field full">
+                    <label for="version-list">Lista de versões</label>
+                    <select id="version-list" size="6"></select>
+                </div>
+            </div>
+            <div class="editor-actions" style="margin-top: 10px;">
+                <button class="btn-secondary" id="btn-carregar" type="button">Abrir versão selecionada</button>
+                <button class="btn-secondary" id="btn-excluir-versao" type="button">Excluir versão selecionada</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="document-page">
+        <header>
+            <h1>Instrumento Particular de Locação Residencial</h1>
+            <h2>Contrato Particular de Locação de Imóvel Residencial</h2>
+        </header>
+
+        <div class="content">
+            <!-- Introdução Injetada -->
+            <div id="intro-partes" style="margin-bottom: 25px;"></div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula I</span>
+                O IMÓVEL, OBJETO DA LOCAÇÃO ACORDADA PELO PRESENTE INSTRUMENTO, ESTÁ SITUADO À <strong id="txt-endereco-imovel" class="var-text"></strong>, SENDO O LOCADOR, ISOLADAMENTE, DE ACORDO COM O CÓDIGO CIVIL E/OU LEIS COMPLEMENTARES AFINS, ALÉM DE DOCUMENTOS COMPROBATÓRIOS EM SEU PODER, PROCURADOR DE SEU LEGÍTIMO PROPRIETÁRIO, <strong id="txt-proprietario" class="var-text"></strong>.
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula II</span>
+                O PRAZO DETERMINADO PARA A LOCAÇÃO DESTE CONTRATO É DE <strong id="txt-prazo" class="var-text"></strong> MESES A INICIAR-SE EM <strong id="txt-inicio" class="var-text"></strong> E A TERMINAR EM <strong id="txt-termino" class="var-text"></strong> INDEPENDENTEMENTE DE QUALQUER AVISO, NOTIFICAÇÃO OU INTERPELAÇÃO JUDICIAL OU EXTRAJUDICIAL, QUANDO ENTÃO O LOCATÁRIO DEVERÁ RESTITUIR O IMÓVEL ORA LOCADO NAS MESMAS CONDIÇÕES EM QUE O RECEBEU SOB PENA DE PROPOSITURA DE AÇÃO DE DESPEJO E RESPONDER PELAS PERDAS E DANOS QUE CAUSAR.
+                
+                <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> O PRAZO DE LOCAÇÃO PODERÁ SER PRORROGADO ATRAVÉS DO CONSENTIMENTO DE AMBAS AS PARTES;</span>
+                
+                <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> A NÃO SER POR MUTUO ACORDO, O LOCADOR NÃO PODERÁ, ANTES DO VENCIMENTO DO PRAZO ESTIPULADO NO "CAPUT" DESTA CLÁUSULA II, REAVER O PRÉDIO LOCADO, NEM O LOCATÁRIO PODERÁ DEVOLVÊ-LO SENÃO PAGANDO A MULTA CORRESPONDENTE A 03 (TRÊS) MESES DE ALUGUEL VIGENTE NA DATA DO COMETIMENTO DA INFRAÇÃO, PROPORCIONAL AO PERÍODO DO CUMPRIMENTO DO CONTRATO.</span>
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula III</span>
+                O ALUGUEL INICIAL, PARA O PRAZO A QUE SE REFERE À CLÁUSULA II, É DE <strong>R$ <span id="txt-valor" class="var-text"></span> (<span id="txt-valor-extenso" class="var-text"></span>)</strong> MENSAIS.
+                
+                <div class="payment-box">
+                    <strong>FORMA DE PAGAMENTO:</strong> O ALUGUEL SERÁ PAGO IMPRETERIVELMENTE ATÉ O DIA 10 (DEZ) DO MÊS ATRAVÉS DE PIX PARA:
+                    <ul style="margin-top: 8px; list-style: none; padding-left: 0;">
+                        <li>• <strong>Favorecida:</strong> <strong id="txt-pix-titular" class="var-text"></strong></li>
+                        <li>• <strong>Chave PIX (CPF):</strong> <span id="txt-pix-chave" class="var-text"></span></li>
+                        <li>• <strong>CPF do Recebedor:</strong> <span id="txt-pix-cpf" class="var-text"></span></li>
+                        <li>• <strong>Instituição/Conta:</strong> <span id="txt-banco-detalhe" class="var-text"></span></li>
+                    </ul>
+                </div>
+
+                <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> O LOCATÁRIO SOFRERÁ A MULTA DE 2% (DOIS POR CENTO) ALÉM DA INCIDÊNCIA DE JUROS LEGAIS DE 1% (HUM POR CENTO) AO MÊS E A DEVIDA CORREÇÃO MONETÁRIA PELO PERÍODO EM ATRASO CASO O PAGAMENTO SEJA FEITO NA DATA APRAZADA.</span>
+                
+                <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> O ALUGUEL SERÁ "REAJUSTADO" A CADA PERÍODO DE 12 (DOZE) MESES CONSECUTIVOS, MEDIANTE A APLICAÇÃO DA VARIAÇÃO DO IPCA OU IGPM (O QUE FOR MAIOR).</span>
+                
+                <span class="paragraph"><strong>PARÁGRAFO TERCEIRO:</strong> EXCLUI-SE DO VALOR DO ALUGUEL A TAXA DE IMPOSTO PREDIAL, CONTA DE ÁGUA E LUZ, AS QUAIS SERÃO PAGAS PELO LOCATÁRIO.</span>
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula IV</span>
+                O LOCATÁRIO TAMBÉM SE OBRIGA A:
+                <ol class="clause-list">
+                    <li>MANTER O IMÓVEL LOCADO EM PERFEITO ESTADO DE CONSERVAÇÃO, HIGIENE E LIMPEZA, ZELANDO SOBREMANEIRA PELO BOM ESTADO E INTEGRIDADE DOS SEUS PERTENCES, PARTES INTEGRANTES OU ACESSÓRIOS DO IMÓVEL LOCADO;</li>
+                    <li>RECUPERAR, AS SUAS EXPENSAS, TODO E QUALQUER DANO QUE TENHA SIDO CAUSADO NAS DEPENDÊNCIAS DO IMÓVEL LOCADO;</li>
+                    <li>CUMPRIR TODAS AS EXIGÊNCIAS DOS PODERES PÚBLICOS CONSTITUIDOS, SEM DIREITO A QUALQUER INDENIZAÇÃO PELO LOCADOR, RELATIVAS A ORDEM E LIMPEZA DO IMÓVEL;  </li>
+                    <li>FACULTAR O LOCADOR, QUANDO ESTE ENTENDER CONVENIENTE, EXAMINAR OU VISTORIAR O IMÓVEL LOCADO, PESSOALMENTE, POR SEU REPRESENTANTE OU PESSOAS AUTORIZADAS, MEDIANTE PRÉVIO AVISO DA HORA DESIGNADA PARA A VISITA.</li>
+                    <li>ENTREGAR E/OU COMUNICAR O LOCADOR, OU SEU REPRESENTANTE CONSTITUÍDO, ASSIM QUE RECEBER, TODOS OS AVISOS DE0 IMPOSTOS OU TAXAS, E AINDA, QUALQUER NOTIFICAÇÃO FISCAL OU CORRESPONDÊNCIA, RESPONDENDO POR DANO CAUSADO NA HIPÓTESE DE OMISSÃO.</li>
+                </ol>
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula V</span>
+                O LOCATÁRIO SE OBRIGA A SERVIR-SE DO IMÓVEL LOCADO EXCLUSIVAMENTE PARA FINS RESIDÊNCIAIS, DEVENDO TRATÁ-LO COMO SE O MESMO FOSSE DE SUA PROPRIEDADE.
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula VI</span>
+                AO LOCATÁRIO É VEDADO CEDER OU TRANSFERIR O PRESENTE CONTRATO, AINDA QUE GRATUITAMENTE, SEM O CONSENTIMENTO EXPRESSO E POR ESCRITO DO LOCADOR, NO TODO OU EM PARTE, OU DAR EM COMODATO O OBJETO IMÓVEL DA PRESENTE LOCAÇÃO.
+
+                <span class="paragraph"><strong>A:</strong> EM CASO DE OCORRER MOROSIDADE, POR PARTE DO LOCADOR, EM EXPOR OFICIALMENTE SUA POSIÇÃO COM RELAÇÃO AO CAPUT DESTA CLÁUSULA, AQUELA NÃO DEVERÁ SER ENTENDIDA COMO AUTORIZAÇÃO OU CONSENTIMENTO AO DISPOSTO NA REFERIDA CLÁUSULA.</span>
+
+                <span class="paragraph"><strong>B:</strong> NO CASO DE CONSENTIMENTO DO LOCADOR, O LOCATÁRIO DEVERÁ PROVIDENCIAR, DEVIDA E OPORTUNAMENTE, JUNTO AOS OCUPANTES, A FIM DE QUE O IMÓVEL ESTEJA TOTALMENTE LIVRE E DESOCUPADO, AO FINDAR A LOCAÇÃO SOB PENA DE RESPONDER PELA MULTA DA CLÁUSULA IX.</span>
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula VII</span>
+                É EXPRESSAMENTE PROIBIDO AO LOCATÁRIO TER NO IMÓVEL, EMBORA EM CARÁTER TEMPORÁRIO, A GUARDA OU O DEPÓSITO DE EXPLOSIVOS OU INFLAMÁVEIS, EXCETO OS BOTIJÕES DE GÁS PARA USO DE COZINHA (GLP).
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula VIII</span>
+                O LOCATÁRIO NÃO PODERÁ MODIFICAR A ESTRUTURA E DIVISÕES DO IMÓVEL, BEM COMO FAZER QUAISQUER REFORMAS, OU MODIFICAÇÕES ESTRUTURAIS SEM PRÉVIO CONSENTIMENTO, POR ESCRITO, DO LOCADOR, SOB PENA DE PODER, ESTE, EXIGIR A RESTAURAÇÃO DO IMÓVEL EM SEU ESTADO ANTERIOR, SEM PREJUÍZO DA FACULDADE DE RESCINDIR O CONTRATO.
+
+                <span class="paragraph"><strong>PARÁGRAFO ÚNICO:</strong> QUAISQUER BENFEITORIAS QUE SEJAM REALIZADAS, MESMO COM AUTORIZAÇÃO DO LOCADOR, FICARÃO INCORPORADAS DESDE LOGO AO IMÓVEL.</span>
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula IX</span>
+                OS CONTRATANTES SE OBRIGAM MUTUAMENTE A RESPEITAR O PRESENTE CONTRATO, FICANDO A PARTE INFRATORA SUJEITA AO PAGAMENTO DA MULTA CONTRATUAL DE 03 (TRÊS) ALUGUÉIS VIGENTES DA ÉPOCA EM QUE OCORRER A INFRAÇÃO.
+
+                <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> A MULTA ORA PREVISTA SERÁ DEVIDA EM QUALQUER ÉPOCA, MESMO NO CASO DE PRORROGAÇÃO DO PRESENTE CONTRATO POR TEMPO INDETERMINADO, INDEPENDENTEMENTE DA ÉPOCA DA OCORRÊNCIA DA INFRAÇÃO OU CONSTATAÇÃO DA MESMA, E DE QUALQUER AVISO OU INTERPELAÇÃO.</span>
+
+                <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> A MULTA SERÁ COBRADA POR INTERMÉDIO DE PROCESSO DE EXECUÇÃO DE TÍTULO EXTRAJUDICIAL, SE, A PARTE INFRATORA SE FURTAR AO PAGAMENTO AMIGÁVEL.</span>
+
+                <span class="paragraph"><strong>PARÁGRAFO TERCEIRO:</strong> A COBRANÇA DA MULTA NÃO OBSTARÁ A QUE A PARTE INOCENTE, SE LHE CONVIER, CONSIDERE RESCINDIDO O CONTRATO, SEM MAIS FORMALIDADES.</span>
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula X</span>
+                NÃO PODERÃO OS CONTRATANTES PLEITEAR A COBRANÇA DE MULTA, SE OS MOTIVOS DA RESCISÃO CONTRATUAL, FOREM POR:
+
+                <ol class="clause-list">
+                    <li>DESAPROPRIAÇÃO;</li>
+                    <li>INCÊNDIO OU DESABAMENTO, SEM CULPA DE QUALQUER DAS PARTES, FORÇA MAIOR OU CASOS FORTUITOS QUE IMPEÇAM O USO NORMAL DO IMÓVEL.</li>
+                </ol>
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula XI - Fiança</span>
+                ASSINAM TAMBÉM O PRESENTE CONTRATO COMO <strong>FIADORES</strong> E PRINCIPAIS PAGADORES, SOLIDARIAMENTE RESPONSÁVEIS:
+                <div id="txt-lista-fiadores" style="margin-top: 10px; padding: 12px; border: 1px solid #f1f5f9; border-radius: 4px;"></div>
+                <span class="paragraph"><strong>PARÁGRAFO ÚNICO:</strong> O FIADOR E PRINCIPAL PAGADOR FICAM TAMBÉM RESPONSÁVEIS PELAS CUSTAS JUDICIAIS E HONORÁRIOS ADVOCATÍCIOS A QUE VIER A SER CONDENADA O LOCATÁRIO EM AÇÃO DE DESPEJO OU QUALQUER OUTRA MEDIDA JUDICIAL QUE FOR INTENTADA PELO LOCADOR PARA PREVALECER SEUS DIREITOS E INTERESSES, DESDE QUE OS FIADORES SEJAM NOTIFICADOS, SENDO QUE O FIADOR RENUNCIA EXPRESSAMENTE O BENEFÍCIO DE ORDEM ESTIPULADO NO ARTIGO 827 DO CÓDIGO CIVIL.</span>
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula XII - Da Titularidade das Contas de Consumo</span>
+                O LOCATÁRIO OBRIGA-SE A PROVIDENCIAR,<mark> NO PRAZO MÁXIMO DO PRIMEIRO MÊS DE VIGÊNCIA DA LOCAÇÃO, A TRANSFERÊNCIA PARA SEU NOME DAS CONTAS DE ÁGUA E ENERGIA ELÉTRICA RELATIVAS AO IMÓVEL LOCADO</mark>, DEVENDO, AINDA, ENCAMINHAR AO LOCADOR O COMPROVANTE FORMAL DA EFETIVA ALTERAÇÃO DE TITULARIDADE.
+
+                <span class="paragraph"><strong>PARÁGRAFO PRELIMINAR:</strong> O COMPROVANTE DA ALTERAÇÃO DE TITULARIDADE DEVERÁ SER ENVIADO PELO LOCATÁRIO AO TELEFONE DE CONTATO DO LOCADOR, QUAL SEJA, <strong><span id="txt-locador-telefone" class="var-text"></span></strong>.</span>
+
+                <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong> O DESCUMPRIMENTO DO PRAZO ESTABELECIDO NO CAPUT DESTA CLÁUSULA SUJEITARÁ O LOCATÁRIO À MULTA IMEDIATA E NÃO COMPENSATÓRIA CORRESPONDENTE A 10% (DEZ POR CENTO) DO VALOR DO ALUGUEL VIGENTE, QUAL SEJA, <strong>R$ <span id="txt-valor-clausula12" class="var-text"></span></strong>, SEM PREJUÍZO DAS DEMAIS COMINAÇÕES CONTRATUAIS E LEGAIS.</span>
+
+                <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> PERMANECENDO A IRREGULARIDADE APÓS NOTIFICAÇÃO FORMAL DO LOCADOR, FICARÁ CARACTERIZADA INFRAÇÃO CONTRATUAL GRAVE, FACULTANDO-SE AO LOCADOR A RESCISÃO ANTECIPADA DO CONTRATO, COM A INCIDÊNCIA DA MULTA RESCISÓRIA PREVISTA NA CLÁUSULA IX.</span>
+            </div>
+
+            <div class="clause">
+                <span class="clause-title">Cláusula XIV - Do Foro</span>
+                TUDO QUANTO FOR DEVIDO EM RAZÃO DESTE CONTRATO SERÁ COBRADO EM PROCESSO EXECUTIVO, OU EM AÇÃO APROPRIADA, NO FORO DA COMARCA DE <strong id="txt-foro" class="var-text">PALOTINA - PR</strong>.
+            </div>
+
+            <p style="margin-top: 40px; text-align: right;"><span id="txt-local-assinatura" class="var-text">PALOTINA - PR</span>, <span id="txt-data-assinatura" class="var-text"></span>.</p>
+
+            <div class="signatures-grid" id="container-assinaturas"></div>
+
+            <div class="witnesses">
+                <div class="signature-item"><div class="line"></div><div class="role">Testemunha 1</div></div>
+                <div class="signature-item"><div class="line"></div><div class="role">Testemunha 2</div></div>
+            </div>
+        </div>
+
+        <footer>
+            Página 1 de 1 • Contrato de locação residencial
+        </footer>
+    </div>
+    </div>
+
+    <script>
+        // Dados de exemplo até carregar do Gist
+        const defaultDb = {
+            locador: {
+                nome: "FULANO DE TAL",
+                telefone: "(00) 90000-0000",
+                qualificacao: "brasileiro, casado, profissão exemplo, portador do RG 0.000.000-0/SSP-UF e CPF 000.000.000-00, residente e domiciliado à Rua Exemplo, 100, Centro, Cidade/UF"
+            },
+            locataria: {
+                nome: "SICRANA DE TAL",
+                estado_civil: "solteiro",
+                qualificacao: "brasileira, solteira, profissão exemplo, portadora do RG 0.000.000-0/SSP-UF e CPF 000.000.000-00, natural de Cidade/UF, filha de NOME EXEMPLO e NOME EXEMPLO",
+                conjuge_qualificacao: ""
+            },
+            imovel: {
+                endereco: "RUA EXEMPLO, 123 – BAIRRO – CIDADE/UF",
+                proprietario: "BELTRANO EXEMPLO"
+            },
+            foro: "PALOTINA - PR",
+            financeiro: {
+                valor: "1.000,00",
+                extenso: "um mil reais",
+                prazo: "12",
+                inicio: "01 de janeiro de 2026",
+                termino: "01 de janeiro de 2027",
+                assinatura: "01 de janeiro de 2026"
+            },
+            pagamento: {
+                recebedor_nome: "TITULAR EXEMPLO",
+                recebedor_cpf: "000.000.000-00",
+                pix_chave: "000.000.000-00",
+                banco_detalhes: "BANCO EXEMPLO - AG 0000 - C/C 000000-0"
+            },
+            fiadores: [
+                {
+                    nome: "FIADOR EXEMPLO",
+                    estado_civil: "casado",
+                    desc: "brasileiro, profissão exemplo, portador do RG 0.000.000-0/SSP-UF e CPF 000.000.000-00, residente à Rua Exemplo, 200, Cidade/UF",
+                    papel: "Fiador"
+                },
+                {
+                    nome: "CONJUGE EXEMPLO",
+                    desc: "brasileira, profissão exemplo, portadora do RG 0.000.000-0/SSP-UF e CPF 000.000.000-00",
+                    papel: "Cônjuge Anuente"
+                }
+            ]
+        };
+
+        // A única persistência local é o nome do editor. Todo o resto fica no Gist.
+        const EDITOR_NAME_KEY = 'contratoEditorName_v1';
+        const TOKEN_SESSION_KEY = 'githubTokenSession_v1';
+        const LEGACY_GIST_CONFIG_KEY = 'contratoGistConfig_v1';
+        const LEGACY_TOKEN_LOCAL_KEY = 'githubTokenRemember_v1';
+        const URL_PARAM_TOKEN = 'gh_token';
+        const URL_PARAM_GIST_ID = 'gist_id';
+        const URL_PARAM_GIST_FILE = 'gist_file';
+
+        let db = JSON.parse(JSON.stringify(defaultDb));
+        let openedVersionId = null;
+        let loadedFromRemote = false;
+        let versionsCache = [];
+        let runtimeToken = '';
+
+        // === Configuração por URL (token/gist_id/gist_file) ===
+        function getUrlRuntimeConfig() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                token: (params.get(URL_PARAM_TOKEN) || '').trim(),
+                gistId: (params.get(URL_PARAM_GIST_ID) || '').trim(),
+                gistFile: (params.get(URL_PARAM_GIST_FILE) || '').trim()
+            };
+        }
+
+        function applyUrlRuntimeConfig(values) {
+            const url = new URL(window.location.href);
+            const params = url.searchParams;
+
+            const gistId = (values?.gistId || '').trim();
+            const gistFile = (values?.gistFile || '').trim();
+
+            if (gistId) params.set(URL_PARAM_GIST_ID, gistId); else params.delete(URL_PARAM_GIST_ID);
+            if (gistFile) params.set(URL_PARAM_GIST_FILE, gistFile); else params.delete(URL_PARAM_GIST_FILE);
+
+            const next = `${url.pathname}${params.toString() ? `?${params.toString()}` : ''}${url.hash}`;
+            window.history.replaceState({}, '', next);
+        }
+
+        // === Avisos de conexão/estado ===
+        function setGistConnectionNote(message, isError = false) {
+            const note = document.getElementById('gist-connection-note');
+            if (!note) return;
+            note.textContent = message;
+            note.classList.toggle('error', !!isError);
+        }
+
+        function setSyncStatus(message) {
+            const el = document.getElementById('sync-status');
+            if (el) el.textContent = message;
+        }
+
+        // === Identificação de editor/dispositivo ===
+        function getEditorName() {
+            const raw = localStorage.getItem(EDITOR_NAME_KEY) || '';
+            return raw.trim();
+        }
+
+        function ensureEditorName() {
+            const existing = getEditorName();
+            if (existing) return existing;
+
+            const input = window.prompt('Nome do editor/dispositivo (ex.: PC-CASA, NOTE-TRABALHO)');
+            const finalName = (input || '').trim() || 'DESCONHECIDO';
+            localStorage.setItem(EDITOR_NAME_KEY, finalName);
+            return finalName;
+        }
+
+        function setEditorNameManually() {
+            const current = getEditorName() || 'DESCONHECIDO';
+            const input = window.prompt('Defina o nome do editor/dispositivo:', current);
+            if (input === null) return;
+
+            const finalName = input.trim() || 'DESCONHECIDO';
+            localStorage.setItem(EDITOR_NAME_KEY, finalName);
+            alert(`Nome do editor atualizado para: ${finalName}`);
+            refreshVersionList();
+        }
+
+        function clearEditorName() {
+            localStorage.removeItem(EDITOR_NAME_KEY);
+        }
+
+        function clearLegacyLocalPersistence() {
+            localStorage.removeItem(LEGACY_GIST_CONFIG_KEY);
+            localStorage.removeItem(LEGACY_TOKEN_LOCAL_KEY);
+        }
+
+        function getConfigFromFields() {
+            return {
+                gistId: fieldValue('f-gist-id'),
+                gistFile: fieldValue('f-gist-file') || 'contratos.json'
+            };
+        }
+
+        function setConfigFields(config) {
+            setFieldValue('f-gist-id', config?.gistId || '');
+            setFieldValue('f-gist-file', config?.gistFile || 'contratos.json');
+        }
+
+        // === Token GitHub (memória + sessionStorage) ===
+        function getStoredToken() {
+            const urlToken = getUrlRuntimeConfig().token;
+            return urlToken || runtimeToken || sessionStorage.getItem(TOKEN_SESSION_KEY) || '';
+        }
+
+        function setStoredToken(token) {
+            runtimeToken = token;
+            sessionStorage.setItem(TOKEN_SESSION_KEY, token);
+        }
+
+        function clearStoredToken() {
+            runtimeToken = '';
+            sessionStorage.removeItem(TOKEN_SESSION_KEY);
+        }
+
+        function promptTokenAndStore() {
+            const input = window.prompt('Informe o token do GitHub (escopo para editar o Gist):');
+            if (!input) return '';
+            const token = input.trim();
+            if (!token) return '';
+            setStoredToken(token);
+            return token;
+        }
+
+        function githubHeaders(token) {
+            return {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/vnd.github+json',
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // === gistLoad / gistSave ===
+        async function gistLoadVersions(config, token) {
+            if (!config?.gistId) throw new Error('GIST_ID não configurado.');
+            const response = await fetch(`https://api.github.com/gists/${config.gistId}`, {
+                method: 'GET',
+                headers: githubHeaders(token)
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                throw new Error('Token inválido ou sem permissão para acessar este Gist.');
+            }
+            if (response.status === 404) {
+                throw new Error('Gist não encontrado. Verifique o GIST_ID.');
+            }
+            if (!response.ok) {
+                throw new Error('Falha ao ler o Gist remoto.');
+            }
+
+            const gist = await response.json();
+            const file = gist?.files?.[config.gistFile];
+            if (!file) {
+                throw new Error('Arquivo JSON não existe no Gist ainda.');
+            }
+
+            let parsed;
+            try {
+                parsed = JSON.parse(file.content || '[]');
+            } catch {
+                throw new Error('Conteúdo JSON inválido no arquivo remoto.');
+            }
+
+            if (!Array.isArray(parsed)) {
+                throw new Error('Formato remoto inválido: esperado array de versões.');
+            }
+
+            return parsed;
+        }
+
+        async function gistSaveVersions(config, token, versions) {
+            if (!config?.gistId) throw new Error('GIST_ID não configurado.');
+            const payload = {
+                files: {
+                    [config.gistFile]: {
+                        content: JSON.stringify(versions, null, 2)
+                    }
+                }
+            };
+
+            const response = await fetch(`https://api.github.com/gists/${config.gistId}`, {
+                method: 'PATCH',
+                headers: githubHeaders(token),
+                body: JSON.stringify(payload)
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                throw new Error('Token inválido ou sem permissão para gravar no Gist.');
+            }
+            if (response.status === 404) {
+                throw new Error('Gist não encontrado para gravação.');
+            }
+            if (!response.ok) {
+                throw new Error('Falha ao gravar versões no Gist.');
+            }
+        }
+
+        async function trySyncRemote(versions) {
+            const config = getConfigFromFields();
+            if (!config.gistId) {
+                loadedFromRemote = false;
+                setSyncStatus('Sem conexão com Gist');
+                setGistConnectionNote('Sem conexão com Gist (GIST_ID não informado)', true);
+                return false;
+            }
+
+            let token = getStoredToken();
+            if (!token) {
+                token = promptTokenAndStore();
+                if (!token) {
+                    loadedFromRemote = false;
+                    setSyncStatus('Sem conexão com Gist');
+                    setGistConnectionNote('Sem conexão com Gist (token não informado)', true);
+                    return false;
+                }
+            }
+
+            try {
+                await gistSaveVersions(config, token, versions);
+                loadedFromRemote = true;
+                setSyncStatus('Fonte: remoto sincronizado');
+                setGistConnectionNote('Conectado ao Gist');
+                return true;
+            } catch (error) {
+                loadedFromRemote = false;
+                setSyncStatus('Sem conexão com Gist');
+                setGistConnectionNote(error.message || 'Sem conexão com Gist', true);
+                throw error;
+            }
+        }
+
+        function getLatestVersion(versions) {
+            if (!versions.length) return null;
+            return [...versions].sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt))[0] || null;
+        }
+
+        function refreshVersionList() {
+            const select = document.getElementById('version-list');
+            select.innerHTML = '';
+
+            if (!versionsCache.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Nenhuma versão no Gist';
+                select.appendChild(option);
+                return;
+            }
+
+            versionsCache.forEach((version, index) => {
+                const option = document.createElement('option');
+                option.value = version.id;
+                const when = new Date(version.savedAt).toLocaleString('pt-BR');
+                const endereco = version.data?.imovel?.endereco || 'Endereço não informado';
+                const inquilino = version.data?.locataria?.nome || 'Inquilino não informado';
+                const editorName = (version.editorName || 'DESCONHECIDO').toString().trim() || 'DESCONHECIDO';
+                option.textContent = `${index + 1}. ${endereco} — ${inquilino} • ${editorName} (${when})`;
+                if (version.id === openedVersionId) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
+        function applyDataFromSource() {
+            const latest = getLatestVersion(versionsCache);
+            if (latest?.data) {
+                openedVersionId = latest.id;
+                setFormData(latest.data);
+                syncValorExtensoFromValor();
+                render();
+                refreshVersionList();
+                setGistConnectionNote('Dados carregados do Gist');
+                return;
+            }
+
+            openedVersionId = null;
+            setFormData(JSON.parse(JSON.stringify(defaultDb)));
+            syncValorExtensoFromValor();
+            render();
+            refreshVersionList();
+            setGistConnectionNote('Dados de exemplo (nenhuma versão no Gist)');
+        }
+
+        function parseCurrencyToNumber(value) {
+            if (!value) return 0;
+            const normalized = value
+                .replace(/\s/g, '')
+                .replace(/\./g, '')
+                .replace(',', '.');
+            const numberValue = Number(normalized);
+            return Number.isFinite(numberValue) ? numberValue : 0;
+        }
+
+        function numberToWordsPtBrInt(numberValue) {
+            const units = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+            const teens = ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+            const tens = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+            const hundreds = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+
+            function underThousand(n) {
+                if (n === 0) return '';
+                if (n === 100) return 'cem';
+
+                const c = Math.floor(n / 100);
+                const t = Math.floor((n % 100) / 10);
+                const u = n % 10;
+                const parts = [];
+
+                if (c > 0) parts.push(hundreds[c]);
+                if (t === 1) {
+                    parts.push(teens[u]);
+                } else {
+                    if (t > 1) parts.push(tens[t]);
+                    if (u > 0) parts.push(units[u]);
+                }
+
+                return parts.join(' e ');
+            }
+
+            if (numberValue === 0) return 'zero';
+
+            const millions = Math.floor(numberValue / 1000000);
+            const thousands = Math.floor((numberValue % 1000000) / 1000);
+            const hundredsPart = numberValue % 1000;
+            const parts = [];
+
+            if (millions > 0) {
+                if (millions === 1) {
+                    parts.push('um milhão');
+                } else {
+                    parts.push(`${underThousand(millions)} milhões`);
+                }
+            }
+
+            if (thousands > 0) {
+                if (thousands === 1) {
+                    parts.push('mil');
+                } else {
+                    parts.push(`${underThousand(thousands)} mil`);
+                }
+            }
+
+            if (hundredsPart > 0) {
+                parts.push(underThousand(hundredsPart));
+            }
+
+            if (!parts.length) return 'zero';
+            if (parts.length === 1) return parts[0];
+
+            return `${parts.slice(0, -1).join(', ')} e ${parts[parts.length - 1]}`;
+        }
+
+        function currencyToExtenso(value) {
+            const numberValue = parseCurrencyToNumber(value);
+            const inteiro = Math.floor(numberValue);
+            const centavos = Math.round((numberValue - inteiro) * 100);
+
+            const reaisText = `${numberToWordsPtBrInt(inteiro)} ${inteiro === 1 ? 'real' : 'reais'}`;
+            if (centavos === 0) return reaisText;
+
+            const centavosText = `${numberToWordsPtBrInt(centavos)} ${centavos === 1 ? 'centavo' : 'centavos'}`;
+            return `${reaisText} e ${centavosText}`;
+        }
+
+        function syncValorExtensoFromValor() {
+            const valor = fieldValue('f-financeiro-valor');
+            const extenso = currencyToExtenso(valor);
+            setFieldValue('f-financeiro-extenso', extenso);
+        }
+
+        function parseDatePtBr(value) {
+            if (!value) return null;
+            const text = value.trim().toLowerCase();
+
+            const monthMap = {
+                janeiro: 0,
+                fevereiro: 1,
+                marco: 2,
+                março: 2,
+                abril: 3,
+                maio: 4,
+                junho: 5,
+                julho: 6,
+                agosto: 7,
+                setembro: 8,
+                outubro: 9,
+                novembro: 10,
+                dezembro: 11
+            };
+
+            const extensoMatch = text.match(/^(\d{1,2})\s+de\s+([a-zçãéíóúâêô]+)\s+de\s+(\d{4})$/i);
+            if (extensoMatch) {
+                const day = Number(extensoMatch[1]);
+                const monthText = extensoMatch[2];
+                const year = Number(extensoMatch[3]);
+                const month = monthMap[monthText];
+                if (month !== undefined) {
+                    return new Date(year, month, day);
+                }
+            }
+
+            const brMatch = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (brMatch) {
+                const day = Number(brMatch[1]);
+                const month = Number(brMatch[2]) - 1;
+                const year = Number(brMatch[3]);
+                return new Date(year, month, day);
+            }
+
+            const isoMatch = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            if (isoMatch) {
+                return new Date(Number(isoMatch[1]), Number(isoMatch[2]) - 1, Number(isoMatch[3]));
+            }
+
+            return null;
+        }
+
+        function formatDatePtBrExtenso(date) {
+            const months = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            return `${day} de ${month} de ${year}`;
+        }
+
+        function addMonthsSafe(date, months) {
+            const result = new Date(date);
+            const day = result.getDate();
+            result.setDate(1);
+            result.setMonth(result.getMonth() + months);
+            const lastDay = new Date(result.getFullYear(), result.getMonth() + 1, 0).getDate();
+            result.setDate(Math.min(day, lastDay));
+            return result;
+        }
+
+        function syncTerminoFromInicioPrazo() {
+            const inicio = parseDatePtBr(fieldValue('f-financeiro-inicio'));
+            const prazo = Number.parseInt(fieldValue('f-financeiro-prazo'), 10);
+            if (!inicio || Number.isNaN(inicio.getTime()) || Number.isNaN(prazo) || prazo <= 0) return;
+
+            const termino = addMonthsSafe(inicio, prazo);
+            setFieldValue('f-financeiro-termino', formatDatePtBrExtenso(termino));
+        }
+
+        function setAssinaturaHoje() {
+            setFieldValue('f-financeiro-assinatura', formatDatePtBrExtenso(new Date()));
+        }
+
+        function fieldValue(id) {
+            const element = document.getElementById(id);
+            return element ? element.value.trim() : '';
+        }
+
+        function setFieldValue(id, value) {
+            const element = document.getElementById(id);
+            if (element) element.value = value ?? '';
+        }
+
+        function getFormData() {
+            const fiadorEstadoCivil = fieldValue('f-fiador1-estado-civil') || 'casado';
+            const includeSecondFiador = fiadorEstadoCivil === 'casado';
+            const locatariaEstadoCivil = fieldValue('f-locataria-estado-civil') || 'solteiro';
+            const includeLocatariaConjuge = locatariaEstadoCivil === 'casado';
+            return {
+                locador: {
+                    nome: fieldValue('f-locador-nome'),
+                    telefone: fieldValue('f-locador-telefone'),
+                    qualificacao: fieldValue('f-locador-qualificacao')
+                },
+                locataria: {
+                    nome: fieldValue('f-locataria-nome'),
+                    estado_civil: locatariaEstadoCivil,
+                    qualificacao: fieldValue('f-locataria-qualificacao'),
+                    conjuge_qualificacao: includeLocatariaConjuge ? fieldValue('f-locataria-conjuge-qualificacao') : ''
+                },
+                imovel: {
+                    endereco: fieldValue('f-imovel-endereco'),
+                    proprietario: fieldValue('f-imovel-proprietario')
+                },
+                foro: fieldValue('f-foro'),
+                financeiro: {
+                    valor: fieldValue('f-financeiro-valor'),
+                    extenso: fieldValue('f-financeiro-extenso'),
+                    prazo: fieldValue('f-financeiro-prazo'),
+                    inicio: fieldValue('f-financeiro-inicio'),
+                    termino: fieldValue('f-financeiro-termino'),
+                    assinatura: fieldValue('f-financeiro-assinatura')
+                },
+                pagamento: {
+                    recebedor_nome: fieldValue('f-pagamento-nome'),
+                    recebedor_cpf: fieldValue('f-pagamento-cpf'),
+                    pix_chave: fieldValue('f-pagamento-chave'),
+                    banco_detalhes: fieldValue('f-pagamento-banco')
+                },
+                fiadores: [
+                    {
+                        nome: fieldValue('f-fiador1-nome'),
+                        estado_civil: fiadorEstadoCivil,
+                        desc: fieldValue('f-fiador1-desc'),
+                        papel: fieldValue('f-fiador1-papel')
+                    }
+                ].concat(includeSecondFiador ? [{
+                    nome: fieldValue('f-fiador2-nome'),
+                    desc: fieldValue('f-fiador2-desc'),
+                    papel: fieldValue('f-fiador2-papel')
+                }] : [])
+            };
+        }
+
+        function setFormData(data) {
+            setFieldValue('f-locador-nome', data.locador?.nome || '');
+            setFieldValue('f-locador-telefone', data.locador?.telefone || '');
+            setFieldValue('f-locador-qualificacao', data.locador?.qualificacao || '');
+            setFieldValue('f-locataria-nome', data.locataria?.nome || '');
+            setFieldValue('f-locataria-estado-civil', data.locataria?.estado_civil || 'solteiro');
+            setFieldValue('f-locataria-qualificacao', data.locataria?.qualificacao || '');
+            setFieldValue('f-locataria-conjuge-qualificacao', data.locataria?.conjuge_qualificacao || '');
+            setFieldValue('f-imovel-endereco', data.imovel?.endereco || '');
+            setFieldValue('f-imovel-proprietario', data.imovel?.proprietario || '');
+            setFieldValue('f-foro', data.foro || 'PALOTINA - PR');
+            setFieldValue('f-financeiro-valor', data.financeiro?.valor || '');
+            setFieldValue('f-financeiro-extenso', data.financeiro?.extenso || '');
+            setFieldValue('f-financeiro-prazo', data.financeiro?.prazo || '');
+            setFieldValue('f-financeiro-inicio', data.financeiro?.inicio || '');
+            setFieldValue('f-financeiro-termino', data.financeiro?.termino || '');
+            setFieldValue('f-financeiro-assinatura', data.financeiro?.assinatura || '');
+            setFieldValue('f-pagamento-nome', data.pagamento?.recebedor_nome || '');
+            setFieldValue('f-pagamento-chave', data.pagamento?.pix_chave || '');
+            setFieldValue('f-pagamento-cpf', data.pagamento?.recebedor_cpf || '');
+            setFieldValue('f-pagamento-banco', data.pagamento?.banco_detalhes || '');
+            setFieldValue('f-fiador1-nome', data.fiadores?.[0]?.nome || '');
+            setFieldValue('f-fiador1-estado-civil', data.fiadores?.[0]?.estado_civil || (data.fiadores?.[1] ? 'casado' : 'solteiro'));
+            setFieldValue('f-fiador1-desc', data.fiadores?.[0]?.desc || '');
+            setFieldValue('f-fiador1-papel', data.fiadores?.[0]?.papel || '');
+            setFieldValue('f-fiador2-nome', data.fiadores?.[1]?.nome || '');
+            setFieldValue('f-fiador2-desc', data.fiadores?.[1]?.desc || '');
+            setFieldValue('f-fiador2-papel', data.fiadores?.[1]?.papel || '');
+            toggleLocatariaConjugeVisibility();
+            toggleFiador2Visibility();
+        }
+
+        function toggleLocatariaConjugeVisibility() {
+            const estadoCivil = fieldValue('f-locataria-estado-civil');
+            const showConjuge = estadoCivil === 'casado';
+            document.querySelectorAll('.locataria-conjuge-field').forEach(field => {
+                field.classList.toggle('hidden', !showConjuge);
+            });
+        }
+
+        function toggleFiador2Visibility() {
+            const estadoCivil = fieldValue('f-fiador1-estado-civil');
+            const showSecondFiador = estadoCivil === 'casado';
+            document.querySelectorAll('.fiador2-field').forEach(field => {
+                field.classList.toggle('hidden', !showSecondFiador);
+            });
+        }
+
+        function refreshVersionList() {
+            const select = document.getElementById('version-list');
+            select.innerHTML = '';
+
+            if (!versionsCache.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Nenhuma versão no Gist';
+                select.appendChild(option);
+                return;
+            }
+
+            versionsCache.forEach((version, index) => {
+                const option = document.createElement('option');
+                option.value = version.id;
+                const when = new Date(version.savedAt).toLocaleString('pt-BR');
+                const endereco = version.data?.imovel?.endereco || 'Endereço não informado';
+                const inquilino = version.data?.locataria?.nome || 'Inquilino não informado';
+                const editorName = (version.editorName || 'DESCONHECIDO').toString().trim() || 'DESCONHECIDO';
+                option.textContent = `${index + 1}. ${endereco} — ${inquilino} • ${editorName} (${when})`;
+                if (version.id === openedVersionId) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
+        function render() {
+            db = getFormData();
+
+            const locatariaConjuge = (db.locataria?.conjuge_qualificacao || '').trim();
+            const trechoConjugeLocataria = db.locataria?.estado_civil === 'casado' && locatariaConjuge
+                ? `, e seu cônjuge, <span id="txt-locataria-conjuge-qualificacao-intro" class="var-text">${locatariaConjuge.toUpperCase()}</span>`
+                : '';
+
+            document.getElementById('intro-partes').innerHTML = `
+                <p><strong>LOCADOR:</strong> <span id="txt-locador-nome-intro" class="var-text">${db.locador.nome.toUpperCase()}</span>, <span id="txt-locador-qualificacao-intro" class="var-text">${db.locador.qualificacao.toUpperCase()}</span>.</p>
+                <p style="margin-top:12px"><strong>LOCATÁRIA:</strong> <span id="txt-locataria-nome-intro" class="var-text">${db.locataria.nome.toUpperCase()}</span>, <span id="txt-locataria-qualificacao-intro" class="var-text">${db.locataria.qualificacao.toUpperCase()}</span>${trechoConjugeLocataria}.</p>
+            `;
+
+            document.getElementById('txt-endereco-imovel').innerText = db.imovel.endereco.toUpperCase();
+            document.getElementById('txt-proprietario').innerText = db.imovel.proprietario.toUpperCase();
+            const foro = (db.foro || 'PALOTINA - PR').toString().trim() || 'PALOTINA - PR';
+            document.getElementById('txt-foro').innerText = foro.toUpperCase();
+            document.getElementById('txt-local-assinatura').innerText = foro;
+            document.getElementById('txt-prazo').innerText = db.financeiro.prazo;
+            document.getElementById('txt-inicio').innerText = db.financeiro.inicio.toUpperCase();
+            document.getElementById('txt-termino').innerText = db.financeiro.termino.toUpperCase();
+            document.getElementById('txt-valor').innerText = db.financeiro.valor;
+            document.getElementById('txt-valor-extenso').innerText = db.financeiro.extenso.toUpperCase();
+            document.getElementById('txt-valor-clausula12').innerText = db.financeiro.valor;
+            document.getElementById('txt-locador-telefone').innerText = db.locador.telefone;
+
+            document.getElementById('txt-pix-titular').innerText = db.pagamento.recebedor_nome.toUpperCase();
+            document.getElementById('txt-pix-chave').innerText = db.pagamento.pix_chave;
+            document.getElementById('txt-pix-cpf').innerText = db.pagamento.recebedor_cpf;
+            document.getElementById('txt-banco-detalhe').innerText = db.pagamento.banco_detalhes.toUpperCase();
+
+            document.getElementById('txt-lista-fiadores').innerHTML = db.fiadores.map(fiador =>
+                `<p style="margin-bottom:8px"><strong><span id="txt-fiador-${db.fiadores.indexOf(fiador)}-papel" class="var-text">${(fiador.papel || '').toUpperCase()}</span>:</strong> <span id="txt-fiador-${db.fiadores.indexOf(fiador)}-nome" class="var-text">${(fiador.nome || '').toUpperCase()}</span>, <span id="txt-fiador-${db.fiadores.indexOf(fiador)}-desc" class="var-text">${(fiador.desc || '').toUpperCase()}</span>.</p>`
+            ).join('');
+
+            document.getElementById('txt-data-assinatura').innerText = db.financeiro.assinatura.toUpperCase();
+
+            const signatures = [
+                { name: db.locador.nome, role: "Locador" },
+                { name: db.locataria.nome, role: "Locatária" },
+                ...db.fiadores.map(fiador => ({ name: fiador.nome, role: fiador.papel }))
+            ];
+
+            document.getElementById('container-assinaturas').innerHTML = signatures.map(signature => `
+                <div class="signature-item">
+                    <div class="line"></div>
+                    <div class="name">${signature.name}</div>
+                    <div class="role">${signature.role}</div>
+                </div>
+            `).join('');
+        }
+
+        function askSaveMode() {
+            const modal = document.getElementById('save-mode-modal');
+            const btnNew = document.getElementById('btn-save-mode-new');
+            const btnOverwrite = document.getElementById('btn-save-mode-overwrite');
+            const btnCancel = document.getElementById('btn-save-mode-cancel');
+
+            if (!modal || !btnNew || !btnOverwrite || !btnCancel) {
+                return Promise.resolve(openedVersionId ? 'overwrite' : 'new');
+            }
+
+            return new Promise((resolve) => {
+                let done = false;
+
+                const close = (value) => {
+                    if (done) return;
+                    done = true;
+                    modal.classList.add('hidden');
+                    document.removeEventListener('keydown', onKeyDown);
+                    modal.removeEventListener('click', onBackdropClick);
+                    btnNew.removeEventListener('click', onNew);
+                    btnOverwrite.removeEventListener('click', onOverwrite);
+                    btnCancel.removeEventListener('click', onCancel);
+                    resolve(value);
+                };
+
+                const onNew = () => close('new');
+                const onOverwrite = () => close('overwrite');
+                const onCancel = () => close(null);
+                const onBackdropClick = (event) => {
+                    if (event.target === modal) close(null);
+                };
+                const onKeyDown = (event) => {
+                    if (event.key === 'Escape') close(null);
+                };
+
+                btnOverwrite.disabled = !openedVersionId;
+                btnOverwrite.title = openedVersionId ? '' : 'Abra uma versão para poder sobrescrever';
+
+                modal.classList.remove('hidden');
+                document.addEventListener('keydown', onKeyDown);
+                modal.addEventListener('click', onBackdropClick);
+                btnNew.addEventListener('click', onNew);
+                btnOverwrite.addEventListener('click', onOverwrite);
+                btnCancel.addEventListener('click', onCancel);
+
+                if (openedVersionId) {
+                    btnOverwrite.focus();
+                } else {
+                    btnNew.focus();
+                }
+            });
+        }
+
+        function scrollToVariableByField(fieldId) {
+            const sideBySideMode = window.matchMedia('(min-width: 1500px)').matches;
+            if (!sideBySideMode) return;
+
+            const map = {
+                'f-locador-nome': '#txt-locador-nome-intro',
+                'f-locador-telefone': '#txt-locador-telefone',
+                'f-locador-qualificacao': '#txt-locador-qualificacao-intro',
+                'f-locataria-nome': '#txt-locataria-nome-intro',
+                'f-locataria-qualificacao': '#txt-locataria-qualificacao-intro',
+                'f-locataria-conjuge-qualificacao': '#txt-locataria-conjuge-qualificacao-intro',
+                'f-imovel-endereco': '#txt-endereco-imovel',
+                'f-imovel-proprietario': '#txt-proprietario',
+                'f-foro': '#txt-foro',
+                'f-financeiro-valor': '#txt-valor',
+                'f-financeiro-extenso': '#txt-valor-extenso',
+                'f-financeiro-prazo': '#txt-prazo',
+                'f-financeiro-inicio': '#txt-inicio',
+                'f-financeiro-termino': '#txt-termino',
+                'f-financeiro-assinatura': '#txt-data-assinatura',
+                'f-pagamento-nome': '#txt-pix-titular',
+                'f-pagamento-chave': '#txt-pix-chave',
+                'f-pagamento-cpf': '#txt-pix-cpf',
+                'f-pagamento-banco': '#txt-banco-detalhe',
+                'f-fiador1-nome': '#txt-fiador-0-nome',
+                'f-fiador1-estado-civil': '#txt-fiador-0-desc',
+                'f-fiador1-papel': '#txt-fiador-0-papel',
+                'f-fiador1-desc': '#txt-fiador-0-desc',
+                'f-fiador2-nome': '#txt-fiador-1-nome',
+                'f-fiador2-papel': '#txt-fiador-1-papel',
+                'f-fiador2-desc': '#txt-fiador-1-desc'
+            };
+
+            const selector = map[fieldId];
+            if (!selector) return;
+
+            const target = document.querySelector(selector);
+            if (!target) return;
+
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.classList.add('var-focus');
+            window.setTimeout(() => target.classList.remove('var-focus'), 900);
+        }
+
+        async function saveCurrentVersion() {
+            syncValorExtensoFromValor();
+            render();
+            const editorName = ensureEditorName();
+            const mode = await askSaveMode();
+            if (!mode) return;
+
+            const now = new Date();
+            const formatted = now.toLocaleString('pt-BR');
+            const baseVersions = [...versionsCache];
+            let nextVersions = [...baseVersions];
+            let nextOpenedId = openedVersionId;
+            const snapshot = JSON.parse(JSON.stringify(db));
+
+            if (mode === 'overwrite' && openedVersionId) {
+                const index = nextVersions.findIndex(version => version.id === openedVersionId);
+                if (index >= 0) {
+                    nextVersions[index] = {
+                        ...nextVersions[index],
+                        savedAt: now.toISOString(),
+                        editorName,
+                        data: snapshot
+                    };
+
+                    try {
+                        const ok = await trySyncRemote(nextVersions);
+                        if (!ok) {
+                            alert('Sem conexão com Gist. Não foi possível salvar a versão.');
+                            return;
+                        }
+                        versionsCache = nextVersions;
+                        openedVersionId = nextOpenedId;
+                        refreshVersionList();
+                        alert('Versão aberta sobrescrita com sucesso.');
+                    } catch (error) {
+                        alert(error.message || 'Falhou sincronizar com o Gist.');
+                    }
+                    return;
+                }
+            }
+
+            const id = `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+            const version = {
+                id,
+                name: `Versão ${nextVersions.length + 1}`,
+                savedAt: now.toISOString(),
+                editorName,
+                data: snapshot
+            };
+            nextVersions.push(version);
+            nextOpenedId = id;
+
+            try {
+                const ok = await trySyncRemote(nextVersions);
+                if (!ok) {
+                    alert('Sem conexão com Gist. Não foi possível salvar a versão.');
+                    return;
+                }
+                versionsCache = nextVersions;
+                openedVersionId = nextOpenedId;
+                refreshVersionList();
+                alert(`Nova versão salva (${formatted}).`);
+            } catch (error) {
+                alert(error.message || 'Falhou sincronizar com o Gist.');
+            }
+        }
+
+        function openSelectedVersion() {
+            const select = document.getElementById('version-list');
+            const id = select.value;
+            if (!id) return;
+
+            const version = versionsCache.find(item => item.id === id);
+            if (!version) return;
+
+            openedVersionId = version.id;
+            setFormData(version.data);
+            syncValorExtensoFromValor();
+            render();
+            refreshVersionList();
+        }
+
+        async function deleteSelectedVersion() {
+            const select = document.getElementById('version-list');
+            const id = select.value;
+            if (!id) {
+                alert('Selecione uma versão para excluir.');
+                return;
+            }
+
+            const version = versionsCache.find(item => item.id === id);
+            if (!version) {
+                alert('Versão selecionada não encontrada.');
+                return;
+            }
+
+            const when = new Date(version.savedAt).toLocaleString('pt-BR');
+            const endereco = version.data?.imovel?.endereco || 'Endereço não informado';
+            const inquilino = version.data?.locataria?.nome || 'Inquilino não informado';
+            const confirmDelete = window.confirm(`Excluir esta versão?\n${endereco} — ${inquilino} (${when})`);
+            if (!confirmDelete) return;
+
+            const updatedVersions = versionsCache.filter(item => item.id !== id);
+
+            if (openedVersionId === id) {
+                openedVersionId = null;
+            }
+
+            try {
+                const ok = await trySyncRemote(updatedVersions);
+                if (!ok) {
+                    alert('Sem conexão com Gist. Não foi possível excluir a versão.');
+                    return;
+                }
+                versionsCache = updatedVersions;
+                refreshVersionList();
+                alert('Versão excluída com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou sincronizar exclusão com o Gist.');
+            }
+        }
+
+        function resetToDefault() {
+            openedVersionId = null;
+            setFormData(JSON.parse(JSON.stringify(defaultDb)));
+            syncValorExtensoFromValor();
+            render();
+            refreshVersionList();
+        }
+
+        async function connectAndTestToken() {
+            const currentToken = getStoredToken();
+            let token = currentToken;
+
+            if (!token) {
+                token = promptTokenAndStore();
+                if (!token) return;
+            } else {
+                const change = window.confirm('Já existe token salvo.\nOK = informar um novo token\nCancelar = testar token atual');
+                if (change) {
+                    token = promptTokenAndStore();
+                    if (!token) return;
+                }
+            }
+
+            const config = getConfigFromFields();
+            if (!config.gistId) {
+                setSyncStatus('Token informado; falta GIST_ID');
+                alert('Token informado. Agora preencha o GIST_ID e clique em Aplicar config.');
+                return;
+            }
+
+            try {
+                const remoteVersions = await gistLoadVersions(config, token);
+                versionsCache = remoteVersions;
+                loadedFromRemote = true;
+                setSyncStatus('Fonte: remoto conectado');
+                setGistConnectionNote('Conectado ao Gist');
+                applyDataFromSource();
+                alert('Conexão com Gist validada com sucesso.');
+            } catch (error) {
+                if (String(error.message || '').includes('Arquivo JSON não existe')) {
+                    versionsCache = [];
+                    loadedFromRemote = true;
+                    setSyncStatus('Gist conectado; arquivo será criado ao salvar');
+                    setGistConnectionNote('Gist conectado sem arquivo remoto; clique em Salvar para criar.');
+                    applyDataFromSource();
+                    alert('Conexão com Gist validada. O arquivo configurado ainda não existe e será criado ao salvar a primeira versão.');
+                    return;
+                }
+                loadedFromRemote = false;
+                versionsCache = [];
+                setSyncStatus('Sem conexão com Gist');
+                setGistConnectionNote(error.message || 'Sem conexão com Gist', true);
+                refreshVersionList();
+                alert(error.message || 'Falha na conexão com Gist.');
+            }
+        }
+
+        function logoutToken() {
+            clearStoredToken();
+            loadedFromRemote = false;
+            versionsCache = [];
+            setSyncStatus('Sem conexão com Gist');
+            setGistConnectionNote('Sem conexão com Gist', true);
+            refreshVersionList();
+            alert('Token removido da sessão atual.');
+        }
+
+        function exportBackupJson() {
+            const blob = new Blob([JSON.stringify(versionsCache, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = `contratos-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        async function importBackupJsonFile(file) {
+            if (!file) return;
+            const text = await file.text();
+            let parsed;
+
+            try {
+                parsed = JSON.parse(text);
+            } catch {
+                alert('Arquivo JSON inválido para importação.');
+                return;
+            }
+
+            if (!Array.isArray(parsed)) {
+                alert('Formato inválido. Esperado: array de versões.');
+                return;
+            }
+
+            try {
+                const ok = await trySyncRemote(parsed);
+                if (!ok) {
+                    alert('Sem conexão com Gist. Importação não persistida.');
+                    return;
+                }
+                versionsCache = parsed;
+                openedVersionId = null;
+                applyDataFromSource();
+                alert('Backup importado e sincronizado no remoto.');
+            } catch (error) {
+                alert(error.message || 'Falhou sincronizar importação com o Gist.');
+            }
+        }
+
+        async function bootstrapVersionsFromRemoteIfPossible() {
+            const urlConfig = getUrlRuntimeConfig();
+            const config = {
+                gistId: urlConfig.gistId || fieldValue('f-gist-id'),
+                gistFile: urlConfig.gistFile || fieldValue('f-gist-file') || 'contratos.json'
+            };
+
+            setConfigFields(config);
+            applyUrlRuntimeConfig(config);
+
+            const token = getStoredToken();
+            if (!config.gistId || !token) {
+                loadedFromRemote = false;
+                versionsCache = [];
+                setSyncStatus('Sem conexão com Gist');
+                setGistConnectionNote('Sem conexão com Gist', true);
+                return;
+            }
+
+            try {
+                const remoteVersions = await gistLoadVersions(config, token);
+                versionsCache = remoteVersions;
+                loadedFromRemote = true;
+                setSyncStatus('Fonte: remoto');
+                setGistConnectionNote('Conectado ao Gist');
+            } catch (error) {
+                if (String(error.message || '').includes('Arquivo JSON não existe')) {
+                    versionsCache = [];
+                    loadedFromRemote = true;
+                    setSyncStatus('Fonte: remoto (arquivo será criado no salvar)');
+                    setGistConnectionNote('Gist conectado sem arquivo remoto; clique em Salvar para criar.');
+                    return;
+                }
+
+                versionsCache = [];
+                loadedFromRemote = false;
+                setSyncStatus('Sem conexão com Gist');
+                setGistConnectionNote(error.message || 'Sem conexão com Gist', true);
+            }
+        }
+
+        window.onload = async function () {
+            clearLegacyLocalPersistence();
+            await bootstrapVersionsFromRemoteIfPossible();
+            applyDataFromSource();
+            toggleLocatariaConjugeVisibility();
+            toggleFiador2Visibility();
+
+            document.getElementById('f-financeiro-valor').addEventListener('input', function () {
+                syncValorExtensoFromValor();
+                render();
+            });
+
+            document.getElementById('f-financeiro-inicio').addEventListener('input', function () {
+                syncTerminoFromInicioPrazo();
+                render();
+            });
+
+            document.getElementById('f-financeiro-prazo').addEventListener('input', function () {
+                syncTerminoFromInicioPrazo();
+                render();
+            });
+
+            document.getElementById('btn-hoje-assinatura').addEventListener('click', function () {
+                setAssinaturaHoje();
+                render();
+            });
+
+            document.getElementById('btn-atualizar').addEventListener('click', function () {
+                syncValorExtensoFromValor();
+                syncTerminoFromInicioPrazo();
+                render();
+            });
+            document.getElementById('btn-salvar').addEventListener('click', saveCurrentVersion);
+            document.getElementById('btn-carregar').addEventListener('click', openSelectedVersion);
+            document.getElementById('btn-excluir-versao').addEventListener('click', deleteSelectedVersion);
+            document.getElementById('btn-json').addEventListener('click', resetToDefault);
+            document.getElementById('btn-editor-name').addEventListener('click', setEditorNameManually);
+            document.getElementById('btn-save-config').addEventListener('click', function () {
+                const config = getConfigFromFields();
+                setConfigFields(config);
+                applyUrlRuntimeConfig(config);
+                alert('Configuração do Gist aplicada nesta URL.');
+            });
+
+            document.getElementById('btn-connect-token').addEventListener('click', connectAndTestToken);
+            document.getElementById('btn-logout-token').addEventListener('click', logoutToken);
+            document.getElementById('btn-export-backup').addEventListener('click', exportBackupJson);
+            document.getElementById('btn-import-backup').addEventListener('click', function () {
+                document.getElementById('backup-import-input').click();
+            });
+            document.getElementById('backup-import-input').addEventListener('change', async function (event) {
+                const file = event.target.files?.[0];
+                await importBackupJsonFile(file);
+                event.target.value = '';
+            });
+
+            document.getElementById('f-fiador1-estado-civil').addEventListener('change', function () {
+                toggleFiador2Visibility();
+                render();
+            });
+
+            document.getElementById('f-locataria-estado-civil').addEventListener('change', function () {
+                toggleLocatariaConjugeVisibility();
+                render();
+            });
+
+            document.querySelectorAll('.editor-panel input, .editor-panel textarea, .editor-panel select').forEach(field => {
+                field.addEventListener('focus', function () {
+                    scrollToVariableByField(field.id);
+                });
+                field.addEventListener('click', function () {
+                    scrollToVariableByField(field.id);
+                });
+            });
+        };
+    </script>
+</body>
+</html>
