@@ -219,14 +219,6 @@ async function upsertContract(ownerId, contract) {
   const safeContract = normalizeContractPayload(contract);
   const ref = fb.doc(fb.db, 'contracts', safeContract.id);
 
-  const snap = await fb.getDoc(ref);
-  const exists = snap.exists();
-  const currentData = exists ? snap.data() : null;
-
-  if (exists && currentData?.ownerId && currentData.ownerId !== ownerId) {
-    throw new Error('Você não tem permissão para alterar este contrato.');
-  }
-
   const payload = {
     ownerId,
     name: safeContract.name,
@@ -236,7 +228,7 @@ async function upsertContract(ownerId, contract) {
     data: safeContract.data,
     status: safeContract.status,
     source: safeContract.source || 'contract',
-    createdAt: exists ? (currentData?.createdAt || safeContract.createdAt) : safeContract.createdAt,
+    createdAt: safeContract.createdAt,
     updatedAt: safeContract.updatedAt || new Date().toISOString(),
     updatedAtServer: fb.serverTimestamp()
   };

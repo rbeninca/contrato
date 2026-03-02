@@ -392,6 +392,88 @@
             font-weight: 600;
         }
 
+        .contracts-dashboard-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .contracts-dashboard-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .contracts-dashboard-subtitle {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .contracts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .contract-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #fff;
+            padding: 12px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+            transition: all .18s ease;
+            cursor: pointer;
+        }
+
+        .contract-card:hover {
+            transform: translateY(-1px);
+            border-color: #c7d2fe;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+        }
+
+        .contract-card.active {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .contract-card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .contract-card-meta {
+            font-size: 12px;
+            color: #475569;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .contract-card-date {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        .contracts-empty {
+            border: 1px dashed #cbd5e1;
+            background: #f8fafc;
+            color: #64748b;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
         .content-layout {
             max-width: 900px;
             margin: 0 auto;
@@ -557,6 +639,226 @@
             }
         }
 
+        /* Tema moderno inspirado no index2 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 18px 14px;
+        }
+
+        .toolbar {
+            max-width: 1360px;
+            border-left: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+            padding: 12px 16px;
+            position: sticky;
+            top: 12px;
+            z-index: 30;
+        }
+
+        .toolbar-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .toolbar-brand-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #0f172a;
+        }
+
+        .toolbar-brand-subtitle {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .top-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 10px;
+        }
+
+        .top-nav-btn {
+            border: none;
+            background: transparent;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all .18s ease;
+        }
+
+        .top-nav-btn:hover {
+            color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .top-nav-btn.active {
+            color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .sync-status {
+            font-size: 11px;
+            margin-right: 0;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 999px;
+            padding: 4px 8px;
+        }
+
+        .btn-toolbar,
+        .btn-secondary,
+        .btn-primary,
+        .btn-print {
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all .18s ease;
+        }
+
+        .btn-toolbar,
+        .btn-secondary {
+            border-color: #cbd5e1;
+            background: #fff;
+        }
+
+        .btn-toolbar:hover,
+        .btn-secondary:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .content-layout {
+            max-width: 1360px;
+            margin-top: 12px;
+            gap: 18px;
+        }
+
+        .content-layout.dashboard-mode {
+            display: block;
+        }
+
+        .content-layout.dashboard-mode .editor-panel {
+            max-width: 1360px;
+            width: 100%;
+            position: static;
+            max-height: none;
+            overflow: visible;
+        }
+
+        .content-layout.dashboard-mode .document-page {
+            display: none;
+        }
+
+        .editor-panel {
+            max-width: none;
+            border-left: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 10px 34px rgba(15, 23, 42, 0.06);
+            padding: 18px;
+            background: #fff;
+        }
+
+        .editor-panel h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .tabs-wrap {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            color: #475569;
+            font-weight: 600;
+            padding: 8px 10px;
+        }
+
+        .tab-btn.active {
+            color: #4f46e5;
+            background: #eef2ff;
+            border: none;
+        }
+
+        .version-wrap,
+        .config-wrap {
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 12px;
+        }
+
+        .version-wrap h4,
+        .config-wrap h4 {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .editor-field input,
+        .editor-field textarea,
+        .editor-field select {
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            padding: 9px 10px;
+        }
+
+        .editor-field input:focus,
+        .editor-field textarea:focus,
+        .editor-field select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+            outline: none;
+        }
+
+        .document-page {
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        @media (max-width: 900px) {
+            .toolbar {
+                position: static;
+            }
+
+            .top-nav {
+                margin-left: 0;
+                width: 100%;
+                flex-wrap: wrap;
+                margin-top: 6px;
+            }
+        }
+
         /* Ajustes de Impressão */
         @media print {
             body {
@@ -605,9 +907,14 @@
 <body>
 
     <div class="toolbar">
-        <div>
-            <strong style="color: var(--accent-blue)">Gerador de Contrato</strong>
-            <span style="font-size: 12px; margin-left: 10px; color: #64748b;"></span>
+        <div class="toolbar-brand">
+            <strong class="toolbar-brand-title">ArrendaPro</strong>
+            <span class="toolbar-brand-subtitle">Dashboard de contratos, imóveis e pessoas</span>
+        </div>
+        <div class="top-nav">
+            <button class="top-nav-btn active" id="nav-dashboard" type="button">Contratos</button>
+            <button class="top-nav-btn" id="nav-properties" type="button">Imóveis</button>
+            <button class="top-nav-btn" id="nav-people" type="button">Pessoas</button>
         </div>
         <div class="toolbar-right">
             <span id="auth-status" class="sync-status">Auth: desconectado</span>
@@ -694,8 +1001,14 @@
             </div>
 
             <div id="tab-contrato" class="tab-content">
-                <div class="version-wrap">
-                    <h4>Dashboard de contratos</h4>
+                <div class="version-wrap" id="contract-dashboard-section">
+                    <div class="contracts-dashboard-head">
+                        <div>
+                            <h4 class="contracts-dashboard-title">Meus contratos</h4>
+                            <p class="contracts-dashboard-subtitle">Gira e acompanhe os seus contratos de arrendamento.</p>
+                        </div>
+                        <button class="btn-primary" id="btn-new-contract-dashboard" type="button">Novo contrato</button>
+                    </div>
                     <div class="editor-grid">
                         <div class="editor-field"><label for="version-filter-property">Filtrar por imóvel</label><select id="version-filter-property"></select></div>
                         <div class="editor-field"><label for="version-filter-landlord">Filtrar por locador</label><select id="version-filter-landlord"></select></div>
@@ -703,13 +1016,14 @@
                         <div class="editor-field"><label for="version-filter-role">Filtrar por papel</label><select id="version-filter-role"></select></div>
                         <div class="editor-field"><label for="version-filter-participant">Filtrar por pessoa</label><select id="version-filter-participant"></select></div>
                         <div class="editor-field"><label>&nbsp;</label><button class="btn-secondary" id="btn-clear-version-filters" type="button">Limpar filtros</button></div>
-                        <div class="editor-field full">
+                        <div class="editor-field full hidden">
                             <label for="version-list">Lista de contratos</label>
                             <select id="version-list" size="6"></select>
                         </div>
                     </div>
+                    <div id="contracts-dashboard-grid" class="contracts-grid"></div>
+                    <div id="contracts-dashboard-empty" class="contracts-empty hidden"></div>
                     <div class="editor-actions" style="margin-top: 10px;">
-                        <button class="btn-primary" id="btn-new-contract-dashboard" type="button">Novo contrato</button>
                         <button class="btn-secondary" id="btn-carregar" type="button">Abrir</button>
                         <button class="btn-secondary" id="btn-excluir-versao" type="button">Excluir</button>
                         <button class="btn-secondary" id="btn-open-invite-panel" type="button">Gerar convite</button>
@@ -719,9 +1033,9 @@
                 <div id="contract-editor-section" class="hidden">
                 <h4>Editor do contrato</h4>
                 <div class="editor-grid">
-                        <div class="editor-field"><label for="f-locador-nome">Locador - Nome (via cadastro)</label><input
+                        <div class="editor-field hidden"><label for="f-locador-nome">Locador - Nome (via cadastro)</label><input
                             id="f-locador-nome" type="text" readonly></div>
-                        <div class="editor-field"><label for="f-locataria-nome">Locatária - Nome (via cadastro)</label><input
+                        <div class="editor-field hidden"><label for="f-locataria-nome">Locatária - Nome (via cadastro)</label><input
                             id="f-locataria-nome" type="text" readonly></div>
                         <div class="editor-field"><label for="f-landlord-selected">Locador cadastrado (obrigatório)</label><select id="f-landlord-selected">
                         <option value="">(Selecionar pessoa cadastrada)</option>
@@ -758,16 +1072,16 @@
                             <button class="btn-secondary" id="btn-open-contract-person-modal" type="button">Cadastrar pessoa</button>
                         </div>
                     </div>
-                    <div class="editor-field"><label for="f-locador-telefone">Locador - Telefone de
-                            contato</label><input id="f-locador-telefone" type="text"></div>
-                    <div class="editor-field"><label for="f-locador-usa-procurador">Locador atua como
+                        <div class="editor-field hidden"><label for="f-locador-telefone">Locador - Telefone de
+                            contato</label><input id="f-locador-telefone" type="text" readonly></div>
+                        <div class="editor-field hidden"><label for="f-locador-usa-procurador">Locador atua como
                             procurador?</label><select id="f-locador-usa-procurador">
                             <option value="sim">Sim</option>
                             <option value="nao">Não</option>
                         </select></div>
-                    <div class="editor-field full"><label for="f-locador-qualificacao">Locador -
-                            Qualificação</label><textarea id="f-locador-qualificacao"></textarea></div>
-                    <div class="editor-field">
+                        <div class="editor-field full hidden"><label for="f-locador-qualificacao">Locador -
+                            Qualificação</label><textarea id="f-locador-qualificacao" readonly></textarea></div>
+                        <div class="editor-field hidden">
                         <label for="f-locataria-estado-civil">Locatária - Estado civil</label>
                         <select id="f-locataria-estado-civil">
                             <option value="casado">Casada</option>
@@ -775,20 +1089,19 @@
                             <option value="divorciado">Divorciada</option>
                         </select>
                     </div>
-                    <div class="editor-field full"><label for="f-locataria-qualificacao">Locatária -
-                            Qualificação</label><textarea id="f-locataria-qualificacao"></textarea></div>
-                    <div class="editor-field full locataria-conjuge-field"><label
+                        <div class="editor-field full hidden"><label for="f-locataria-qualificacao">Locatária -
+                            Qualificação</label><textarea id="f-locataria-qualificacao" readonly></textarea></div>
+                        <div class="editor-field full locataria-conjuge-field hidden"><label
                             for="f-locataria-conjuge-qualificacao">Locatária (casada) - Qualificação do
-                            cônjuge</label><textarea id="f-locataria-conjuge-qualificacao"></textarea></div>
+                            cônjuge</label><textarea id="f-locataria-conjuge-qualificacao" readonly></textarea></div>
 
-                    <div class="editor-field full"><label for="f-imovel-endereco">Endereço do imóvel</label><input
-                            id="f-imovel-endereco" type="text"></div>
-                    <div class="editor-field full"><label for="f-property-selected">Imóvel cadastrado
-                            (opcional)</label><select id="f-property-selected">
-                            <option value="">(Digitar manualmente)</option>
+                        <div class="editor-field full hidden"><label for="f-imovel-endereco">Endereço do imóvel</label><input
+                            id="f-imovel-endereco" type="text" readonly></div>
+                        <div class="editor-field full"><label for="f-property-selected">Imóvel cadastrado (obrigatório)</label><select id="f-property-selected">
+                            <option value="">(Selecionar imóvel cadastrado)</option>
                         </select></div>
-                    <div class="editor-field"><label for="f-imovel-proprietario">Proprietário</label><input
-                            id="f-imovel-proprietario" type="text"></div>
+                        <div class="editor-field hidden"><label for="f-imovel-proprietario">Proprietário</label><input
+                            id="f-imovel-proprietario" type="text" readonly></div>
                     <div class="editor-field"><label for="f-foro">Foro (comarca/cidade)</label><input id="f-foro"
                             type="text"></div>
                     <div class="editor-field"><label for="f-financeiro-valor">Valor aluguel (R$)</label><input
@@ -809,18 +1122,18 @@
                         </div>
                     </div>
 
-                    <div class="editor-field"><label for="f-pagamento-nome">PIX - Favorecida</label><input
-                            id="f-pagamento-nome" type="text"></div>
-                    <div class="editor-field"><label for="f-pagamento-chave">PIX - Chave</label><input
-                            id="f-pagamento-chave" type="text"></div>
-                    <div class="editor-field"><label for="f-pagamento-cpf">PIX - CPF</label><input id="f-pagamento-cpf"
-                            type="text"></div>
-                    <div class="editor-field"><label for="f-pagamento-banco">Banco/Conta</label><input
-                            id="f-pagamento-banco" type="text"></div>
+                        <div class="editor-field hidden"><label for="f-pagamento-nome">PIX - Favorecida</label><input
+                            id="f-pagamento-nome" type="text" readonly></div>
+                        <div class="editor-field hidden"><label for="f-pagamento-chave">PIX - Chave</label><input
+                            id="f-pagamento-chave" type="text" readonly></div>
+                        <div class="editor-field hidden"><label for="f-pagamento-cpf">PIX - CPF</label><input id="f-pagamento-cpf"
+                            type="text" readonly></div>
+                        <div class="editor-field hidden"><label for="f-pagamento-banco">Banco/Conta</label><input
+                            id="f-pagamento-banco" type="text" readonly></div>
 
-                        <div class="editor-field"><label for="f-fiador1-nome">Fiador 1 - Nome (via cadastro)</label><input
+                        <div class="editor-field hidden"><label for="f-fiador1-nome">Fiador 1 - Nome (via cadastro)</label><input
                             id="f-fiador1-nome" type="text" readonly></div>
-                    <div class="editor-field">
+                    <div class="editor-field hidden">
                         <label for="f-fiador1-estado-civil">Fiador 1 - Estado civil</label>
                         <select id="f-fiador1-estado-civil">
                             <option value="casado">Casado</option>
@@ -828,16 +1141,16 @@
                             <option value="divorciado">Divorciado</option>
                         </select>
                     </div>
-                        <div class="editor-field"><label for="f-fiador1-papel">Fiador 1 - Papel</label><input
+                        <div class="editor-field hidden"><label for="f-fiador1-papel">Fiador 1 - Papel</label><input
                             id="f-fiador1-papel" type="text" readonly></div>
-                        <div class="editor-field full"><label for="f-fiador1-desc">Fiador 1 - Descrição (via cadastro)</label><textarea
+                        <div class="editor-field full hidden"><label for="f-fiador1-desc">Fiador 1 - Descrição (via cadastro)</label><textarea
                             id="f-fiador1-desc" readonly></textarea></div>
 
-                        <div class="editor-field fiador2-field"><label for="f-fiador2-nome">Fiador 2 - Nome (via cadastro)</label><input
+                        <div class="editor-field fiador2-field hidden"><label for="f-fiador2-nome">Fiador 2 - Nome (via cadastro)</label><input
                             id="f-fiador2-nome" type="text" readonly></div>
-                        <div class="editor-field fiador2-field"><label for="f-fiador2-papel">Fiador 2 - Papel</label><input
+                        <div class="editor-field fiador2-field hidden"><label for="f-fiador2-papel">Fiador 2 - Papel</label><input
                             id="f-fiador2-papel" type="text" readonly></div>
-                    <div class="editor-field full fiador2-field"><label for="f-fiador2-desc">Fiador 2 -
+                    <div class="editor-field full fiador2-field hidden"><label for="f-fiador2-desc">Fiador 2 -
                             Descrição (via cadastro)</label><textarea id="f-fiador2-desc" readonly></textarea></div>
                 </div>
 
@@ -1656,10 +1969,10 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const current = db?.selectedPropertyId || select.value || '';
 
             select.innerHTML = '';
-            const manualOption = document.createElement('option');
-            manualOption.value = '';
-            manualOption.textContent = '(Digitar manualmente)';
-            select.appendChild(manualOption);
+            const emptyOption = document.createElement('option');
+            emptyOption.value = '';
+            emptyOption.textContent = '(Selecionar imóvel cadastrado)';
+            select.appendChild(emptyOption);
 
             propertiesCache.forEach((property) => {
                 const option = document.createElement('option');
@@ -1878,11 +2191,73 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             });
         }
 
+        function getPersonNameById(personId) {
+            if (!personId) return '';
+            const person = getUnifiedPeopleList().find((item) => item.id === personId);
+            return person?.name || '';
+        }
+
+        function getPropertyLabelById(propertyId) {
+            if (!propertyId) return '';
+            const property = propertiesCache.find((item) => item.id === propertyId);
+            return property?.label || buildPropertyAddressLine(property) || '';
+        }
+
+        function renderContractsDashboardCards(versions) {
+            const grid = document.getElementById('contracts-dashboard-grid');
+            const empty = document.getElementById('contracts-dashboard-empty');
+            if (!grid || !empty) return;
+
+            grid.innerHTML = '';
+            const list = Array.isArray(versions) ? versions : [];
+
+            if (!list.length) {
+                empty.textContent = versionsCache.length
+                    ? 'Nenhum contrato para os filtros selecionados.'
+                    : 'Nenhum contrato salvo ainda. Clique em "Novo contrato" para começar.';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            list.forEach((version, index) => {
+                const card = document.createElement('button');
+                card.type = 'button';
+                card.className = 'contract-card';
+                if (version.id === openedVersionId) {
+                    card.classList.add('active');
+                }
+
+                const refs = getVersionRefIds(version);
+                const propertyText = getPropertyLabelById(refs.propertyId) || version.data?.imovel?.endereco || 'Imóvel não informado';
+                const tenantText = getPersonNameById(refs.tenantId) || version.data?.locataria?.nome || 'Locatário não informado';
+                const landlordText = getPersonNameById(refs.landlordId) || version.data?.locador?.nome || 'Locador não informado';
+                const when = new Date(version.savedAt || version.updatedAt || Date.now()).toLocaleString('pt-BR');
+
+                card.innerHTML = `
+                    <div class="contract-card-title">${index + 1}. ${propertyText}</div>
+                    <div class="contract-card-meta">Locatário: ${tenantText}</div>
+                    <div class="contract-card-meta">Locador: ${landlordText}</div>
+                    <div class="contract-card-date">Atualizado em ${when}</div>
+                `;
+
+                card.addEventListener('click', function () {
+                    const select = document.getElementById('version-list');
+                    if (!select) return;
+                    select.value = version.id;
+                    openSelectedVersion();
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
         function refreshVersionList() {
             const select = document.getElementById('version-list');
             select.innerHTML = '';
 
             const filteredVersions = getFilteredVersions();
+            renderContractsDashboardCards(filteredVersions);
 
             if (!filteredVersions.length) {
                 const option = document.createElement('option');
@@ -2777,9 +3152,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         function applyLandlordToContractFields(landlord) {
             setFieldValue('f-locador-nome', landlord.name || '');
             setFieldValue('f-locador-telefone', landlord.phone || '');
-            if (landlord.qualification) {
-                setFieldValue('f-locador-qualificacao', landlord.qualification);
-            }
+            setFieldValue('f-locador-qualificacao', buildPersonQualificationSummary(landlord));
             setFieldValue('f-landlord-selected', landlord.id);
             db.selectedLandlordId = landlord.id;
             lastLandlordSelectionId = landlord.id;
@@ -2787,9 +3160,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         function applyTenantToContractFields(tenant) {
             setFieldValue('f-locataria-nome', tenant.name || '');
-            if (tenant.qualification) {
-                setFieldValue('f-locataria-qualificacao', tenant.qualification);
-            }
+            const maritalRaw = (tenant?.maritalStatus || '').toString().toLowerCase();
+            const maritalValue = maritalRaw.includes('casad') ? 'casado' : maritalRaw.includes('divorci') ? 'divorciado' : 'solteiro';
+            setFieldValue('f-locataria-estado-civil', maritalValue);
+            setFieldValue('f-locataria-qualificacao', buildPersonQualificationSummary(tenant));
+            setFieldValue('f-locataria-conjuge-qualificacao', '');
             setFieldValue('f-tenant-selected', tenant.id);
             db.selectedTenantId = tenant.id;
             lastTenantSelectionId = tenant.id;
@@ -2867,12 +3242,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
 
-            const confirmOverwrite = window.confirm('Deseja sobrescrever os campos do locador com os dados cadastrados?');
-            if (!confirmOverwrite) {
-                setFieldValue('f-landlord-selected', lastLandlordSelectionId || '');
-                return;
-            }
-
             applyLandlordToContractFields(landlord);
             render();
         }
@@ -2891,12 +3260,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 setFieldValue('f-tenant-selected', '');
                 db.selectedTenantId = '';
                 lastTenantSelectionId = '';
-                return;
-            }
-
-            const confirmOverwrite = window.confirm('Deseja sobrescrever os campos da locatária com os dados cadastrados?');
-            if (!confirmOverwrite) {
-                setFieldValue('f-tenant-selected', lastTenantSelectionId || '');
                 return;
             }
 
@@ -3097,12 +3460,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
 
-            const confirmOverwrite = window.confirm('Deseja sobrescrever os campos de imóvel do contrato com os dados cadastrados?');
-            if (!confirmOverwrite) {
-                setFieldValue('f-property-selected', lastPropertySelectionId || '');
-                return;
-            }
-
             applyPropertyToContractFields(property);
             render();
         }
@@ -3110,16 +3467,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         function handleManualPropertyFieldEdit() {
             if (isApplyingPropertySelection) return;
             const selectedId = fieldValue('f-property-selected');
-            if (!selectedId) return;
-
-            const keepLinked = window.confirm('Este contrato está vinculado a um imóvel cadastrado.\nOK = Desvincular e manter edição manual\nCancelar = restaurar dados do imóvel cadastrado');
-            if (keepLinked) {
-                setFieldValue('f-property-selected', '');
-                db.selectedPropertyId = '';
-                lastPropertySelectionId = '';
-                return;
-            }
-
             const property = propertiesCache.find((item) => item.id === selectedId);
             if (property) {
                 applyPropertyToContractFields(property);
@@ -3377,8 +3724,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         function setContractEditorVisible(visible) {
             const editor = document.getElementById('contract-editor-section');
-            if (!editor) return;
-            editor.classList.toggle('hidden', !visible);
+            const dashboard = document.getElementById('contract-dashboard-section');
+            const layout = document.querySelector('.content-layout');
+            if (editor) editor.classList.toggle('hidden', !visible);
+            if (dashboard) dashboard.classList.toggle('hidden', !!visible);
+            if (layout) layout.classList.toggle('dashboard-mode', !visible);
         }
 
         function closeContractEditorSection() {
@@ -3441,6 +3791,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             if (mode === 'overwrite' && openedVersionId) {
                 const index = nextVersions.findIndex(version => version.id === openedVersionId);
                 if (index >= 0) {
+                    let fallbackToCreateNew = false;
                     nextVersions[index] = {
                         ...nextVersions[index],
                         savedAt: now.toISOString(),
@@ -3461,10 +3812,20 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                         refreshVersionList();
                         setContractEditorVisible(true);
                         alert('Contrato aberto sobrescrito com sucesso.');
+                        return;
                     } catch (error) {
-                        alert(error.message || 'Falhou ao salvar contrato no Firestore.');
+                        const message = (error?.message || '').toString();
+                        const permissionDenied = /missing or insufficient permissions|permission-denied|insufficient/i.test(message);
+                        if (!permissionDenied) {
+                            alert(message || 'Falhou ao salvar contrato no Firestore.');
+                            return;
+                        }
+                        fallbackToCreateNew = true;
+                        alert('Sem permissão para sobrescrever este contrato. Será criado um novo contrato com os dados atuais.');
                     }
-                    return;
+                    if (!fallbackToCreateNew) {
+                        return;
+                    }
                 }
             }
 
@@ -3622,6 +3983,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('tab-btn-contrato').classList.toggle('active', isContrato);
             document.getElementById('tab-btn-imoveis').classList.toggle('active', isImoveis);
             document.getElementById('tab-btn-pessoas').classList.toggle('active', isPessoas);
+            document.getElementById('nav-dashboard')?.classList.toggle('active', isContrato);
+            document.getElementById('nav-properties')?.classList.toggle('active', isImoveis);
+            document.getElementById('nav-people')?.classList.toggle('active', isPessoas);
+
+            setContractEditorVisible(false);
         }
 
         window.onload = async function () {
@@ -3662,6 +4028,15 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 switchTab('imoveis');
             });
             document.getElementById('tab-btn-pessoas').addEventListener('click', function () {
+                switchTab('pessoas');
+            });
+            document.getElementById('nav-dashboard').addEventListener('click', function () {
+                switchTab('contrato');
+            });
+            document.getElementById('nav-properties').addEventListener('click', function () {
+                switchTab('imoveis');
+            });
+            document.getElementById('nav-people').addEventListener('click', function () {
                 switchTab('pessoas');
             });
 
@@ -3733,13 +4108,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     closeContractPersonModal();
                 }
             });
-            ['f-imovel-endereco', 'f-imovel-proprietario'].forEach((id) => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.addEventListener('input', handleManualPropertyFieldEdit);
-                }
-            });
-
             const propertyFields = [
                 'p-label', 'p-cidade', 'p-estado', 'p-bairro', 'p-rua', 'p-numero', 'p-complemento', 'p-cep', 'p-proprietario',
                 'p-memorial-enabled', 'p-memorial-page-break', 'p-memorial-title', 'p-memorial-text', 'p-memorial-note'
@@ -3796,6 +4164,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
             refreshInviteContractOptions();
             refreshInvitationList();
+            setContractEditorVisible(false);
             switchTab('contrato');
 
             document.querySelectorAll('.editor-panel input, .editor-panel textarea, .editor-panel select').forEach(field => {
@@ -3810,18 +4179,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
     </script>
 </body>
 
-</html></body>
-
-</html>                    scrollToVariableByField(field.id);
-                });
-                field.addEventListener('click', function () {
-                    scrollToVariableByField(field.id);
-                });
-            });
-        };
+</html>
     </script>
 </body>
 
+</html></body>
+
+</html>
 </html></body>
 
 </html>

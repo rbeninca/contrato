@@ -11,7 +11,10 @@ service cloud.firestore {
 
     function keepsImmutableOwnership() {
       return request.resource.data.ownerId == resource.data.ownerId
-        && request.resource.data.createdAt == resource.data.createdAt;
+        && (
+          resource.data.createdAt == null
+          || request.resource.data.createdAt == resource.data.createdAt
+        );
     }
 
     function invitationDoc(invitationId) {
