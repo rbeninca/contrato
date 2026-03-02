@@ -1873,8 +1873,13 @@
                 </div>
 
                 <div class="editor-grid" style="margin-top: 12px;">
-                    <div class="editor-field full"><label for="p-label">Nome do imóvel (label)</label><input
+                        <div class="editor-field full"><label for="p-label">Nome do imóvel (label)</label><input
                             id="p-label" type="text" placeholder="Ex.: Casa 2482 - Jardim Universitário"></div>
+                        <div class="editor-field full">
+                        <label for="p-fotos">Fotos do imóvel</label>
+                        <input id="p-fotos" type="file" accept="image/*" multiple>
+                        <div id="p-fotos-preview" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;"></div>
+                        </div>
                     <div class="editor-field"><label for="p-cidade">Cidade</label><input id="p-cidade" type="text">
                     </div>
                     <div class="editor-field"><label for="p-estado">Estado</label><input id="p-estado" type="text"
@@ -4140,6 +4145,39 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setFieldValue('p-complemento', property?.address?.complemento || '');
             setFieldValue('p-cep', property?.address?.cep || '');
             setFieldValue('p-proprietario', property?.owner || '');
+            // Fotos
+            const fotosPreview = document.getElementById('p-fotos-preview');
+            fotosPreview.innerHTML = '';
+            if (property?.fotos && Array.isArray(property.fotos)) {
+                property.fotos.forEach(url => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.style.maxWidth = '80px';
+                    img.style.maxHeight = '80px';
+                    img.style.objectFit = 'cover';
+                    fotosPreview.appendChild(img);
+                });
+            }
+            // Preview imediato ao selecionar arquivos
+            const inputFotos = document.getElementById('p-fotos');
+            if (inputFotos) {
+                inputFotos.onchange = function () {
+                    fotosPreview.innerHTML = '';
+                    const files = Array.from(inputFotos.files || []);
+                    files.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.maxWidth = '80px';
+                            img.style.maxHeight = '80px';
+                            img.style.objectFit = 'cover';
+                            fotosPreview.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                };
+            }
             const enabled = property?.memorial?.enabled ?? true;
             const pageBreakBefore = property?.memorial?.pageBreakBefore ?? false;
             const checkbox = document.getElementById('p-memorial-enabled');
@@ -4154,6 +4192,16 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         function getPropertyFormData(baseProperty = null) {
             const nowIso = new Date().toISOString();
+            // Fotos: upload para Firebase Storage
+            let fotos = baseProperty?.fotos || [];
+            const inputFotos = document.getElementById('p-fotos');
+            if (inputFotos && inputFotos.files && inputFotos.files.length > 0) {
+                fotos = [];
+                for (let i = 0; i < inputFotos.files.length; i++) {
+                    const file = inputFotos.files[i];
+                    fotos.push(file); // Salva o File para upload posterior
+                }
+            }
             return {
                 id: baseProperty?.id || generatePropertyId(),
                 label: fieldValue('p-label'),
@@ -4167,6 +4215,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     complemento: fieldValue('p-complemento'),
                     cep: fieldValue('p-cep')
                 },
+                fotos,
                 memorial: {
                     enabled: !!document.getElementById('p-memorial-enabled')?.checked,
                     pageBreakBefore: !!document.getElementById('p-memorial-page-break')?.checked,
@@ -4177,6 +4226,41 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 createdAt: baseProperty?.createdAt || nowIso,
                 updatedAt: nowIso
             };
+        // Função para upload de arquivos para Firebase Storage
+        async function uploadImovelFotosToFirebase(propertyId, files) {
+            if (!window.firebase || !window.firebase.storage) {
+                alert('Firebase Storage não está disponível.');
+                return [];
+            }
+            const storage = window.firebase.storage();
+            const urls = [];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const ext = file.name.split('.').pop();
+                const ref = storage.ref().child(`imoveis/${propertyId}/${Date.now()}_${i}.${ext}`);
+                await ref.put(file);
+                const url = await ref.getDownloadURL();
+                urls.push(url);
+            }
+            return urls;
+        }
+        // Hook para salvar imóvel com upload das fotos
+        const btnSalvarImovel = document.getElementById('btn-property-save');
+        if (btnSalvarImovel) {
+            btnSalvarImovel.addEventListener('click', async function () {
+                let property = getPropertyFormData();
+                // Se houver arquivos (File), faz upload e substitui por URLs
+                if (property.fotos && property.fotos.length && property.fotos[0] instanceof File) {
+                    const urls = await uploadImovelFotosToFirebase(property.id, property.fotos);
+                    property.fotos = urls;
+                }
+                await savePropertyToFirestore(property);
+                setPropertyFormData(property);
+                await loadPropertiesFromFirestore();
+                refreshPropertyList();
+                alert('Imóvel salvo com sucesso!');
+            });
+        }
         }
 
         function selectPropertyForEditor(id) {
