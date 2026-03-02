@@ -5,13 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contrato de Locação Residencial - Versão Final</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-dark: #0f172a;
-            --accent-blue: #2563eb;
-            --text-main: #1e293b;
-            --border-color: #cbd5e1;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #64748b;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
             --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
+            --radius: 10px;
+            --radius-lg: 16px;
         }
 
         * {
@@ -21,59 +40,364 @@
         }
 
         body {
-            font-family: 'Times New Roman', Times, serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-page);
-            color: var(--text-main);
+            color: var(--text-primary);
             line-height: 1.6;
-            padding: 30px 15px;
+            min-height: 100vh;
         }
 
-        /* Barra de Ferramentas */
-        .toolbar {
-            max-width: 900px;
-            margin: 0 auto 20px;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 8px;
+        /* Sidebar de Navegação */
+        .app-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 240px;
+            background: linear-gradient(180deg, var(--text-primary) 0%, #1e293b 100%);
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            padding: 20px 16px;
+            z-index: 100;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar-brand {
+            display: flex;
             align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            font-family: sans-serif;
-            border-left: 4px solid var(--accent-blue);
+            gap: 12px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 24px;
         }
 
-        .toolbar-right {
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: var(--radius);
             display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .sidebar-brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand-text strong {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-brand-text span {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .sidebar-btn {
+            width: 100%;
+            padding: 12px 14px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .sidebar-btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-btn:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .sidebar-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-user {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .auth-badge {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+        }
+
+        .sidebar-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .sidebar-action-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .sidebar-action-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* Header Superior */
+        .app-header {
+            margin-left: 240px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sync-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--success-light);
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .sync-badge.offline {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .sync-badge.error {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .header-btn:hover {
+            background: var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .header-btn-primary {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
+            padding: 10px 18px;
+            background: var(--text-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .header-btn-primary:hover {
+            background: #334155;
+            transform: translateY(-1px);
+        }
+
+        /* Área Principal */
+        .app-main {
+            margin-left: 240px;
+            padding: 24px 28px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* Botões Modernos */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-sm {
+            padding: 7px 12px;
+            font-size: 12px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-light);
+            border-color: var(--text-muted);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            background: var(--border-light);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
         }
 
         .btn-toolbar {
-            border: 1px solid var(--border-color);
-            background: #f8fafc;
-            color: #334155;
-            padding: 7px 10px;
-            border-radius: 5px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            border-radius: var(--radius);
             cursor: pointer;
             font-weight: 600;
             font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-toolbar:hover {
+            background: var(--border-light);
         }
 
         .sync-status {
             font-size: 11px;
-            color: #64748b;
-            margin-right: 4px;
+            color: var(--text-muted);
+            background: var(--border-light);
+            padding: 6px 10px;
+            border-radius: 999px;
         }
 
         .btn-print {
-            background: var(--primary-dark);
+            background: var(--text-primary);
             color: white;
             border: none;
-            padding: 10px 24px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: var(--radius);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -85,20 +409,31 @@
         }
 
         .editor-panel {
-            max-width: 900px;
-            margin: 0 auto 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-            border-left: 4px solid var(--primary-dark);
-            padding: 18px 20px;
-            font-family: sans-serif;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            padding: 24px;
+            max-width: 480px;
+        }
+
+        .editor-actions-sticky {
+            position: sticky;
+            bottom: 0;
+            background: var(--bg-card);
+            padding: 16px 0;
+            margin-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .editor-panel h3 {
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: var(--primary-dark);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
         }
 
         .status-note {
@@ -114,13 +449,13 @@
         .editor-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px 14px;
+            gap: 16px;
         }
 
         .editor-field {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
 
         .editor-field.full {
@@ -128,22 +463,48 @@
         }
 
         .editor-field label {
-            font-size: 12px;
-            color: #475569;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
         }
 
         .editor-field input,
         .editor-field textarea,
         .editor-field select {
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            font-size: 13px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 12px;
+            font-size: 14px;
             font-family: inherit;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .editor-field input:focus,
+        .editor-field textarea:focus,
+        .editor-field select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .editor-field input:disabled,
+        .editor-field textarea:disabled,
+        .editor-field select:disabled {
+            background: var(--border-light);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .editor-field input[readonly],
+        .editor-field textarea[readonly] {
+            background: var(--border-light);
+            color: var(--text-secondary);
         }
 
         .editor-field textarea {
-            min-height: 64px;
+            min-height: 80px;
             resize: vertical;
         }
 
@@ -157,6 +518,125 @@
             flex: 1;
         }
 
+        /* Seções do Editor */
+        .editor-section {
+            background: var(--bg-page);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .editor-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .editor-section-header:hover {
+            background: var(--border-light);
+        }
+
+        .editor-section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .editor-section-title svg {
+            width: 18px;
+            height: 18px;
+            color: var(--primary);
+        }
+
+        .editor-section-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .editor-section-badge.optional {
+            background: var(--border-light);
+            color: var(--text-muted);
+        }
+
+        .editor-section-toggle {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .editor-section.collapsed .editor-section-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .editor-section-content {
+            padding: 16px;
+        }
+
+        .editor-section.collapsed .editor-section-content {
+            display: none;
+        }
+
+        .conditional-field {
+            transition: all 0.3s ease;
+        }
+
+        .conditional-field.show {
+            opacity: 1;
+        }
+
+        .conditional-field.hide {
+            display: none;
+        }
+
+        .field-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .inline-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: var(--border-light);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+        }
+
+        .inline-toggle label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inline-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
         .hidden {
             display: none !important;
         }
@@ -164,7 +644,8 @@
         .modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.5);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -174,95 +655,148 @@
 
         .modal-card {
             width: 100%;
-            max-width: 420px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-            padding: 16px;
-            font-family: sans-serif;
+            max-width: 520px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 24px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
-            color: var(--primary-dark);
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
         .modal-text {
-            font-size: 13px;
-            color: #475569;
-            margin-bottom: 14px;
-            line-height: 1.45;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
 
         .modal-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
             justify-content: flex-end;
+            margin-top: 20px;
         }
 
         .editor-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 14px;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .editor-actions .btn-primary {
+            margin-right: auto;
+        }
+
+        .btn-danger-subtle {
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        .btn-danger-subtle:hover {
+            background: #fef2f2;
+            border-color: #dc2626;
         }
 
         .btn-secondary {
-            border: 1px solid var(--border-color);
-            background: #f8fafc;
-            color: #334155;
-            padding: 8px 12px;
-            border-radius: 5px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            padding: 10px 16px;
+            border-radius: var(--radius);
             cursor: pointer;
             font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-light);
+            border-color: var(--text-muted);
         }
 
         .btn-primary {
             border: none;
-            background: var(--accent-blue);
+            background: var(--primary);
             color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 10px 16px;
+            border-radius: var(--radius);
             cursor: pointer;
             font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
 
         .version-wrap {
-            margin-top: 14px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 12px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            background: var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 20px;
         }
 
         .config-wrap {
-            margin-top: 14px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 12px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            background: var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+        }
+
+        .version-wrap h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
         }
 
         .tabs-wrap {
             display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 4px;
+            margin-bottom: 20px;
+            background: var(--border-light);
+            padding: 4px;
+            border-radius: var(--radius);
+            width: fit-content;
         }
 
         .tab-btn {
-            border: 1px solid var(--border-color);
-            background: #f8fafc;
-            color: #334155;
-            padding: 8px 10px;
-            border-radius: 5px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-weight: 700;
-            font-size: 12px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
         }
 
         .tab-btn.active {
-            background: #dbeafe;
-            border-color: #93c5fd;
-            color: #1e3a8a;
+            background: var(--bg-card);
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
         }
 
         .tab-content.hidden {
@@ -396,103 +930,276 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 16px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .contracts-dashboard-title {
             margin: 0;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
         }
 
         .contracts-dashboard-subtitle {
-            margin: 2px 0 0;
-            font-size: 12px;
-            color: #64748b;
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
         }
 
         .contracts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
         }
 
         .contract-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            background: #fff;
-            padding: 12px;
-            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
-            transition: all .18s ease;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contract-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
         .contract-card:hover {
-            transform: translateY(-1px);
-            border-color: #c7d2fe;
-            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .contract-card:hover::before {
+            opacity: 1;
         }
 
         .contract-card.active {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .contract-card.active::before {
+            opacity: 1;
+        }
+
+        .contract-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .contract-card.selected::before {
+            opacity: 1;
+        }
+
+        .contract-card-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .contract-card-details span {
+            white-space: nowrap;
+        }
+
+        .contract-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .contract-card-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .contract-card-status {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contract-card-status.draft {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .contract-card-status.active {
+            background: var(--success-light);
+            color: var(--success);
         }
 
         .contract-card-title {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 4px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .contract-card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .contract-card-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .contract-card-row svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+            flex-shrink: 0;
         }
 
         .contract-card-meta {
             font-size: 12px;
-            color: #475569;
-            margin-bottom: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .contract-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
         }
 
         .contract-card-date {
             font-size: 11px;
-            color: #64748b;
-            margin-top: 6px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .contract-card-actions {
+            display: flex;
+            gap: 4px;
         }
 
         .contracts-empty {
-            border: 1px dashed #cbd5e1;
-            background: #f8fafc;
-            color: #64748b;
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 12px;
-            margin-top: 10px;
+            border: 2px dashed var(--border);
+            background: var(--border-light);
+            color: var(--text-muted);
+            border-radius: var(--radius-lg);
+            padding: 48px 24px;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .contracts-empty-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .contracts-empty-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .contracts-empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .contracts-empty-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
         }
 
         .content-layout {
-            max-width: 900px;
-            margin: 0 auto;
+            display: flex;
+            gap: 28px;
+            align-items: flex-start;
+            margin-left: 240px;
+            padding: 24px 28px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .content-layout.dashboard-mode {
+            display: block;
+            max-width: 1400px;
+        }
+
+        .content-layout.dashboard-mode .editor-panel {
+            max-width: 100%;
+        }
+
+        .content-layout.dashboard-mode .document-page {
+            display: none;
         }
 
         /* Papel A4 */
         .document-page {
+            flex: 1;
             max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            padding: 80px 90px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            background: var(--bg-card);
+            padding: 60px 70px;
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
             min-height: 297mm;
         }
 
         header {
             text-align: center;
             margin-bottom: 40px;
-            border-bottom: 2px solid var(--primary-dark);
+            border-bottom: 2px solid var(--text-primary);
             padding-bottom: 20px;
         }
 
@@ -500,14 +1207,14 @@
             font-size: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #000;
+            color: var(--text-primary);
             line-height: 1.2;
         }
 
         h2 {
-            font-family: sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 10px;
-            color: #64748b;
+            color: var(--text-muted);
             margin-top: 8px;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -515,12 +1222,13 @@
 
         .content {
             text-align: justify;
-            font-size: 13.5px;
+            font-size: 12px;
             hyphens: auto;
+            line-height: 1.5;
         }
 
         .clause {
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
 
         .clause-title {
@@ -561,11 +1269,11 @@
         }
 
         .payment-box {
-            background: #fdfdfd;
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
+            background: var(--border-light);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: var(--radius);
         }
 
         /* Área de Assinaturas */
@@ -639,223 +1347,29 @@
             }
         }
 
-        /* Tema moderno inspirado no index2 */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f1f5f9;
-            color: #0f172a;
-            padding: 18px 14px;
-        }
-
-        .toolbar {
-            max-width: 1360px;
-            border-left: none;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
-            padding: 12px 16px;
-            position: sticky;
-            top: 12px;
-            z-index: 30;
-        }
-
-        .toolbar-brand {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .toolbar-brand-title {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: #0f172a;
-        }
-
-        .toolbar-brand-subtitle {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .top-nav {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: 10px;
-        }
-
-        .top-nav-btn {
-            border: none;
-            background: transparent;
-            color: #475569;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 8px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all .18s ease;
-        }
-
-        .top-nav-btn:hover {
-            color: #4f46e5;
-            background: #eef2ff;
-        }
-
-        .top-nav-btn.active {
-            color: #4f46e5;
-            background: #eef2ff;
-        }
-
-        .sync-status {
-            font-size: 11px;
-            margin-right: 0;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 999px;
-            padding: 4px 8px;
-        }
-
-        .btn-toolbar,
-        .btn-secondary,
-        .btn-primary,
-        .btn-print {
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all .18s ease;
-        }
-
-        .btn-toolbar,
-        .btn-secondary {
-            border-color: #cbd5e1;
-            background: #fff;
-        }
-
-        .btn-toolbar:hover,
-        .btn-secondary:hover {
-            background: #f8fafc;
-            transform: translateY(-1px);
-        }
-
-        .btn-primary {
-            background: #4f46e5;
-        }
-
-        .btn-primary:hover {
-            background: #4338ca;
-            transform: translateY(-1px);
-        }
-
-        .content-layout {
-            max-width: 1360px;
-            margin-top: 12px;
-            gap: 18px;
-        }
-
-        .content-layout.dashboard-mode {
-            display: block;
-        }
-
-        .content-layout.dashboard-mode .editor-panel {
-            max-width: 1360px;
-            width: 100%;
-            position: static;
-            max-height: none;
-            overflow: visible;
-        }
-
-        .content-layout.dashboard-mode .document-page {
-            display: none;
-        }
-
-        .editor-panel {
-            max-width: none;
-            border-left: none;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            box-shadow: 0 10px 34px rgba(15, 23, 42, 0.06);
-            padding: 18px;
-            background: #fff;
-        }
-
-        .editor-panel h3 {
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-
-        .tabs-wrap {
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        .tab-btn {
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            color: #475569;
-            font-weight: 600;
-            padding: 8px 10px;
-        }
-
-        .tab-btn.active {
-            color: #4f46e5;
-            background: #eef2ff;
-            border: none;
-        }
-
-        .version-wrap,
-        .config-wrap {
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 14px;
-            margin-top: 12px;
-        }
-
-        .version-wrap h4,
-        .config-wrap h4 {
-            font-size: 15px;
-            margin-bottom: 10px;
-        }
-
-        .editor-field input,
-        .editor-field textarea,
-        .editor-field select {
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
-            background: #fff;
-            padding: 9px 10px;
-        }
-
-        .editor-field input:focus,
-        .editor-field textarea:focus,
-        .editor-field select:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
-            outline: none;
-        }
-
-        .document-page {
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-            font-family: 'Times New Roman', Times, serif;
-        }
-
+        /* Responsivo - Mobile */
         @media (max-width: 900px) {
-            .toolbar {
-                position: static;
+            .app-sidebar {
+                transform: translateX(-100%);
+                width: 260px;
             }
 
-            .top-nav {
+            .app-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .app-header {
                 margin-left: 0;
-                width: 100%;
-                flex-wrap: wrap;
-                margin-top: 6px;
+            }
+
+            .content-layout {
+                margin-left: 0;
+                padding: 16px;
+                flex-direction: column;
+            }
+
+            .header-menu-btn {
+                display: flex;
             }
         }
 
@@ -865,19 +1379,20 @@
                 background: white;
                 padding: 0;
                 margin: 0;
-            }
-
-            body {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
 
-            .toolbar {
-                display: none;
+            .app-sidebar,
+            .app-header,
+            .toolbar,
+            .editor-panel {
+                display: none !important;
             }
 
-            .editor-panel {
-                display: none;
+            .content-layout {
+                margin-left: 0 !important;
+                padding: 0 !important;
             }
 
             .var-text {
@@ -890,7 +1405,9 @@
             }
 
             .document-page {
+                display: block !important;
                 box-shadow: none;
+                border: none;
                 padding: 10mm 15mm;
                 margin: 0;
                 width: 100%;
@@ -906,27 +1423,110 @@
 
 <body>
 
-    <div class="toolbar">
-        <div class="toolbar-brand">
-            <strong class="toolbar-brand-title">ArrendaPro</strong>
-            <span class="toolbar-brand-subtitle">Dashboard de contratos, imóveis e pessoas</span>
+    <!-- Sidebar de Navegação -->
+    <aside class="app-sidebar" id="app-sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            <div class="sidebar-brand-text">
+                <strong>ArrendaPro</strong>
+                <span>Gestão de contratos</span>
+            </div>
         </div>
-        <div class="top-nav">
-            <button class="top-nav-btn active" id="nav-dashboard" type="button">Contratos</button>
-            <button class="top-nav-btn" id="nav-properties" type="button">Imóveis</button>
-            <button class="top-nav-btn" id="nav-people" type="button">Pessoas</button>
+        
+        <nav class="sidebar-nav">
+            <button class="sidebar-btn active" id="nav-dashboard" type="button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <span>Contratos</span>
+            </button>
+            <button class="sidebar-btn" id="nav-properties" type="button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Imóveis</span>
+            </button>
+            <button class="sidebar-btn" id="nav-people" type="button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span>Pessoas</span>
+            </button>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <span id="auth-status" class="auth-badge">Desconectado</span>
+            </div>
+            <div class="sidebar-actions">
+                <button class="sidebar-action-btn" id="btn-login" type="button" title="Entrar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                </button>
+                <button class="sidebar-action-btn" id="btn-logout-auth" type="button" title="Sair">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
-        <div class="toolbar-right">
-            <span id="auth-status" class="sync-status">Auth: desconectado</span>
-            <button class="btn-toolbar" id="btn-login" type="button">Entrar</button>
-            <button class="btn-toolbar" id="btn-logout-auth" type="button">Sair (Auth)</button>
-            <span id="sync-status" class="sync-status">Sem login Firebase</span>
-            <button class="btn-toolbar" id="btn-editor-name" type="button">Nome do Editor</button>
-            <button class="btn-toolbar" id="btn-export-backup" type="button">Exportar backup JSON</button>
-            <button class="btn-toolbar" id="btn-import-backup" type="button">Importar backup JSON</button>
-            <button class="btn-print" onclick="window.print()">Imprimir Contrato</button>
+    </aside>
+
+    <!-- Header Principal -->
+    <header class="app-header" id="app-header">
+        <div class="header-left">
+            <button class="header-menu-btn" id="sidebar-toggle" type="button" title="Menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <h1 class="header-title" id="header-page-title">Contratos</h1>
         </div>
-    </div>
+        <div class="header-right">
+            <span id="sync-status" class="sync-badge">Firebase</span>
+            <button class="header-btn" id="btn-export-backup" type="button" title="Exportar backup">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
+            <button class="header-btn" id="btn-import-backup" type="button" title="Importar backup">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+            </button>
+            <button class="header-btn-primary" id="btn-print" onclick="window.print()" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                Imprimir
+            </button>
+        </div>
+    </header>
     <input id="backup-import-input" type="file" accept="application/json" class="hidden">
 
     <div id="save-mode-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
@@ -951,7 +1551,8 @@
                 <div class="editor-field full"><label for="modal-person-name">Nome</label><input id="modal-person-name" type="text"></div>
                 <div class="editor-field"><label for="modal-person-email">E-mail</label><input id="modal-person-email" type="text"></div>
                 <div class="editor-field"><label for="modal-person-cpfcnpj">CPF</label><input id="modal-person-cpfcnpj" type="text"></div>
-                <div class="editor-field"><label for="modal-person-rg">RG</label><input id="modal-person-rg" type="text"></div>
+                <div class="editor-field"><label for="modal-person-rg">RG</label><input id="modal-person-rg" type="text" placeholder="0.000.000-0/SSP-PR"></div>
+                <div class="editor-field"><label for="modal-person-nationality">Nacionalidade</label><input id="modal-person-nationality" type="text" placeholder="brasileiro(a)"></div>
                 <div class="editor-field"><label for="modal-person-profession">Profissão</label><input id="modal-person-profession" type="text"></div>
                 <div class="editor-field"><label for="modal-person-marital-status">Estado civil</label>
                     <select id="modal-person-marital-status">
@@ -963,9 +1564,14 @@
                         <option value="uniao-estavel">União estável</option>
                     </select>
                 </div>
-                <div class="editor-field"><label for="modal-person-address-city">Cidade</label><input id="modal-person-address-city" type="text"></div>
+                <div class="editor-field"><label for="modal-person-address-city">Cidade residência</label><input id="modal-person-address-city" type="text"></div>
                 <div class="editor-field"><label for="modal-person-address-state">Estado</label><input id="modal-person-address-state" type="text"></div>
-                <div class="editor-field full"><label for="modal-person-address-street">Rua</label><input id="modal-person-address-street" type="text"></div>
+                <div class="editor-field full"><label for="modal-person-address-street">Endereço completo</label><input id="modal-person-address-street" type="text" placeholder="Rua Dom Pedro I, 2484, Apto 03, Jardim Universitário"></div>
+                <div class="editor-field"><label for="modal-person-birth-city">Cidade natal</label><input id="modal-person-birth-city" type="text"></div>
+                <div class="editor-field"><label for="modal-person-birth-state">Estado natal</label><input id="modal-person-birth-state" type="text"></div>
+                <div class="editor-field"><label for="modal-person-birth-date">Data nascimento</label><input id="modal-person-birth-date" type="date"></div>
+                <div class="editor-field"><label for="modal-person-father-name">Nome do pai</label><input id="modal-person-father-name" type="text"></div>
+                <div class="editor-field"><label for="modal-person-mother-name">Nome da mãe</label><input id="modal-person-mother-name" type="text"></div>
                 <div class="editor-field"><label for="modal-person-bank-account">Conta bancária</label><input id="modal-person-bank-account" type="text"></div>
                 <div class="editor-field"><label for="modal-person-pix-key">Chave PIX</label><input id="modal-person-pix-key" type="text"></div>
                 <div class="editor-field full"><label for="modal-person-qualification">Qualificação</label><textarea id="modal-person-qualification"></textarea></div>
@@ -1024,142 +1630,226 @@
                     <div id="contracts-dashboard-grid" class="contracts-grid"></div>
                     <div id="contracts-dashboard-empty" class="contracts-empty hidden"></div>
                     <div class="editor-actions" style="margin-top: 10px;">
-                        <button class="btn-secondary" id="btn-carregar" type="button">Abrir</button>
-                        <button class="btn-secondary" id="btn-excluir-versao" type="button">Excluir</button>
+                        <button class="btn-primary" id="btn-carregar" type="button">Abrir contrato</button>
                         <button class="btn-secondary" id="btn-open-invite-panel" type="button">Gerar convite</button>
+                        <button class="btn-secondary btn-danger-subtle" id="btn-excluir-versao" type="button">Excluir</button>
                     </div>
                 </div>
 
                 <div id="contract-editor-section" class="hidden">
-                <h4>Editor do contrato</h4>
-                <div class="editor-grid">
-                        <div class="editor-field hidden"><label for="f-locador-nome">Locador - Nome (via cadastro)</label><input
-                            id="f-locador-nome" type="text" readonly></div>
-                        <div class="editor-field hidden"><label for="f-locataria-nome">Locatária - Nome (via cadastro)</label><input
-                            id="f-locataria-nome" type="text" readonly></div>
-                        <div class="editor-field"><label for="f-landlord-selected">Locador cadastrado (obrigatório)</label><select id="f-landlord-selected">
-                        <option value="">(Selecionar pessoa cadastrada)</option>
-                    </select></div>
-                        <div class="editor-field"><label for="f-tenant-selected">Locatário cadastrado (obrigatório)</label><select id="f-tenant-selected">
-                        <option value="">(Selecionar pessoa cadastrada)</option>
-                    </select></div>
-                    <div class="editor-field"><label for="f-owner-selected">Proprietário cadastrado
-                        (opcional)</label><select id="f-owner-selected">
-                        <option value="">(Selecionar pessoa)</option>
-                    </select></div>
-                    <div class="editor-field"><label for="f-pix-payee-selected">Beneficiário PIX cadastrado
-                        (opcional)</label><select id="f-pix-payee-selected">
-                        <option value="">(Selecionar pessoa)</option>
-                    </select></div>
-                    <div class="editor-field"><label for="f-guarantor1-selected">Fiador 1 cadastrado
-                        (opcional)</label><select id="f-guarantor1-selected">
-                        <option value="">(Selecionar pessoa)</option>
-                    </select></div>
-                    <div class="editor-field"><label for="f-guarantor1-spouse-selected">Cônjuge Fiador 1
-                        (opcional)</label><select id="f-guarantor1-spouse-selected">
-                        <option value="">(Selecionar pessoa)</option>
-                    </select></div>
-                    <div class="editor-field"><label for="f-guarantor2-selected">Fiador 2 cadastrado
-                        (opcional)</label><select id="f-guarantor2-selected">
-                        <option value="">(Selecionar pessoa)</option>
-                    </select></div>
-                    <div class="editor-field"><label for="f-guarantor2-spouse-selected">Cônjuge Fiador 2
-                        (opcional)</label><select id="f-guarantor2-spouse-selected">
-                        <option value="">(Selecionar pessoa)</option>
-                    </select></div>
-                    <div class="editor-field full"><label>Cadastro de pessoa no contrato</label>
-                        <div class="field-inline">
-                            <button class="btn-secondary" id="btn-open-contract-person-modal" type="button">Cadastrar pessoa</button>
+                <h4 style="margin-bottom: 16px;">Editor do contrato</h4>
+                
+                <!-- Seção: Partes do Contrato -->
+                <div class="editor-section" id="section-partes">
+                    <div class="editor-section-header" onclick="toggleSection('section-partes')">
+                        <div class="editor-section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            Partes do Contrato
+                            <span class="editor-section-badge">Obrigatório</span>
+                        </div>
+                        <div class="editor-section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
                         </div>
                     </div>
-                        <div class="editor-field hidden"><label for="f-locador-telefone">Locador - Telefone de
-                            contato</label><input id="f-locador-telefone" type="text" readonly></div>
-                        <div class="editor-field hidden"><label for="f-locador-usa-procurador">Locador atua como
-                            procurador?</label><select id="f-locador-usa-procurador">
-                            <option value="sim">Sim</option>
-                            <option value="nao">Não</option>
-                        </select></div>
-                        <div class="editor-field full hidden"><label for="f-locador-qualificacao">Locador -
-                            Qualificação</label><textarea id="f-locador-qualificacao" readonly></textarea></div>
-                        <div class="editor-field hidden">
-                        <label for="f-locataria-estado-civil">Locatária - Estado civil</label>
-                        <select id="f-locataria-estado-civil">
-                            <option value="casado">Casada</option>
-                            <option value="solteiro">Solteira</option>
-                            <option value="divorciado">Divorciada</option>
-                        </select>
-                    </div>
-                        <div class="editor-field full hidden"><label for="f-locataria-qualificacao">Locatária -
-                            Qualificação</label><textarea id="f-locataria-qualificacao" readonly></textarea></div>
-                        <div class="editor-field full locataria-conjuge-field hidden"><label
-                            for="f-locataria-conjuge-qualificacao">Locatária (casada) - Qualificação do
-                            cônjuge</label><textarea id="f-locataria-conjuge-qualificacao" readonly></textarea></div>
-
-                        <div class="editor-field full hidden"><label for="f-imovel-endereco">Endereço do imóvel</label><input
-                            id="f-imovel-endereco" type="text" readonly></div>
-                        <div class="editor-field full"><label for="f-property-selected">Imóvel cadastrado (obrigatório)</label><select id="f-property-selected">
-                            <option value="">(Selecionar imóvel cadastrado)</option>
-                        </select></div>
-                        <div class="editor-field hidden"><label for="f-imovel-proprietario">Proprietário</label><input
-                            id="f-imovel-proprietario" type="text" readonly></div>
-                    <div class="editor-field"><label for="f-foro">Foro (comarca/cidade)</label><input id="f-foro"
-                            type="text"></div>
-                    <div class="editor-field"><label for="f-financeiro-valor">Valor aluguel (R$)</label><input
-                            id="f-financeiro-valor" type="text"></div>
-                    <div class="editor-field"><label for="f-financeiro-extenso">Valor por extenso</label><input
-                            id="f-financeiro-extenso" type="text"></div>
-                    <div class="editor-field"><label for="f-financeiro-prazo">Prazo (meses)</label><input
-                            id="f-financeiro-prazo" type="text"></div>
-                    <div class="editor-field"><label for="f-financeiro-inicio">Início</label><input
-                            id="f-financeiro-inicio" type="text"></div>
-                    <div class="editor-field"><label for="f-financeiro-termino">Término</label><input
-                            id="f-financeiro-termino" type="text"></div>
-                    <div class="editor-field">
-                        <label for="f-financeiro-assinatura">Data assinatura</label>
-                        <div class="field-inline">
-                            <input id="f-financeiro-assinatura" type="text">
-                            <button class="btn-secondary" id="btn-hoje-assinatura" type="button">Hoje</button>
+                    <div class="editor-section-content">
+                        <div class="editor-grid">
+                            <div class="editor-field"><label for="f-landlord-selected">Locador</label><select id="f-landlord-selected">
+                                <option value="">(Selecionar pessoa)</option>
+                            </select>
+                            <span class="field-hint">Quem está alugando o imóvel</span></div>
+                            <div class="editor-field"><label for="f-tenant-selected">Locatário</label><select id="f-tenant-selected">
+                                <option value="">(Selecionar pessoa)</option>
+                            </select>
+                            <span class="field-hint">Quem vai morar no imóvel</span></div>
+                            <div class="editor-field"><label for="f-owner-selected">Proprietário</label><select id="f-owner-selected">
+                                <option value="">(Mesmo que locador)</option>
+                            </select>
+                            <span class="field-hint">Se diferente do locador</span></div>
+                            <div class="editor-field">
+                                <label>&nbsp;</label>
+                                <button class="btn-secondary" id="btn-open-contract-person-modal" type="button">+ Cadastrar nova pessoa</button>
+                            </div>
                         </div>
                     </div>
-
-                        <div class="editor-field hidden"><label for="f-pagamento-nome">PIX - Favorecida</label><input
-                            id="f-pagamento-nome" type="text" readonly></div>
-                        <div class="editor-field hidden"><label for="f-pagamento-chave">PIX - Chave</label><input
-                            id="f-pagamento-chave" type="text" readonly></div>
-                        <div class="editor-field hidden"><label for="f-pagamento-cpf">PIX - CPF</label><input id="f-pagamento-cpf"
-                            type="text" readonly></div>
-                        <div class="editor-field hidden"><label for="f-pagamento-banco">Banco/Conta</label><input
-                            id="f-pagamento-banco" type="text" readonly></div>
-
-                        <div class="editor-field hidden"><label for="f-fiador1-nome">Fiador 1 - Nome (via cadastro)</label><input
-                            id="f-fiador1-nome" type="text" readonly></div>
-                    <div class="editor-field hidden">
-                        <label for="f-fiador1-estado-civil">Fiador 1 - Estado civil</label>
-                        <select id="f-fiador1-estado-civil">
-                            <option value="casado">Casado</option>
-                            <option value="solteiro">Solteiro</option>
-                            <option value="divorciado">Divorciado</option>
-                        </select>
-                    </div>
-                        <div class="editor-field hidden"><label for="f-fiador1-papel">Fiador 1 - Papel</label><input
-                            id="f-fiador1-papel" type="text" readonly></div>
-                        <div class="editor-field full hidden"><label for="f-fiador1-desc">Fiador 1 - Descrição (via cadastro)</label><textarea
-                            id="f-fiador1-desc" readonly></textarea></div>
-
-                        <div class="editor-field fiador2-field hidden"><label for="f-fiador2-nome">Fiador 2 - Nome (via cadastro)</label><input
-                            id="f-fiador2-nome" type="text" readonly></div>
-                        <div class="editor-field fiador2-field hidden"><label for="f-fiador2-papel">Fiador 2 - Papel</label><input
-                            id="f-fiador2-papel" type="text" readonly></div>
-                    <div class="editor-field full fiador2-field hidden"><label for="f-fiador2-desc">Fiador 2 -
-                            Descrição (via cadastro)</label><textarea id="f-fiador2-desc" readonly></textarea></div>
                 </div>
 
-                <div class="editor-actions">
-                    <button class="btn-secondary" id="btn-atualizar" type="button">Atualizar Contrato</button>
+                <!-- Seção: Imóvel -->
+                <div class="editor-section" id="section-imovel">
+                    <div class="editor-section-header" onclick="toggleSection('section-imovel')">
+                        <div class="editor-section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            Imóvel
+                            <span class="editor-section-badge">Obrigatório</span>
+                        </div>
+                        <div class="editor-section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="editor-section-content">
+                        <div class="editor-grid">
+                            <div class="editor-field full"><label for="f-property-selected">Imóvel</label><select id="f-property-selected">
+                                <option value="">(Selecionar imóvel cadastrado)</option>
+                            </select></div>
+                            <div class="editor-field"><label for="f-foro">Foro (comarca)</label><input id="f-foro" type="text" placeholder="Ex: Palotina/PR"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção: Dados Financeiros -->
+                <div class="editor-section" id="section-financeiro">
+                    <div class="editor-section-header" onclick="toggleSection('section-financeiro')">
+                        <div class="editor-section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                            Dados Financeiros
+                            <span class="editor-section-badge">Obrigatório</span>
+                        </div>
+                        <div class="editor-section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="editor-section-content">
+                        <div class="editor-grid">
+                            <div class="editor-field"><label for="f-financeiro-valor">Valor do Aluguel (R$)</label><input id="f-financeiro-valor" type="text" placeholder="1.500,00"></div>
+                            <div class="editor-field"><label for="f-financeiro-extenso">Valor por Extenso</label><input id="f-financeiro-extenso" type="text" placeholder="Gerado automaticamente">
+                            <span class="field-hint">Gerado automaticamente ao digitar o valor</span></div>
+                            <div class="editor-field"><label for="f-financeiro-prazo">Prazo (meses)</label><input id="f-financeiro-prazo" type="text" placeholder="12"></div>
+                            <div class="editor-field"><label for="f-financeiro-inicio">Data de Início</label><input id="f-financeiro-inicio" type="text" placeholder="01/03/2026"></div>
+                            <div class="editor-field"><label for="f-financeiro-termino">Data de Término</label><input id="f-financeiro-termino" type="text" placeholder="Calculado automaticamente">
+                            <span class="field-hint">Calculado automaticamente com base no início e prazo</span></div>
+                            <div class="editor-field">
+                                <label for="f-financeiro-assinatura">Data de Assinatura</label>
+                                <div class="field-inline">
+                                    <input id="f-financeiro-assinatura" type="text" placeholder="01/03/2026">
+                                    <button class="btn-secondary" id="btn-hoje-assinatura" type="button">Hoje</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção: Pagamento PIX -->
+                <div class="editor-section" id="section-pagamento">
+                    <div class="editor-section-header" onclick="toggleSection('section-pagamento')">
+                        <div class="editor-section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                            Pagamento PIX
+                            <span class="editor-section-badge optional">Opcional</span>
+                        </div>
+                        <div class="editor-section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="editor-section-content">
+                        <div class="editor-grid">
+                            <div class="editor-field full"><label for="f-pix-payee-selected">Beneficiário do PIX</label><select id="f-pix-payee-selected">
+                                <option value="">(Usar dados do locador)</option>
+                            </select>
+                            <span class="field-hint">Pessoa que receberá os pagamentos. Se não selecionado, usa os dados do locador.</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção: Fiador -->
+                <div class="editor-section collapsed" id="section-fiador">
+                    <div class="editor-section-header" onclick="toggleSection('section-fiador')">
+                        <div class="editor-section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            Fiadores / Garantia
+                            <span class="editor-section-badge optional">Opcional</span>
+                        </div>
+                        <div class="editor-section-toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="editor-section-content">
+                        <!-- Fiador 1 -->
+                        <div class="editor-grid">
+                            <div class="editor-field"><label for="f-guarantor1-selected">Fiador 1</label><select id="f-guarantor1-selected" onchange="updateGuarantorSpouseVisibility()">
+                                <option value="">(Sem fiador)</option>
+                            </select></div>
+                            <div class="editor-field conditional-field" id="guarantor1-spouse-field"><label for="f-guarantor1-spouse-selected">Cônjuge do Fiador 1</label><select id="f-guarantor1-spouse-selected">
+                                <option value="">(Selecionar cônjuge)</option>
+                            </select>
+                            <span class="field-hint">Exibido quando o fiador é casado</span></div>
+                        </div>
+                        
+                        <!-- Toggle para Fiador 2 -->
+                        <div class="inline-toggle" style="margin-top: 16px;">
+                            <label>
+                                <input type="checkbox" id="chk-fiador2-enabled" onchange="toggleFiador2Section()">
+                                Adicionar segundo fiador
+                            </label>
+                        </div>
+                        
+                        <!-- Fiador 2 (condicional) -->
+                        <div class="editor-grid conditional-field" id="fiador2-fields" style="display: none;">
+                            <div class="editor-field"><label for="f-guarantor2-selected">Fiador 2</label><select id="f-guarantor2-selected" onchange="updateGuarantorSpouseVisibility()">
+                                <option value="">(Selecionar pessoa)</option>
+                            </select></div>
+                            <div class="editor-field conditional-field" id="guarantor2-spouse-field"><label for="f-guarantor2-spouse-selected">Cônjuge do Fiador 2</label><select id="f-guarantor2-spouse-selected">
+                                <option value="">(Selecionar cônjuge)</option>
+                            </select></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos ocultos para compatibilidade -->
+                <div style="display:none;">
+                    <input id="f-locador-nome" type="text" readonly>
+                    <input id="f-locataria-nome" type="text" readonly>
+                    <input id="f-locador-telefone" type="text" readonly>
+                    <select id="f-locador-usa-procurador"><option value="nao">Não</option><option value="sim">Sim</option></select>
+                    <textarea id="f-locador-qualificacao" readonly></textarea>
+                    <select id="f-locataria-estado-civil"><option value="solteiro">Solteiro</option><option value="casado">Casado</option><option value="divorciado">Divorciado</option></select>
+                    <textarea id="f-locataria-qualificacao" readonly></textarea>
+                    <textarea id="f-locataria-conjuge-qualificacao" readonly></textarea>
+                    <input id="f-imovel-endereco" type="text" readonly>
+                    <input id="f-imovel-proprietario" type="text" readonly>
+                    <input id="f-pagamento-nome" type="text" readonly>
+                    <input id="f-pagamento-chave" type="text" readonly>
+                    <input id="f-pagamento-cpf" type="text" readonly>
+                    <input id="f-pagamento-banco" type="text" readonly>
+                    <input id="f-fiador1-nome" type="text" readonly>
+                    <select id="f-fiador1-estado-civil"><option value="solteiro">Solteiro</option><option value="casado">Casado</option><option value="divorciado">Divorciado</option></select>
+                    <input id="f-fiador1-papel" type="text" readonly>
+                    <textarea id="f-fiador1-desc" readonly></textarea>
+                    <input id="f-fiador2-nome" type="text" readonly>
+                    <input id="f-fiador2-papel" type="text" readonly>
+                    <textarea id="f-fiador2-desc" readonly></textarea>
+                </div>
+
+                <div class="editor-actions editor-actions-sticky">
                     <button class="btn-primary" id="btn-salvar" type="button">Salvar</button>
-                    <button class="btn-secondary" id="btn-json" type="button">Novo contrato</button>
+                    <button class="btn-secondary" id="btn-atualizar" type="button">Atualizar Contrato</button>
                     <button class="btn-secondary" id="btn-close-contract-editor" type="button">Voltar ao dashboard</button>
                 </div>
+                <div style="display:none;"><button id="btn-json" type="button"></button></div>
 
                 <div class="config-wrap tech-panel">
                     <div class="tech-title">Painel técnico (Firebase)</div>
@@ -1180,12 +1870,6 @@
                 <div class="editor-grid">
                     <div class="editor-field full"><label for="property-list">Imóveis cadastrados</label><select
                             id="property-list" size="6"></select></div>
-                </div>
-                <div class="editor-actions" style="margin-top: 10px;">
-                    <button class="btn-secondary" id="btn-property-new" type="button">Novo</button>
-                    <button class="btn-primary" id="btn-property-save" type="button">Salvar imóvel</button>
-                    <button class="btn-secondary" id="btn-property-duplicate" type="button">Duplicar</button>
-                    <button class="btn-secondary" id="btn-property-delete" type="button">Excluir</button>
                 </div>
 
                 <div class="editor-grid" style="margin-top: 12px;">
@@ -1217,6 +1901,12 @@
                             id="p-memorial-note" type="text" placeholder="FOTOS ENVIADAS POR E-MAIL (xxxxxx@gmail.com)">
                     </div>
                 </div>
+                <div class="editor-actions">
+                    <button class="btn-primary" id="btn-property-save" type="button">Salvar imóvel</button>
+                    <button class="btn-secondary" id="btn-property-new" type="button">Novo</button>
+                    <button class="btn-secondary" id="btn-property-duplicate" type="button">Duplicar</button>
+                    <button class="btn-secondary btn-danger-subtle" id="btn-property-delete" type="button">Excluir</button>
+                </div>
             </div>
 
             <div id="tab-pessoas" class="tab-content hidden">
@@ -1227,17 +1917,13 @@
                     <div class="editor-grid">
                         <div class="editor-field full"><label for="person-list">Pessoas cadastradas</label><select id="person-list" size="8"></select></div>
                     </div>
-                    <div class="editor-actions" style="margin-top: 10px;">
-                        <button class="btn-secondary" id="btn-person-new" type="button">Novo</button>
-                        <button class="btn-primary" id="btn-person-save" type="button">Salvar pessoa</button>
-                        <button class="btn-secondary" id="btn-person-delete" type="button">Excluir</button>
-                    </div>
                     <div class="editor-grid" style="margin-top: 12px;">
                         <div class="editor-field full"><label for="person-name">Nome</label><input id="person-name" type="text"></div>
                         <div class="editor-field"><label for="person-phone">Telefone</label><input id="person-phone" type="text"></div>
                         <div class="editor-field"><label for="person-email">E-mail</label><input id="person-email" type="text"></div>
                         <div class="editor-field"><label for="person-cpfcnpj">CPF</label><input id="person-cpfcnpj" type="text"></div>
-                        <div class="editor-field"><label for="person-rg">RG</label><input id="person-rg" type="text"></div>
+                        <div class="editor-field"><label for="person-rg">RG</label><input id="person-rg" type="text" placeholder="0.000.000-0/SSP-PR"></div>
+                        <div class="editor-field"><label for="person-nationality">Nacionalidade</label><input id="person-nationality" type="text" placeholder="brasileiro(a)"></div>
                         <div class="editor-field"><label for="person-profession">Profissão</label><input id="person-profession" type="text"></div>
                         <div class="editor-field"><label for="person-marital-status">Estado civil</label>
                             <select id="person-marital-status">
@@ -1249,13 +1935,23 @@
                                 <option value="uniao-estavel">União estável</option>
                             </select>
                         </div>
-                        <div class="editor-field"><label for="person-address-city">Cidade</label><input id="person-address-city" type="text"></div>
+                        <div class="editor-field"><label for="person-address-city">Cidade residência</label><input id="person-address-city" type="text"></div>
                         <div class="editor-field"><label for="person-address-state">Estado</label><input id="person-address-state" type="text"></div>
-                        <div class="editor-field full"><label for="person-address-street">Rua</label><input id="person-address-street" type="text"></div>
+                        <div class="editor-field full"><label for="person-address-street">Endereço completo</label><input id="person-address-street" type="text" placeholder="Rua Dom Pedro I, 2484, Apto 03, Jardim Universitário"></div>
+                        <div class="editor-field"><label for="person-birth-city">Cidade natal</label><input id="person-birth-city" type="text"></div>
+                        <div class="editor-field"><label for="person-birth-state">Estado natal</label><input id="person-birth-state" type="text"></div>
+                        <div class="editor-field"><label for="person-birth-date">Data nascimento</label><input id="person-birth-date" type="date"></div>
+                        <div class="editor-field"><label for="person-father-name">Nome do pai</label><input id="person-father-name" type="text"></div>
+                        <div class="editor-field"><label for="person-mother-name">Nome da mãe</label><input id="person-mother-name" type="text"></div>
                         <div class="editor-field"><label for="person-bank-account">Conta bancária</label><input id="person-bank-account" type="text"></div>
                         <div class="editor-field"><label for="person-pix-key">Chave PIX</label><input id="person-pix-key" type="text"></div>
-                        <div class="editor-field full"><label for="person-qualification">Qualificação</label><textarea id="person-qualification"></textarea></div>
+                        <div class="editor-field full"><label for="person-qualification">Qualificação (override)</label><textarea id="person-qualification" placeholder="Deixe vazio para gerar automaticamente"></textarea></div>
                         <div class="editor-field full"><label for="person-notes">Observações</label><textarea id="person-notes"></textarea></div>
+                    </div>
+                    <div class="editor-actions">
+                        <button class="btn-primary" id="btn-person-save" type="button">Salvar pessoa</button>
+                        <button class="btn-secondary" id="btn-person-new" type="button">Novo</button>
+                        <button class="btn-secondary btn-danger-subtle" id="btn-person-delete" type="button">Excluir</button>
                     </div>
                 </div>
 
@@ -2178,7 +2874,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const roleFilter = fieldValue('version-filter-role');
             const participantFilter = fieldValue('version-filter-participant');
 
-            return versionsCache.filter((version) => {
+            const filtered = versionsCache.filter((version) => {
                 const refs = getVersionRefIds(version);
                 if (propertyFilter && refs.propertyId !== propertyFilter) return false;
                 if (landlordFilter && refs.landlordId !== landlordFilter) return false;
@@ -2189,6 +2885,15 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 }
                 return true;
             });
+
+            // Ordenar por data mais recente primeiro
+            filtered.sort((a, b) => {
+                const dateA = new Date(a.savedAt || a.updatedAt || 0).getTime();
+                const dateB = new Date(b.savedAt || b.updatedAt || 0).getTime();
+                return dateB - dateA;
+            });
+
+            return filtered;
         }
 
         function getPersonNameById(personId) {
@@ -2202,6 +2907,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const property = propertiesCache.find((item) => item.id === propertyId);
             return property?.label || buildPropertyAddressLine(property) || '';
         }
+
+        let selectedDashboardVersionId = null;
 
         function renderContractsDashboardCards(versions) {
             const grid = document.getElementById('contracts-dashboard-grid');
@@ -2232,19 +2939,34 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 const propertyText = getPropertyLabelById(refs.propertyId) || version.data?.imovel?.endereco || 'Imóvel não informado';
                 const tenantText = getPersonNameById(refs.tenantId) || version.data?.locataria?.nome || 'Locatário não informado';
                 const landlordText = getPersonNameById(refs.landlordId) || version.data?.locador?.nome || 'Locador não informado';
+
+                // Datas e valor (campos corretos da estrutura financeiro)
+                const dataInicio = version.data?.financeiro?.inicio || '';
+                const dataFim = version.data?.financeiro?.termino || '';
+                const valorInicial = version.data?.financeiro?.valor || '';
                 const when = new Date(version.savedAt || version.updatedAt || Date.now()).toLocaleString('pt-BR');
 
                 card.innerHTML = `
                     <div class="contract-card-title">${index + 1}. ${propertyText}</div>
-                    <div class="contract-card-meta">Locatário: ${tenantText}</div>
-                    <div class="contract-card-meta">Locador: ${landlordText}</div>
-                    <div class="contract-card-date">Atualizado em ${when}</div>
+                    <div class="contract-card-meta">Locador: ${landlordText} | Locatário: ${tenantText}</div>
+                    <div class="contract-card-details">
+                        <span>Início: ${dataInicio || '-'}</span>
+                        <span>Fim: ${dataFim || '-'}</span>
+                        <span>Valor: ${valorInicial ? 'R$ ' + valorInicial : '-'}</span>
+                        <span>Atualizado: ${when}</span>
+                    </div>
                 `;
 
-                card.addEventListener('click', function () {
+                // Click seleciona, double-click abre
+                card.addEventListener('click', function (e) {
+                    document.querySelectorAll('.contract-card.selected').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    selectedDashboardVersionId = version.id;
                     const select = document.getElementById('version-list');
-                    if (!select) return;
-                    select.value = version.id;
+                    if (select) select.value = version.id;
+                });
+
+                card.addEventListener('dblclick', function () {
                     openSelectedVersion();
                 });
 
@@ -2625,7 +3347,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         function getFormData() {
             const fiadorEstadoCivil = fieldValue('f-fiador1-estado-civil') || 'casado';
-            const includeSecondFiador = fiadorEstadoCivil === 'casado';
+            const chkFiador2 = document.getElementById('chk-fiador2-enabled');
+            const includeSecondFiador = (chkFiador2?.checked) || !!fieldValue('f-fiador2-nome');
             const locatariaEstadoCivil = fieldValue('f-locataria-estado-civil') || 'solteiro';
             const includeLocatariaConjuge = locatariaEstadoCivil === 'casado';
             return {
@@ -2759,6 +3482,49 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             });
         }
 
+        // Funções para o editor de contrato com seções
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.toggle('collapsed');
+            }
+        }
+
+        function toggleFiador2Section() {
+            const checkbox = document.getElementById('chk-fiador2-enabled');
+            const fiador2Fields = document.getElementById('fiador2-fields');
+            if (fiador2Fields) {
+                fiador2Fields.style.display = checkbox?.checked ? 'grid' : 'none';
+            }
+            updateGuarantorSpouseVisibility();
+        }
+
+        function updateGuarantorSpouseVisibility() {
+            // Fiador 1 - mostra cônjuge se fiador selecionado E casado
+            const guarantor1Id = fieldValue('f-guarantor1-selected');
+            const guarantor1Person = guarantor1Id ? landlordsCache.find(p => p.id === guarantor1Id) : null;
+            const guarantor1IsCasado = guarantor1Person?.maritalStatus === 'casado';
+            const guarantor1SpouseField = document.getElementById('guarantor1-spouse-field');
+            if (guarantor1SpouseField) {
+                guarantor1SpouseField.style.display = (guarantor1Id && guarantor1IsCasado) ? 'flex' : 'none';
+            }
+
+            // Fiador 2 - mostra cônjuge se fiador selecionado E casado
+            const guarantor2Id = fieldValue('f-guarantor2-selected');
+            const guarantor2Person = guarantor2Id ? landlordsCache.find(p => p.id === guarantor2Id) : null;
+            const guarantor2IsCasado = guarantor2Person?.maritalStatus === 'casado';
+            const guarantor2SpouseField = document.getElementById('guarantor2-spouse-field');
+            if (guarantor2SpouseField) {
+                guarantor2SpouseField.style.display = (guarantor2Id && guarantor2IsCasado) ? 'flex' : 'none';
+            }
+
+            // Expande a seção de fiadores se algum fiador estiver selecionado
+            const sectionFiador = document.getElementById('section-fiador');
+            if (sectionFiador && (guarantor1Id || guarantor2Id)) {
+                sectionFiador.classList.remove('collapsed');
+            }
+        }
+
         function generatePropertyId() {
             return `prop-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
         }
@@ -2848,11 +3614,17 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setFieldValue('person-email', person?.email || '');
             setFieldValue('person-cpfcnpj', person?.cpfCnpj || '');
             setFieldValue('person-rg', person?.rg || '');
+            setFieldValue('person-nationality', person?.nationality || '');
             setFieldValue('person-profession', person?.profession || '');
             setFieldValue('person-marital-status', person?.maritalStatus || '');
             setFieldValue('person-address-city', person?.address?.cidade || '');
             setFieldValue('person-address-state', person?.address?.estado || '');
             setFieldValue('person-address-street', person?.address?.rua || '');
+            setFieldValue('person-birth-city', person?.birthCity || '');
+            setFieldValue('person-birth-state', person?.birthState || '');
+            setFieldValue('person-birth-date', person?.birthDate || '');
+            setFieldValue('person-father-name', person?.fatherName || '');
+            setFieldValue('person-mother-name', person?.motherName || '');
             setFieldValue('person-bank-account', person?.bankAccount || '');
             setFieldValue('person-pix-key', person?.pixKey || '');
             setFieldValue('person-qualification', person?.qualification || '');
@@ -2868,6 +3640,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 email: fieldValue('person-email'),
                 cpfCnpj: fieldValue('person-cpfcnpj'),
                 rg: fieldValue('person-rg'),
+                nationality: fieldValue('person-nationality'),
                 profession: fieldValue('person-profession'),
                 maritalStatus: fieldValue('person-marital-status'),
                 address: {
@@ -2875,6 +3648,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     estado: fieldValue('person-address-state'),
                     rua: fieldValue('person-address-street')
                 },
+                birthCity: fieldValue('person-birth-city'),
+                birthState: fieldValue('person-birth-state'),
+                birthDate: fieldValue('person-birth-date'),
+                fatherName: fieldValue('person-father-name'),
+                motherName: fieldValue('person-mother-name'),
                 bankAccount: fieldValue('person-bank-account'),
                 pixKey: fieldValue('person-pix-key'),
                 qualification: fieldValue('person-qualification'),
@@ -2934,11 +3712,17 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setFieldValue('modal-person-email', '');
             setFieldValue('modal-person-cpfcnpj', '');
             setFieldValue('modal-person-rg', '');
+            setFieldValue('modal-person-nationality', '');
             setFieldValue('modal-person-profession', '');
             setFieldValue('modal-person-marital-status', '');
             setFieldValue('modal-person-address-city', '');
             setFieldValue('modal-person-address-state', '');
             setFieldValue('modal-person-address-street', '');
+            setFieldValue('modal-person-birth-city', '');
+            setFieldValue('modal-person-birth-state', '');
+            setFieldValue('modal-person-birth-date', '');
+            setFieldValue('modal-person-father-name', '');
+            setFieldValue('modal-person-mother-name', '');
             setFieldValue('modal-person-bank-account', '');
             setFieldValue('modal-person-pix-key', '');
             setFieldValue('modal-person-qualification', '');
@@ -2969,6 +3753,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 email: fieldValue('modal-person-email'),
                 cpfCnpj: fieldValue('modal-person-cpfcnpj'),
                 rg: fieldValue('modal-person-rg'),
+                nationality: fieldValue('modal-person-nationality'),
                 profession: fieldValue('modal-person-profession'),
                 maritalStatus: fieldValue('modal-person-marital-status'),
                 address: {
@@ -2976,6 +3761,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     estado: fieldValue('modal-person-address-state'),
                     rua: fieldValue('modal-person-address-street')
                 },
+                birthCity: fieldValue('modal-person-birth-city'),
+                birthState: fieldValue('modal-person-birth-state'),
+                birthDate: fieldValue('modal-person-birth-date'),
+                fatherName: fieldValue('modal-person-father-name'),
+                motherName: fieldValue('modal-person-mother-name'),
                 bankAccount: fieldValue('modal-person-bank-account'),
                 pixKey: fieldValue('modal-person-pix-key'),
                 qualification: fieldValue('modal-person-qualification'),
@@ -3163,24 +3953,97 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const maritalRaw = (tenant?.maritalStatus || '').toString().toLowerCase();
             const maritalValue = maritalRaw.includes('casad') ? 'casado' : maritalRaw.includes('divorci') ? 'divorciado' : 'solteiro';
             setFieldValue('f-locataria-estado-civil', maritalValue);
-            setFieldValue('f-locataria-qualificacao', buildPersonQualificationSummary(tenant));
+            setFieldValue('f-locataria-qualificacao', buildPersonQualificationSummary(tenant, 'tenant'));
             setFieldValue('f-locataria-conjuge-qualificacao', '');
             setFieldValue('f-tenant-selected', tenant.id);
             db.selectedTenantId = tenant.id;
             lastTenantSelectionId = tenant.id;
         }
 
-        function buildPersonQualificationSummary(person) {
+        function formatMaritalStatus(maritalStatus, isFemale = false) {
+            const ms = (maritalStatus || '').toLowerCase();
+            if (ms.includes('casad')) return isFemale ? 'casada' : 'casado';
+            if (ms.includes('soltei')) return isFemale ? 'solteira' : 'solteiro';
+            if (ms.includes('divorci')) return isFemale ? 'divorciada' : 'divorciado';
+            if (ms.includes('viuv') || ms.includes('viúv')) return isFemale ? 'viúva' : 'viúvo';
+            if (ms.includes('uniao') || ms.includes('união')) return 'em união estável';
+            return maritalStatus || '';
+        }
+
+        function formatDateBR(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function buildPersonQualificationSummary(person, role = 'landlord') {
             if (!person) return '';
             if (person.qualification) return person.qualification;
-            const cityState = [person?.address?.cidade, person?.address?.estado].filter(Boolean).join('/');
-            const parts = [
-                person?.profession,
-                person?.rg ? `RG ${person.rg}` : '',
-                person?.cpfCnpj ? `CPF ${person.cpfCnpj}` : '',
-                person?.address?.rua,
-                cityState
-            ].filter(Boolean);
+
+            // Detectar gênero pelo nome (heurística simples)
+            const firstName = (person.name || '').split(' ')[0].toUpperCase();
+            const isFemale = firstName.endsWith('A') && !['LUCA', 'JOSUA', 'NIKOLA'].includes(firstName);
+
+            const nationality = person.nationality || (isFemale ? 'brasileira' : 'brasileiro');
+            const maritalFormatted = formatMaritalStatus(person.maritalStatus, isFemale);
+            const profession = person.profession || '';
+            const portador = isFemale ? 'portadora' : 'portador';
+            const rg = person.rg || '';
+            const cpf = person.cpfCnpj || '';
+            
+            const cityState = [person?.address?.cidade, person?.address?.estado].filter(Boolean).join(' ');
+            const address = person?.address?.rua || '';
+
+            let parts = [];
+            
+            // Linha 1: nacionalidade, estado civil, profissão
+            const basicInfo = [nationality, maritalFormatted, profession].filter(Boolean).join(', ');
+            if (basicInfo) parts.push(basicInfo);
+
+            // Linha 2: RG e CPF
+            const docs = [];
+            if (rg) docs.push(`RG ${rg}`);
+            if (cpf) docs.push(`CPF ${cpf}`);
+            if (docs.length > 0) {
+                parts.push(`${portador} do ${docs.join(' e ')}`);
+            }
+
+            // Linha 3: Endereço e telefone
+            let enderecoLinha = '';
+            if (address && cityState) {
+                enderecoLinha = `residente e domiciliado à ${address}, ${cityState}`;
+            } else if (address) {
+                enderecoLinha = `residente e domiciliado à ${address}`;
+            }
+            if (enderecoLinha) {
+                if (person.phone) {
+                    enderecoLinha += `, telefone ${person.phone}`;
+                }
+                parts.push(enderecoLinha);
+            }
+
+            // Para locatário e fiador: adicionar naturalidade, nascimento e filiação
+            if (role === 'tenant' || role === 'guarantor') {
+                const birthCityState = [person.birthCity, person.birthState].filter(Boolean).join('/');
+                if (birthCityState) {
+                    parts.push(`natural de ${birthCityState}`);
+                }
+
+                if (person.birthDate) {
+                    const nascido = isFemale ? 'nascida' : 'nascido';
+                    parts.push(`${nascido} em ${formatDateBR(person.birthDate)}`);
+                }
+
+                const parents = [person.fatherName, person.motherName].filter(Boolean);
+                if (parents.length > 0) {
+                    const filho = isFemale ? 'filha' : 'filho';
+                    parts.push(`${filho} de ${parents.join(' e ')}`);
+                }
+            }
+
             return parts.join(', ');
         }
 
@@ -3207,14 +4070,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             setFieldValue('f-fiador1-nome', guarantor1?.name || '');
             setFieldValue('f-fiador1-papel', guarantor1 ? 'Fiador' : '');
-            setFieldValue('f-fiador1-desc', buildPersonQualificationSummary(guarantor1));
+            setFieldValue('f-fiador1-desc', buildPersonQualificationSummary(guarantor1, 'guarantor'));
 
             const fiador1EstadoCivil = guarantor1Spouse ? 'casado' : ((guarantor1?.maritalStatus || '').toLowerCase() === 'casado' ? 'casado' : 'solteiro');
             setFieldValue('f-fiador1-estado-civil', fiador1EstadoCivil);
 
             setFieldValue('f-fiador2-nome', guarantor2?.name || '');
             setFieldValue('f-fiador2-papel', guarantor2 ? 'Fiador' : '');
-            setFieldValue('f-fiador2-desc', buildPersonQualificationSummary(guarantor2));
+            setFieldValue('f-fiador2-desc', buildPersonQualificationSummary(guarantor2, 'guarantor'));
 
             toggleFiador2Visibility();
         }
@@ -3729,6 +4592,18 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             if (editor) editor.classList.toggle('hidden', !visible);
             if (dashboard) dashboard.classList.toggle('hidden', !!visible);
             if (layout) layout.classList.toggle('dashboard-mode', !visible);
+            
+            // Atualiza visibilidade condicional dos campos de cônjuge
+            if (visible) {
+                updateGuarantorSpouseVisibility();
+                // Verifica se tem fiador 2 para marcar o checkbox
+                const guarantor2Id = fieldValue('f-guarantor2-selected');
+                const chkFiador2 = document.getElementById('chk-fiador2-enabled');
+                if (chkFiador2) {
+                    chkFiador2.checked = !!guarantor2Id;
+                    toggleFiador2Section();
+                }
+            }
         }
 
         function closeContractEditorSection() {
@@ -3987,7 +4862,22 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('nav-properties')?.classList.toggle('active', isImoveis);
             document.getElementById('nav-people')?.classList.toggle('active', isPessoas);
 
+            // Atualiza título do header
+            const headerTitle = document.getElementById('header-page-title');
+            if (headerTitle) {
+                headerTitle.textContent = isContrato ? 'Contratos' : isImoveis ? 'Imóveis' : 'Pessoas';
+            }
+
+            // Fecha sidebar no mobile
+            document.getElementById('app-sidebar')?.classList.remove('open');
+
             setContractEditorVisible(false);
+        }
+
+        // Toggle sidebar no mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('app-sidebar');
+            sidebar?.classList.toggle('open');
         }
 
         window.onload = async function () {
@@ -4040,6 +4930,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 switchTab('pessoas');
             });
 
+            // Toggle sidebar no mobile
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+
             document.getElementById('btn-salvar').addEventListener('click', saveCurrentVersion);
             document.getElementById('btn-carregar').addEventListener('click', openSelectedVersion);
             document.getElementById('btn-excluir-versao').addEventListener('click', deleteSelectedVersion);
@@ -4057,16 +4953,16 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 await reloadVersionsWithActiveFilters();
             });
             document.getElementById('btn-json').addEventListener('click', resetToDefault);
-            document.getElementById('btn-open-invite-panel').addEventListener('click', function () {
+            document.getElementById('btn-open-invite-panel')?.addEventListener('click', function () {
                 switchTab('pessoas');
                 const inviteBlock = document.getElementById('invite-contract-version');
                 if (inviteBlock) {
                     inviteBlock.focus();
                 }
             });
-            document.getElementById('btn-editor-name').addEventListener('click', setEditorNameManually);
-            document.getElementById('btn-export-backup').addEventListener('click', exportBackupJson);
-            document.getElementById('btn-import-backup').addEventListener('click', function () {
+            document.getElementById('btn-editor-name')?.addEventListener('click', setEditorNameManually);
+            document.getElementById('btn-export-backup')?.addEventListener('click', exportBackupJson);
+            document.getElementById('btn-import-backup')?.addEventListener('click', function () {
                 document.getElementById('backup-import-input').click();
             });
             const btnNewContractDashboard = document.getElementById('btn-new-contract-dashboard');
@@ -4178,14 +5074,5 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         };
     </script>
 </body>
-
-</html>
-    </script>
-</body>
-
-</html></body>
-
-</html>
-</html></body>
 
 </html>
