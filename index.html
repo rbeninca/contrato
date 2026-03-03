@@ -1141,6 +1141,33 @@
             gap: 4px;
         }
 
+        .btn-delete-contract {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-delete-contract:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: var(--danger-light);
+        }
+
+        .btn-delete-contract svg {
+            width: 16px;
+            height: 16px;
+        }
+
         .contracts-empty {
             border: 2px dashed var(--border);
             background: var(--border-light);
@@ -3960,10 +3987,26 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                         <span>Valor: ${valorInicial ? 'R$ ' + valorInicial : '-'}</span>
                         <span>Atualizado: ${when}</span>
                     </div>
+                    <div class="contract-card-footer">
+                        <div class="contract-card-date">Salvo em: ${when}</div>
+                        <div class="contract-card-actions">
+                            <button type="button" class="btn-icon btn-secondary btn-danger-subtle btn-delete-contract" data-contract-id="${version.id}" title="Excluir contrato">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 `;
 
                 // Click seleciona, double-click abre
-                card.addEventListener('click', async function () {
+                card.addEventListener('click', async function (e) {
+                    // Não executar lógica de seleção se clicar no botão de exclusão
+                    if (e.target.closest('.btn-delete-contract')) return;
+                    
                     document.querySelectorAll('.contract-card.selected').forEach(c => c.classList.remove('selected'));
                     card.classList.add('selected');
                     selectedDashboardVersionId = version.id;
@@ -3988,6 +4031,16 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 card.addEventListener('dblclick', function () {
                     openSelectedVersion();
                 });
+
+                // Adicionar evento ao botão de exclusão
+                const deleteBtn = card.querySelector('.btn-delete-contract');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        await deleteContractFromCard(version.id, propertyText, tenantText, when);
+                    });
+                }
 
                 grid.appendChild(card);
             });
@@ -6114,6 +6167,27 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setContractEditorVisible(true);
             setContractEditorReadOnly(status !== 'draft');
             syncContractActionButtons(version);
+        }
+
+        async function deleteContractFromCard(contractId, propertyText, tenantText, when) {
+            const confirmDelete = window.confirm(`Excluir este contrato?\n${propertyText} — ${tenantText}\n(${when})`);
+            if (!confirmDelete) return;
+            if (!requestRandomDeleteConfirmation('Atenção: esta ação é irreversível e excluirá o contrato selecionado.')) return;
+
+            const updatedVersions = versionsCache.filter(item => item.id !== contractId);
+
+            if (openedVersionId === contractId) {
+                openedVersionId = null;
+            }
+
+            try {
+                await deleteVersionFromFirestore(contractId);
+                versionsCache = updatedVersions;
+                refreshVersionList();
+                alert('Contrato excluído com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao excluir contrato no Firestore.');
+            }
         }
 
         async function deleteSelectedVersion() {
