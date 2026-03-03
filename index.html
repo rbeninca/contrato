@@ -193,13 +193,14 @@
             margin-left: 240px;
             background: var(--bg-card);
             border-bottom: 1px solid var(--border);
-            padding: 14px 28px;
+            padding: 10px 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 50;
+            gap: 12px;
         }
 
         .header-left {
@@ -413,8 +414,9 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            padding: 24px;
+            padding: 20px;
             max-width: 480px;
+            margin-top: 0;
         }
 
         .editor-actions-sticky {
@@ -432,8 +434,9 @@
         .editor-panel h3 {
             font-size: 18px;
             font-weight: 700;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             color: var(--text-primary);
+            margin-top: 0;
         }
 
         .status-note {
@@ -641,6 +644,73 @@
             display: none !important;
         }
 
+        .filters-container {
+            display: block;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--border-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            animation: slideDown 0.2s ease-out;
+        }
+
+        .filters-container.hidden {
+            display: none;
+            animation: slideUp 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                max-height: 1000px;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+                max-height: 1000px;
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-8px);
+                max-height: 0;
+            }
+        }
+
+        .btn-filter-toggle {
+            width: 100%;
+            justify-content: flex-start;
+            margin-bottom: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-filter-toggle:hover {
+            background: var(--border-light);
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .btn-filter-toggle .filter-chevron {
+            transition: transform 0.2s;
+            margin-left: auto;
+        }
+
+        .btn-filter-toggle.open .filter-chevron {
+            transform: rotate(180deg);
+        }
+
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -816,6 +886,42 @@
 
         .tab-content.hidden {
             display: none;
+        }
+
+        /* Otimizações para tab-imoveis e tab-pessoas */
+        #tab-imoveis,
+        #tab-pessoas {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 16px;
+        }
+
+        #tab-imoveis > .contracts-dashboard-head,
+        #tab-pessoas > .contracts-dashboard-head {
+            grid-column: 1 / -1;
+        }
+
+        #tab-imoveis > .editor-grid:first-of-type,
+        #tab-pessoas > .version-wrap:first-of-type {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        #tab-imoveis > .editor-grid:nth-of-type(2),
+        #tab-pessoas > .version-wrap:not(:first-of-type) {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        #tab-imoveis > .editor-actions,
+        #tab-pessoas > .editor-actions {
+            grid-column: 1 / -1;
+        }
+
+        #property-list,
+        #person-list {
+            width: 100%;
+            max-height: 60vh;
         }
 
         .tech-panel {
@@ -1211,10 +1317,10 @@
 
         .content-layout {
             display: flex;
-            gap: 28px;
+            gap: 20px;
             align-items: flex-start;
             margin-left: 240px;
-            padding: 24px 28px;
+            padding: 8px 28px 24px;
             min-height: calc(100vh - 60px);
         }
 
@@ -1514,7 +1620,199 @@
             }
         }
 
-        /* Responsivo - Mobile */
+        /* Responsivo - Tablet (768px a 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            #tab-imoveis,
+            #tab-pessoas {
+                grid-template-columns: 200px 1fr;
+                gap: 12px;
+            }
+
+            #property-list,
+            #person-list {
+                max-height: 50vh;
+            }
+        }
+
+        /* Responsivo - Tablet (900px e menos) - coluna única */
+        @media (max-width: 900px) {
+            #tab-imoveis,
+            #tab-pessoas {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            #tab-imoveis > .editor-grid:first-of-type,
+            #tab-pessoas > .version-wrap:first-of-type {
+                grid-column: 1;
+            }
+
+            #tab-imoveis > .editor-grid:nth-of-type(2),
+            #tab-pessoas > .version-wrap:not(:first-of-type) {
+                grid-column: 1;
+            }
+
+            #property-list,
+            #person-list {
+                max-height: 40vh;
+                size: auto;
+            }
+
+            .property-note {
+                font-size: 12px;
+                margin-top: 8px;
+                padding: 8px;
+            }
+        }
+
+        /* Responsivo - Mobile (768px e menos) */
+            .content-layout {
+                padding: 16px 12px;
+                gap: 16px;
+            }
+
+            .editor-panel {
+                max-width: 100%;
+                padding: 16px;
+            }
+
+            .document-page {
+                padding: 40px 50px;
+            }
+
+            .contracts-grid {
+                gap: 6px;
+            }
+
+            .editor-grid {
+                gap: 12px;
+            }
+
+            .payment-list {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+
+        /* Responsivo - Tablet Grande (1025px não-desktop) */
+        @media (max-width: 768px) {
+            /* Reduzir espaçamento em formulários mobile */
+            .editor-section {
+                margin-bottom: 10px;
+                border-radius: var(--radius);
+            }
+
+            .editor-section-header {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .editor-section-content {
+                padding: 10px;
+            }
+
+            /* Reduzir padding/margin em cards e containers */
+            .version-wrap {
+                margin-top: 10px;
+            }
+
+            .version-wrap h4 {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            /* Otimizar grids de pessoa/imóvel */
+            #person-list,
+            #property-list,
+            #version-list,
+            #invite-list {
+                font-size: 11px;
+                line-height: 1.3;
+            }
+
+            /* Remove padding desnecessário em tech-panel */
+            .tech-panel {
+                padding: 10px;
+                margin-top: 12px;
+            }
+
+            .tech-title {
+                font-size: 11px;
+            }
+
+            /* Buttons em formulários mais compactos */
+            #btn-property-new,
+            #btn-person-new,
+            #btn-new-contract-dashboard,
+            #btn-carregar {
+                width: 100%;
+                margin-bottom: 6px;
+            }
+
+            .editor-actions {
+                flex-direction: column;
+            }
+
+            .editor-actions > button {
+                width: 100%;
+            }
+
+            /* Melhorias para inline-toggle em mobile */
+            .inline-toggle {
+                padding: 8px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+
+            /* Property note mais compacto */
+            .property-note {
+                padding: 6px;
+                font-size: 10px;
+                margin-top: 6px;
+            }
+
+            /* Reduzir espaçamento header em modals */
+            .modal-card {
+                max-width: 95vw;
+            }
+
+            .modal-title {
+                margin-bottom: 6px;
+            }
+
+            .modal-text {
+                margin-bottom: 12px;
+            }
+
+            .modal-actions {
+                margin-top: 12px;
+            }
+
+            /* Status note compacto */
+            .status-note {
+                padding: 4px 0;
+                margin-bottom: 6px;
+            }
+
+            /* Signatures mais compactas */
+            .signature-item {
+                min-height: 40px;
+            }
+
+            /* Field hints sutis */
+            .field-hint {
+                margin-top: 1px;
+                line-height: 1.2;
+            }
+
+            /* Reduzir espaço de inputs com error/focus */
+            .editor-field input:focus,
+            .editor-field textarea:focus,
+            .editor-field select:focus {
+                box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+            }
+        }
+
+        /* Responsive Design Final */
         @media (max-width: 900px) {
             .app-sidebar {
                 transform: translateX(-100%);
@@ -1527,19 +1825,1010 @@
 
             .app-header {
                 margin-left: 0;
+                padding: 8px 12px;
+                height: auto;
+            }
+
+            .header-title {
+                font-size: 18px;
             }
 
             .content-layout {
                 margin-left: 0;
-                padding: 16px;
+                padding: 6px 12px 16px;
                 flex-direction: column;
+                gap: 12px;
             }
 
             .header-menu-btn {
                 display: flex;
             }
+
+            .editor-grid {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .editor-panel {
+                max-width: 100%;
+                padding: 14px;
+                margin-top: 0;
+            }
+
+            .contracts-dashboard-head {
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .contracts-dashboard-title {
+                font-size: 20px;
+            }
+
+            .contract-card {
+                padding: 12px;
+            }
+
+            .contracts-grid {
+                gap: 6px;
+            }
         }
 
+        /* Responsivo - Mobile (768px e menos) */
+        @media (max-width: 768px) {
+            :root {
+                --radius: 8px;
+                --radius-lg: 12px;
+            }
+
+            .filters-container {
+                padding: 10px;
+                margin-bottom: 12px;
+            }
+
+            .btn-filter-toggle {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .btn-filter-toggle svg {
+                width: 12px;
+                height: 12px;
+            }
+
+            html, body {
+                font-size: 14px;
+            }
+
+            .app-sidebar {
+                width: 240px;
+                padding: 12px;
+            }
+
+            .sidebar-brand {
+                padding-bottom: 16px;
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+
+            .sidebar-logo {
+                width: 36px;
+                height: 36px;
+            }
+
+            .sidebar-logo svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .sidebar-brand-text strong {
+                font-size: 14px;
+            }
+
+            .sidebar-btn {
+                padding: 10px 10px;
+                gap: 10px;
+                font-size: 13px;
+            }
+
+            .sidebar-btn svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .app-header {
+                padding: 10px 12px;
+                gap: 8px;
+            }
+
+            .header-title {
+                font-size: 16px;
+            }
+
+            .sync-badge {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+
+            .header-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .header-btn-primary {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+
+            .content-layout {
+                padding: 8px 10px 16px;
+                gap: 16px;
+            }
+
+            .editor-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .editor-field label {
+                font-size: 12px;
+            }
+
+            .editor-field input,
+            .editor-field textarea,
+            .editor-field select {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+            .editor-panel {
+                padding: 14px;
+                max-width: 100%;
+            }
+
+            .editor-panel h3 {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+
+            .editor-section {
+                margin-bottom: 12px;
+            }
+
+            .editor-section-header {
+                padding: 10px 12px;
+            }
+
+            .editor-section-title {
+                font-size: 13px;
+                gap: 8px;
+            }
+
+            .editor-section-title svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            .editor-section-content {
+                padding: 12px;
+            }
+
+            .editor-actions,
+            .editor-actions-sticky {
+                padding-top: 12px;
+                gap: 6px;
+                margin-top: 12px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 8px 14px;
+                font-size: 12px;
+                min-height: 36px;
+            }
+
+            .btn-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            /* Contratos Dashboard */
+            .contracts-dashboard-head {
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .contracts-dashboard-title {
+                font-size: 18px;
+                margin: 0;
+            }
+
+            .contracts-dashboard-subtitle {
+                font-size: 12px;
+                margin-top: 2px;
+            }
+
+            .contract-card {
+                padding: 10px;
+                border-radius: var(--radius);
+            }
+
+            .contract-card-header {
+                margin-bottom: 8px;
+                gap: 8px;
+            }
+
+            .contract-card-title {
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+
+            .contract-card-status {
+                font-size: 9px;
+                padding: 3px 6px;
+            }
+
+            .contract-card-meta {
+                font-size: 11px;
+                margin-bottom: 6px;
+            }
+
+            .contract-card-details {
+                font-size: 11px;
+                gap: 6px 12px;
+                margin-top: 6px;
+                flex-wrap: wrap;
+            }
+
+            .contract-card-details span {
+                white-space: wrap;
+            }
+
+            .contract-card-footer {
+                margin-top: 8px;
+                padding-top: 8px;
+                gap: 8px;
+            }
+
+            .contract-card-date {
+                font-size: 10px;
+            }
+
+            .contract-card-actions {
+                gap: 3px;
+            }
+
+            .btn-delete-contract {
+                width: 28px;
+                height: 28px;
+            }
+
+            .btn-delete-contract svg {
+                width: 14px;
+                height: 14px;
+            }
+
+            .contracts-grid {
+                gap: 4px;
+            }
+
+            .contracts-empty {
+                padding: 32px 16px;
+                border-radius: var(--radius);
+            }
+
+            .contracts-empty-icon {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 12px;
+            }
+
+            .contracts-empty-icon svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .contracts-empty-title {
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+
+            .contracts-empty-text {
+                font-size: 12px;
+                margin-bottom: 12px;
+            }
+
+            /* Modais */
+            .modal-card {
+                max-width: 90vw;
+                padding: 16px;
+            }
+
+            .modal-title {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .modal-text {
+                font-size: 13px;
+                margin-bottom: 16px;
+            }
+
+            /* Tabs */
+            .tabs-container {
+                gap: 4px;
+            }
+
+            .tab-item {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            /* Payment Dashboard */
+            .payment-dashboard-head {
+                margin-bottom: 12px;
+            }
+
+            .payment-dashboard-title {
+                font-size: 16px;
+            }
+
+            .payment-dashboard-subtitle {
+                font-size: 12px;
+                margin: 2px 0 0;
+            }
+
+            .payment-toolbar {
+                flex-wrap: wrap;
+                gap: 6px 8px;
+                margin-bottom: 12px;
+            }
+
+            .payment-list {
+                gap: 6px;
+            }
+
+            /* Versão Wrap */
+            .version-wrap h4 {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+
+            .version-wrap {
+                margin-top: 8px;
+            }
+
+            /* Property Note */
+            .property-note {
+                font-size: 11px;
+                margin-top: 8px;
+            }
+
+            /* Inline Toggle */
+            .inline-toggle {
+                padding: 10px 10px;
+                margin-bottom: 10px;
+            }
+
+            .inline-toggle label {
+                font-size: 12px;
+                gap: 6px;
+            }
+
+            .inline-toggle input[type="checkbox"] {
+                width: 16px;
+                height: 16px;
+            }
+
+            /* Tech Panel */
+            .tech-panel {
+                padding: 12px;
+            }
+
+            .tech-title {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .tech-note {
+                font-size: 11px;
+                margin-bottom: 10px;
+            }
+
+            /* Signatures */
+            .signatures-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .signature-item {
+                min-height: 60px;
+            }
+
+            .signature-item .line {
+                margin-bottom: 6px;
+            }
+
+            .signature-item .role {
+                font-size: 11px;
+            }
+
+            /* Print Button */
+            .btn-print {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+
+            /* Payment List Item */
+            .payment-list-item {
+                padding: 10px;
+            }
+
+            /* Status Note */
+            .status-note {
+                font-size: 11px;
+                margin-bottom: 8px;
+            }
+
+            /* Field Hint */
+            .field-hint {
+                font-size: 10px;
+                margin-top: 2px;
+            }
+
+            /* Document Page */
+            .document-page {
+                margin: 0;
+                margin-top: 400px;
+            }
+
+            /* Otimizações para abas de imóveis e pessoas em mobile */
+            #tab-imoveis,
+            #tab-pessoas {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            #tab-imoveis > .editor-grid:first-of-type,
+            #tab-pessoas > .version-wrap:first-of-type {
+                grid-column: 1;
+            }
+
+            #tab-imoveis > .editor-grid:nth-of-type(2),
+            #tab-pessoas > .version-wrap:not(:first-of-type) {
+                grid-column: 1;
+            }
+
+            #property-list,
+            #person-list {
+                max-height: 30vh;
+                width: 100%;
+                font-size: 11px;
+            }
+
+            .version-wrap {
+                padding: 12px;
+                margin-top: 12px;
+            }
+
+            .version-wrap h4 {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .property-note {
+                font-size: 10px;
+                padding: 6px;
+                margin-top: 6px;
+            }
+
+            .editor-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .editor-actions button {
+                width: 100%;
+            }
+
+            #btn-property-new,
+            #btn-property-save,
+            #btn-property-duplicate,
+            #btn-person-new {
+                width: 100%;
+            }
+        }
+
+        /* Responsivo - Mobile Pequeno (480px e menos) */
+        @media (max-width: 480px) {
+            .app-sidebar {
+                width: 220px;
+                padding: 10px;
+            }
+
+            .sidebar-brand {
+                padding-bottom: 12px;
+                margin-bottom: 12px;
+                gap: 6px;
+            }
+
+            .sidebar-logo {
+                width: 32px;
+                height: 32px;
+            }
+
+            .sidebar-logo svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .sidebar-brand-text strong {
+                font-size: 13px;
+            }
+
+            .sidebar-brand-text span {
+                font-size: 10px;
+            }
+
+            .sidebar-btn {
+                padding: 8px 8px;
+                gap: 8px;
+                font-size: 12px;
+            }
+
+            .sidebar-btn svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            .app-header {
+                padding: 8px 10px;
+            }
+
+            .header-title {
+                font-size: 14px;
+            }
+
+            .header-right {
+                gap: 6px;
+            }
+
+            .sync-badge {
+                font-size: 9px;
+                padding: 3px 6px;
+            }
+
+            .header-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .header-btn-primary {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+
+            .content-layout {
+                padding: 6px;
+                gap: 12px;
+            }
+
+            .editor-grid {
+                gap: 8px;
+            }
+
+            .editor-field label {
+                font-size: 11px;
+            }
+
+            .editor-field input,
+            .editor-field textarea,
+            .editor-field select {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+
+            .editor-panel {
+                padding: 12px;
+            }
+
+            .editor-panel h3 {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 6px 12px;
+                font-size: 11px;
+                min-height: 32px;
+            }
+
+            .contracts-dashboard-title {
+                font-size: 16px;
+            }
+
+            .contracts-dashboard-subtitle {
+                font-size: 11px;
+            }
+
+            .contract-card {
+                padding: 8px;
+            }
+
+            .contract-card-title {
+                font-size: 12px;
+            }
+
+            .contract-card-meta {
+                font-size: 10px;
+                line-height: 1.3;
+            }
+
+            .contract-card-details {
+                font-size: 10px;
+                gap: 4px 8px;
+            }
+
+            .contracts-empty {
+                padding: 24px 12px;
+            }
+
+            .contracts-empty-icon {
+                width: 36px;
+                height: 36px;
+                margin-bottom: 10px;
+            }
+
+            .contracts-empty-icon svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .contracts-empty-title {
+                font-size: 13px;
+            }
+
+            .contracts-empty-text {
+                font-size: 11px;
+            }
+
+            .modal-card {
+                max-width: 95vw;
+                padding: 14px;
+                border-radius: var(--radius);
+            }
+
+            .modal-title {
+                font-size: 14px;
+            }
+
+            .modal-text {
+                font-size: 12px;
+            }
+
+            .modal-actions {
+                gap: 8px;
+            }
+
+            /* Otimizações adicionais para tab-imoveis e tab-pessoas em 480px */
+            #tab-imoveis .version-wrap,
+            #tab-pessoas .version-wrap {
+                padding: 10px;
+                margin-top: 8px;
+            }
+
+            #tab-imoveis .property-note,
+            #tab-pessoas .property-note {
+                font-size: 9px;
+                padding: 4px;
+                margin-top: 4px;
+            }
+
+            #tab-imoveis .editor-field label,
+            #tab-pessoas .editor-field label {
+                font-size: 10px;
+                margin-bottom: 3px;
+            }
+
+            #tab-imoveis .editor-field input,
+            #tab-imoveis .editor-field textarea,
+            #tab-imoveis .editor-field select,
+            #tab-pessoas .editor-field input,
+            #tab-pessoas .editor-field textarea,
+            #tab-pessoas .editor-field select {
+                padding: 5px 6px;
+                font-size: 14px;
+            }
+
+            #property-list li,
+            #person-list li {
+                padding: 6px;
+            }
+
+            /* Tabs */
+            .tabs-wrap {
+                gap: 2px;
+                padding: 2px;
+                margin-bottom: 16px;
+            }
+
+            .tab-btn {
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+
+            /* Payment List Mobile */
+            .payment-list {
+                grid-template-columns: 1fr;
+                gap: 6px;
+                max-height: none;
+                padding-right: 0;
+            }
+
+            .payment-item {
+                padding: 8px;
+            }
+
+            .payment-item-title {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .payment-item-meta {
+                font-size: 11px;
+                margin-bottom: 6px;
+            }
+
+            .payment-item-actions {
+                gap: 4px;
+            }
+
+            /* Document Page Mobile */
+            .document-page {
+                padding: 16px;
+                margin-top: 300px;
+                border-radius: var(--radius);
+            }
+
+            header {
+                margin-bottom: 20px;
+                padding-bottom: 12px;
+            }
+
+            h1 {
+                font-size: 14px;
+                letter-spacing: 0;
+            }
+
+            h2 {
+                font-size: 9px;
+                margin-top: 4px;
+                letter-spacing: 1px;
+            }
+
+            .content {
+                text-align: left;
+                font-size: 11px;
+                line-height: 1.4;
+            }
+
+            .clause {
+                margin-bottom: 10px;
+            }
+
+            .clause-title {
+                font-size: 11px;
+                margin-bottom: 4px;
+            }
+
+            .paragraph {
+                font-size: 11px;
+                margin-top: 6px;
+                text-indent: 20px;
+            }
+
+            .clause-list {
+                font-size: 11px;
+                margin-top: 6px;
+                margin-left: 16px;
+                padding-left: 12px;
+            }
+
+            .clause-list li {
+                margin-bottom: 4px;
+            }
+
+            .payment-box {
+                padding: 12px;
+                margin: 12px 0;
+                font-size: 10px;
+            }
+
+            .payment-box ul {
+                margin-top: 6px;
+                padding-left: 16px;
+            }
+
+            .payment-box li {
+                margin-bottom: 3px;
+                font-size: 10px;
+            }
+
+            footer {
+                font-size: 9px;
+                margin-top: 20px;
+            }
+
+            .signatures-grid {
+                gap: 12px;
+            }
+
+            .signature-item {
+                min-height: 50px;
+            }
+
+            .signature-item .line {
+                margin-bottom: 4px;
+            }
+
+            .signature-item .role {
+                font-size: 9px;
+            }
+
+            .witnesses {
+                margin-top: 20px;
+            }
+
+            .witnesses .signature-item {
+                min-height: 40px;
+            }
+
+            .memorial-section {
+                margin-top: 20px;
+                padding: 12px;
+            }
+
+            .memorial-title {
+                font-size: 12px;
+                margin-bottom: 8px;
+                letter-spacing: 0;
+            }
+
+            .memorial-note {
+                font-size: 9px;
+                padding: 1px 6px;
+                margin-bottom: 8px;
+            }
+
+            .memorial-text {
+                font-size: 11px;
+                line-height: 1.4;
+            }
+
+            .memorial-text p {
+                margin-bottom: 4px;
+            }
+
+            .memorial-text ul,
+            .memorial-text ol {
+                margin: 4px 0 6px 16px;
+                padding-left: 8px;
+            }
+
+            .memorial-text li {
+                margin-bottom: 2px;
+            }
+        }
+
+        /* Responsivo - Landscape Mobile */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .app-sidebar {
+                width: 180px;
+                padding: 8px 6px;
+            }
+
+            .sidebar-brand {
+                padding-bottom: 8px;
+                margin-bottom: 8px;
+                gap: 6px;
+            }
+
+            .sidebar-logo {
+                width: 30px;
+                height: 30px;
+            }
+
+            .sidebar-btn {
+                padding: 6px 8px;
+                gap: 6px;
+                font-size: 11px;
+            }
+
+            .app-header {
+                padding: 6px 10px;
+                height: 40px;
+            }
+
+            .header-title {
+                font-size: 13px;
+            }
+
+            .content-layout {
+                padding: 6px;
+                min-height: calc(100vh - 40px);
+            }
+
+            .editor-panel {
+                max-height: calc(100vh - 50px);
+            }
+
+            .document-page {
+                padding: 20px 30px;
+                margin-top: 0;
+            }
+        }
+
+        /* Responsivo - Ajustes gerais de layout em mobile */
+        @media (max-width: 600px) {
+            .content-layout.dashboard-mode {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .editor-panel {
+                order: 1;
+            }
+
+            .document-page {
+                order: 2;
+                max-width: 100%;
+            }
+
+            .tab-btn.active::after {
+                display: none;
+            }
+
+            /* Melhorias no modal em telas muito pequenas */
+            .modal-backdrop {
+                padding: 12px;
+            }
+
+            .modal-card {
+                border-radius: var(--radius);
+            }
+
+            /* Melhorias no select/input para mobile */
+            .editor-field input[type="number"],
+            .editor-field input[type="email"],
+            .editor-field input[type="text"],
+            .editor-field input[type="date"],
+            .editor-field textarea,
+            .editor-field select {
+                font-size: 16px;
+                padding: 10px;
+            }
+
+            /* Melhoria para evitar zoom em inputs */
+            input,
+            textarea,
+            select {
+                font-size: 16px !important;
+            }
+
+            /* Adicionar mais espaço em volta de botões tocáveis */
+            button {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            /* Melhorias no footer em mobile */
+            footer {
+                font-size: 10px;
+                padding: 8px;
+            }
+        }
+
+        /* Responsivo - Otimizações de print para mobile */
         /* Ajustes de Impressão */
         @media print {
             body {
@@ -1990,21 +3279,34 @@
                 <div class="version-wrap" id="contract-dashboard-section">
                     <div class="contracts-dashboard-head">
                         <div>
-                            <h4 class="contracts-dashboard-title">Meus contratos</h4>
-                            <p class="contracts-dashboard-subtitle">Gira e acompanhe os seus contratos de arrendamento.</p>
+                            <!-- <h4 class="contracts-dashboard-title">Meus contratos</h4> -->
+                            <p class="contracts-dashboard-subtitle">Contratos atuais.</p>
                         </div>
                         <button class="btn-primary" id="btn-new-contract-dashboard" type="button">Novo contrato</button>
                     </div>
-                    <div class="editor-grid">
-                        <div class="editor-field"><label for="version-filter-property">Filtrar por imóvel</label><select id="version-filter-property"></select></div>
-                        <div class="editor-field"><label for="version-filter-landlord">Filtrar por locador</label><select id="version-filter-landlord"></select></div>
-                        <div class="editor-field"><label for="version-filter-tenant">Filtrar por locatário</label><select id="version-filter-tenant"></select></div>
-                        <div class="editor-field"><label for="version-filter-role">Filtrar por papel</label><select id="version-filter-role"></select></div>
-                        <div class="editor-field"><label for="version-filter-participant">Filtrar por pessoa</label><select id="version-filter-participant"></select></div>
-                        <div class="editor-field"><label>&nbsp;</label><button class="btn-secondary" id="btn-clear-version-filters" type="button">Limpar filtros</button></div>
-                        <div class="editor-field full hidden">
-                            <label for="version-list">Lista de contratos</label>
-                            <select id="version-list" size="6"></select>
+                    <div style="margin-bottom: 12px;">
+                        <button class="btn-secondary btn-filter-toggle" id="btn-toggle-filters" type="button" style="display: flex; align-items: center; gap: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                            </svg>
+                            <span>Mostrar filtros</span>
+                            <svg class="filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: auto;">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="filters-container" class="filters-container hidden">
+                        <div class="editor-grid">
+                            <div class="editor-field"><label for="version-filter-property">Filtrar por imóvel</label><select id="version-filter-property"></select></div>
+                            <div class="editor-field"><label for="version-filter-landlord">Filtrar por locador</label><select id="version-filter-landlord"></select></div>
+                            <div class="editor-field"><label for="version-filter-tenant">Filtrar por locatário</label><select id="version-filter-tenant"></select></div>
+                            <div class="editor-field"><label for="version-filter-role">Filtrar por papel</label><select id="version-filter-role"></select></div>
+                            <div class="editor-field"><label for="version-filter-participant">Filtrar por pessoa</label><select id="version-filter-participant"></select></div>
+                            <div class="editor-field"><label>&nbsp;</label><button class="btn-secondary" id="btn-clear-version-filters" type="button">Limpar filtros</button></div>
+                            <div class="editor-field full hidden">
+                                <label for="version-list">Lista de contratos</label>
+                                <select id="version-list" size="6"></select>
+                            </div>
                         </div>
                     </div>
                     <div id="contracts-dashboard-grid" class="contracts-grid"></div>
@@ -2012,7 +3314,7 @@
                     <div class="editor-actions" style="margin-top: 10px;">
                         <button class="btn-primary" id="btn-carregar" type="button">Abrir contrato</button>
                         <button class="btn-secondary hidden" id="btn-open-invite-panel" type="button">Gerar convite</button>
-                        <button class="btn-secondary btn-danger-subtle" id="btn-excluir-versao" type="button">Excluir</button>
+                        
                     </div>
                 </div>
 
@@ -6373,6 +7675,24 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('nav-people').addEventListener('click', function () {
                 switchTab('pessoas');
             });
+
+            // Toggle de filtros de contrato
+            document.getElementById('btn-toggle-filters')?.addEventListener('click', function () {
+                const filtersContainer = document.getElementById('filters-container');
+                const btn = this;
+                const isHidden = filtersContainer.classList.contains('hidden');
+                
+                if (isHidden) {
+                    filtersContainer.classList.remove('hidden');
+                    btn.classList.add('open');
+                    btn.querySelector('span').textContent = 'Ocultar filtros';
+                } else {
+                    filtersContainer.classList.add('hidden');
+                    btn.classList.remove('open');
+                    btn.querySelector('span').textContent = 'Mostrar filtros';
+                }
+            });
+
 
             // Toggle sidebar no mobile
             const sidebarToggle = document.getElementById('sidebar-toggle');
