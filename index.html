@@ -3617,8 +3617,9 @@
                     <div class="editor-field"><label for="p-complemento">Complemento</label><input id="p-complemento"
                             type="text"></div>
                     <div class="editor-field"><label for="p-cep">CEP</label><input id="p-cep" type="text"></div>
-                    <div class="editor-field full"><label for="p-proprietario">Proprietário (opcional)</label><input
-                            id="p-proprietario" type="text"></div>
+                    <div class="editor-field full"><label for="p-proprietario">Proprietário (opcional)</label>
+                        <select id="p-proprietario"></select>
+                    </div>
                     <div class="editor-field full"><label><input id="p-memorial-enabled" type="checkbox"> Anexar
                             memorial ao contrato</label></div>
                     <div class="editor-field full"><label><input id="p-memorial-page-break" type="checkbox"> Iniciar
@@ -3713,9 +3714,15 @@
 
                 <div class="version-wrap" style="margin-bottom: 24px;">
                     <div class="editor-grid">
-                        <div class="editor-field full">
-                            <label for="dash-landlord-filter">Filtrar por Proprietário</label>
+                        <div class="editor-field">
+                            <label for="dash-landlord-filter">Filtrar por Locador</label>
                             <select id="dash-landlord-filter">
+                                <option value="">Todos os Locadores</option>
+                            </select>
+                        </div>
+                        <div class="editor-field">
+                            <label for="dash-owner-filter">Filtrar por Proprietário</label>
+                            <select id="dash-owner-filter">
                                 <option value="">Todos os Proprietários</option>
                             </select>
                         </div>
@@ -4600,6 +4607,33 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             return Array.from(merged.values());
         }
 
+        function refreshPropertyOwnerOptions() {
+            const select = document.getElementById('p-proprietario');
+            if (!select) return;
+
+            const currentValue = select.value;
+            select.innerHTML = '';
+
+            const emptyOption = document.createElement('option');
+            emptyOption.value = '';
+            emptyOption.textContent = '(Selecionar proprietário)';
+            select.appendChild(emptyOption);
+
+            const unifiedPeople = getUnifiedPeopleList();
+            unifiedPeople.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+            unifiedPeople.forEach((person) => {
+                const option = document.createElement('option');
+                option.value = person.id;
+                option.textContent = person.name || person.cpfCnpj || person.id;
+                select.appendChild(option);
+            });
+
+            if (currentValue && unifiedPeople.some(p => p.id === currentValue)) {
+                select.value = currentValue;
+            }
+        }
+
         function refreshParticipantRoleSelects() {
             const unifiedPeople = getUnifiedPeopleList();
             const selectIds = [
@@ -4633,6 +4667,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 const exists = unifiedPeople.some((person) => person.id === currentValue);
                 select.value = exists ? currentValue : '';
             });
+
+            refreshPropertyOwnerOptions();
         }
 
         function refreshVersionFilterOptions() {
@@ -7688,7 +7724,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             properties: [],
             contracts: [],
             paymentsByContract: {},
-            selectedLandlordId: ''
+            selectedLandlordId: '',
+            selectedOwnerId: ''
         };
 
         async function loadFinancialDashboard() {
@@ -7699,7 +7736,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 const ownerId = currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid;
                 if (!ownerId) throw new Error('Usuário não autenticado.');
 
-                // Carregar todas as pessoas para resolver nomes e popular o filtro
+                // Carregar todas as pessoas para resolver nomes e popular os filtros
                 if (landlordsCache && landlordsCache.length > 0) {
                     dashState.people = [...landlordsCache];
                 } else {
@@ -7717,18 +7754,37 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 dashState.landlords = [...dashState.people];
                 dashState.landlords.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
                 
-                const filter = document.getElementById('dash-landlord-filter');
-                filter.innerHTML = '<option value="">Todos os Proprietários</option>';
+                // Popular Filtro de Locador
+                const landlordFilter = document.getElementById('dash-landlord-filter');
+                landlordFilter.innerHTML = '<option value="">Todos os Locadores</option>';
+                
+                // Popular Filtro de Proprietário (mesma lista de pessoas)
+                const ownerFilter = document.getElementById('dash-owner-filter');
+                ownerFilter.innerHTML = '<option value="">Todos os Proprietários</option>';
+
                 dashState.landlords.forEach(l => {
                     if (!l.name) return;
-                    const opt = document.createElement('option');
-                    opt.value = l.id;
-                    opt.textContent = l.name;
-                    filter.appendChild(opt);
+                    
+                    const optL = document.createElement('option');
+                    optL.value = l.id;
+                    optL.textContent = l.name;
+                    landlordFilter.appendChild(optL);
+
+                    const optO = document.createElement('option');
+                    optO.value = l.id;
+                    optO.textContent = l.name;
+                    ownerFilter.appendChild(optO);
                 });
-                filter.value = dashState.selectedLandlordId;
-                filter.onchange = (e) => {
+
+                landlordFilter.value = dashState.selectedLandlordId;
+                landlordFilter.onchange = (e) => {
                     dashState.selectedLandlordId = e.target.value;
+                    renderFinancialDashboard();
+                };
+
+                ownerFilter.value = dashState.selectedOwnerId;
+                ownerFilter.onchange = (e) => {
+                    dashState.selectedOwnerId = e.target.value;
                     renderFinancialDashboard();
                 };
 
@@ -7751,8 +7807,10 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         function renderFinancialDashboard() {
             const filtered = dashState.contracts.filter(c => {
-                if (!dashState.selectedLandlordId) return true;
-                return c.participants?.landlordId === dashState.selectedLandlordId;
+                const refs = getVersionRefIds(c);
+                if (dashState.selectedLandlordId && refs.landlordId !== dashState.selectedLandlordId) return false;
+                if (dashState.selectedOwnerId && refs.ownerId !== dashState.selectedOwnerId) return false;
+                return true;
             });
 
             // Sumarizações
