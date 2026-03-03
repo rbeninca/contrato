@@ -693,10 +693,25 @@
             margin-top: 20px;
             padding-top: 16px;
             border-top: 1px solid var(--border);
+            justify-content: flex-start;
+            align-items: center;
         }
 
         .editor-actions .btn-primary {
-            margin-right: auto;
+            margin-right: 0;
+        }
+
+        .editor-actions .btn-primary,
+        .editor-actions .btn-secondary,
+        #btn-new-contract-dashboard {
+            min-height: 40px;
+        }
+
+        #btn-salvar,
+        #btn-property-save,
+        #btn-person-save,
+        #btn-new-contract-dashboard {
+            min-width: 170px;
         }
 
         .btn-danger-subtle {
@@ -1433,7 +1448,7 @@
                 </svg>
             </div>
             <div class="sidebar-brand-text">
-                <strong>ArrendaPro</strong>
+                <strong>B</strong>
                 <span>Gestão de contratos</span>
             </div>
         </div>
@@ -1622,11 +1637,77 @@
         </div>
     </div>
 
+    <div id="new-person-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="new-person-title">
+        <div class="modal-card">
+            <div id="new-person-title" class="modal-title">Nova pessoa</div>
+            <div id="new-person-description" class="modal-text">Cadastre uma nova pessoa. Role o formulário para preencher todos os campos necessários.</div>
+            <div class="editor-grid">
+                <div class="editor-field full"><label for="new-person-name">Nome</label><input id="new-person-name" type="text"></div>
+                <div class="editor-field"><label for="new-person-phone">Telefone</label><input id="new-person-phone" type="text"></div>
+                <div class="editor-field"><label for="new-person-email">E-mail</label><input id="new-person-email" type="text"></div>
+                <div class="editor-field"><label for="new-person-cpfcnpj">CPF</label><input id="new-person-cpfcnpj" type="text"></div>
+                <div class="editor-field"><label for="new-person-rg">RG</label><input id="new-person-rg" type="text" placeholder="0.000.000-0/SSP-PR"></div>
+                <div class="editor-field"><label for="new-person-nationality">Nacionalidade</label><input id="new-person-nationality" type="text" placeholder="brasileiro(a)"></div>
+                <div class="editor-field"><label for="new-person-profession">Profissão</label><input id="new-person-profession" type="text"></div>
+                <div class="editor-field"><label for="new-person-marital-status">Estado civil</label>
+                    <select id="new-person-marital-status">
+                        <option value="">(Selecionar)</option>
+                        <option value="solteiro">Solteiro(a)</option>
+                        <option value="casado">Casado(a)</option>
+                        <option value="divorciado">Divorciado(a)</option>
+                        <option value="viuvo">Viúvo(a)</option>
+                        <option value="uniao-estavel">União estável</option>
+                    </select>
+                </div>
+                <div class="editor-field"><label for="new-person-address-city">Cidade residência</label><input id="new-person-address-city" type="text"></div>
+                <div class="editor-field"><label for="new-person-address-state">Estado</label><input id="new-person-address-state" type="text"></div>
+                <div class="editor-field full"><label for="new-person-address-street">Endereço completo</label><input id="new-person-address-street" type="text"></div>
+                <div class="editor-field"><label for="new-person-birth-city">Cidade natal</label><input id="new-person-birth-city" type="text"></div>
+                <div class="editor-field"><label for="new-person-birth-state">Estado natal</label><input id="new-person-birth-state" type="text"></div>
+                <div class="editor-field"><label for="new-person-birth-date">Data nascimento</label><input id="new-person-birth-date" type="date"></div>
+                <div class="editor-field"><label for="new-person-father-name">Nome do pai</label><input id="new-person-father-name" type="text"></div>
+                <div class="editor-field"><label for="new-person-mother-name">Nome da mãe</label><input id="new-person-mother-name" type="text"></div>
+                <div class="editor-field"><label for="new-person-bank-account">Conta bancária</label><input id="new-person-bank-account" type="text"></div>
+                <div class="editor-field"><label for="new-person-pix-key">Chave PIX</label><input id="new-person-pix-key" type="text"></div>
+                <div class="editor-field full"><label for="new-person-qualification">Qualificação (override)</label><textarea id="new-person-qualification"></textarea></div>
+                <div class="editor-field full"><label for="new-person-notes">Observações</label><textarea id="new-person-notes"></textarea></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-new-person-cancel" type="button">Voltar</button>
+                <button class="btn-primary" id="btn-new-person-save" type="button">Salvar pessoa</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="new-property-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="new-property-title">
+        <div class="modal-card">
+            <div id="new-property-title" class="modal-title">Novo imóvel</div>
+            <div class="modal-text">Cadastre um novo imóvel. O formulário permite rolagem para preencher tudo.</div>
+            <div class="editor-grid">
+                <div class="editor-field full"><label for="new-property-label">Nome do imóvel (label)</label><input id="new-property-label" type="text" placeholder="Ex.: Casa 2482 - Jardim Universitário"></div>
+                <div class="editor-field"><label for="new-property-cidade">Cidade</label><input id="new-property-cidade" type="text"></div>
+                <div class="editor-field"><label for="new-property-estado">Estado</label><input id="new-property-estado" type="text" placeholder="PR"></div>
+                <div class="editor-field"><label for="new-property-bairro">Bairro</label><input id="new-property-bairro" type="text"></div>
+                <div class="editor-field"><label for="new-property-rua">Rua</label><input id="new-property-rua" type="text"></div>
+                <div class="editor-field"><label for="new-property-numero">Número</label><input id="new-property-numero" type="text"></div>
+                <div class="editor-field"><label for="new-property-complemento">Complemento</label><input id="new-property-complemento" type="text"></div>
+                <div class="editor-field"><label for="new-property-cep">CEP</label><input id="new-property-cep" type="text"></div>
+                <div class="editor-field full"><label for="new-property-owner">Proprietário (opcional)</label><input id="new-property-owner" type="text"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-new-property-cancel" type="button">Cancelar</button>
+                <button class="btn-primary" id="btn-new-property-save" type="button">Salvar imóvel</button>
+            </div>
+        </div>
+    </div>
+
     <div class="content-layout">
         <div class="editor-panel">
-            <h3>Dados do Contrato (não aparece na impressão)</h3>
-            <div id="gist-connection-note" class="status-note">Aguardando login Firebase...</div>
-            <div class="tabs-wrap">
+            <h3 class="hidden">Dados do Contrato (não aparece na impressão)</h3>
+            <div id="gist-connection-note" class="status-note hidden">Aguardando login Firebase...</div>
+            <div class="tabs-wrap hidden">
                 <button class="tab-btn active" id="tab-btn-contrato" type="button">Contratos</button>
                 <button class="tab-btn" id="tab-btn-imoveis" type="button">Imóveis</button>
                 <button class="tab-btn" id="tab-btn-pessoas" type="button">Pessoas</button>
@@ -1657,7 +1738,7 @@
                     <div id="contracts-dashboard-empty" class="contracts-empty hidden"></div>
                     <div class="editor-actions" style="margin-top: 10px;">
                         <button class="btn-primary" id="btn-carregar" type="button">Abrir contrato</button>
-                        <button class="btn-secondary" id="btn-open-invite-panel" type="button">Gerar convite</button>
+                        <button class="btn-secondary hidden" id="btn-open-invite-panel" type="button">Gerar convite</button>
                         <button class="btn-secondary btn-danger-subtle" id="btn-excluir-versao" type="button">Excluir</button>
                     </div>
                 </div>
@@ -1891,8 +1972,13 @@
             </div>
 
             <div id="tab-imoveis" class="tab-content hidden">
-                <div class="property-note">Cadastre imóveis para reaproveitar endereço, proprietário e memorial
-                    descritivo nos contratos.</div>
+                <div class="contracts-dashboard-head" style="margin-bottom: 10px;">
+                    <div>
+                        <h4 class="contracts-dashboard-title" style="font-size: 20px;">Imóveis</h4>
+                        <p class="contracts-dashboard-subtitle">Cadastre imóveis para reaproveitar endereço, proprietário e memorial descritivo nos contratos.</p>
+                    </div>
+                    <button class="btn-primary" id="btn-property-new" type="button">Novo imóvel</button>
+                </div>
                 <div class="editor-grid">
                     <div class="editor-field full"><label for="property-list">Imóveis cadastrados</label><select
                             id="property-list" size="6"></select></div>
@@ -1934,59 +2020,28 @@
                 </div>
                 <div class="editor-actions">
                     <button class="btn-primary" id="btn-property-save" type="button">Salvar imóvel</button>
-                    <button class="btn-secondary" id="btn-property-new" type="button">Novo</button>
                     <button class="btn-secondary" id="btn-property-duplicate" type="button">Duplicar</button>
                     <button class="btn-secondary btn-danger-subtle" id="btn-property-delete" type="button">Excluir</button>
                 </div>
             </div>
 
             <div id="tab-pessoas" class="tab-content hidden">
-                <div class="property-note">Cadastro único de pessoas reutilizável para todos os papéis do contrato.</div>
-
+                <div class="contracts-dashboard-head" style="margin-bottom: 10px;">
+                    <div>
+                        <h4 class="contracts-dashboard-title" style="font-size: 20px;">Pessoas</h4>
+                        <p class="contracts-dashboard-subtitle">Cadastro único de pessoas reutilizável para todos os papéis do contrato.</p>
+                    </div>
+                    <button class="btn-primary" id="btn-person-new" type="button">Nova pessoa</button>
+                </div>
                 <div class="version-wrap" style="margin-top: 10px;">
                     <h4>Pessoas</h4>
                     <div class="editor-grid">
                         <div class="editor-field full"><label for="person-list">Pessoas cadastradas</label><select id="person-list" size="8"></select></div>
                     </div>
-                    <div class="editor-grid" style="margin-top: 12px;">
-                        <div class="editor-field full"><label for="person-name">Nome</label><input id="person-name" type="text"></div>
-                        <div class="editor-field"><label for="person-phone">Telefone</label><input id="person-phone" type="text"></div>
-                        <div class="editor-field"><label for="person-email">E-mail</label><input id="person-email" type="text"></div>
-                        <div class="editor-field"><label for="person-cpfcnpj">CPF</label><input id="person-cpfcnpj" type="text"></div>
-                        <div class="editor-field"><label for="person-rg">RG</label><input id="person-rg" type="text" placeholder="0.000.000-0/SSP-PR"></div>
-                        <div class="editor-field"><label for="person-nationality">Nacionalidade</label><input id="person-nationality" type="text" placeholder="brasileiro(a)"></div>
-                        <div class="editor-field"><label for="person-profession">Profissão</label><input id="person-profession" type="text"></div>
-                        <div class="editor-field"><label for="person-marital-status">Estado civil</label>
-                            <select id="person-marital-status">
-                                <option value="">(Selecionar)</option>
-                                <option value="solteiro">Solteiro(a)</option>
-                                <option value="casado">Casado(a)</option>
-                                <option value="divorciado">Divorciado(a)</option>
-                                <option value="viuvo">Viúvo(a)</option>
-                                <option value="uniao-estavel">União estável</option>
-                            </select>
-                        </div>
-                        <div class="editor-field"><label for="person-address-city">Cidade residência</label><input id="person-address-city" type="text"></div>
-                        <div class="editor-field"><label for="person-address-state">Estado</label><input id="person-address-state" type="text"></div>
-                        <div class="editor-field full"><label for="person-address-street">Endereço completo</label><input id="person-address-street" type="text" placeholder="Rua Dom Pedro I, 2484, Apto 03, Jardim Universitário"></div>
-                        <div class="editor-field"><label for="person-birth-city">Cidade natal</label><input id="person-birth-city" type="text"></div>
-                        <div class="editor-field"><label for="person-birth-state">Estado natal</label><input id="person-birth-state" type="text"></div>
-                        <div class="editor-field"><label for="person-birth-date">Data nascimento</label><input id="person-birth-date" type="date"></div>
-                        <div class="editor-field"><label for="person-father-name">Nome do pai</label><input id="person-father-name" type="text"></div>
-                        <div class="editor-field"><label for="person-mother-name">Nome da mãe</label><input id="person-mother-name" type="text"></div>
-                        <div class="editor-field"><label for="person-bank-account">Conta bancária</label><input id="person-bank-account" type="text"></div>
-                        <div class="editor-field"><label for="person-pix-key">Chave PIX</label><input id="person-pix-key" type="text"></div>
-                        <div class="editor-field full"><label for="person-qualification">Qualificação (override)</label><textarea id="person-qualification" placeholder="Deixe vazio para gerar automaticamente"></textarea></div>
-                        <div class="editor-field full"><label for="person-notes">Observações</label><textarea id="person-notes"></textarea></div>
-                    </div>
-                    <div class="editor-actions">
-                        <button class="btn-primary" id="btn-person-save" type="button">Salvar pessoa</button>
-                        <button class="btn-secondary" id="btn-person-new" type="button">Novo</button>
-                        <button class="btn-secondary btn-danger-subtle" id="btn-person-delete" type="button">Excluir</button>
-                    </div>
+                    <div class="property-note" style="margin-top: 10px;">Dica: dê dois cliques em uma pessoa da lista para editar no modal.</div>
                 </div>
 
-                <div class="version-wrap" style="margin-top: 12px;">
+                <div class="version-wrap hidden" style="margin-top: 12px;">
                     <h4>Convites por papel</h4>
                     <div class="editor-grid">
                         <div class="editor-field"><label for="invite-contract-version">Contrato</label><select id="invite-contract-version"></select></div>
@@ -2357,6 +2412,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         let currentTenantId = null;
         let currentInvitationId = null;
         let lastGeneratedInviteUrl = '';
+        let editingPersonId = null;
         let propertyFormDirty = false;
         let lastPropertySelectionId = '';
         let lastLandlordSelectionId = '';
@@ -3813,6 +3869,160 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             refreshPeopleList();
         }
 
+        function resetNewPersonModalForm() {
+            setFieldValue('new-person-name', '');
+            setFieldValue('new-person-phone', '');
+            setFieldValue('new-person-email', '');
+            setFieldValue('new-person-cpfcnpj', '');
+            setFieldValue('new-person-rg', '');
+            setFieldValue('new-person-nationality', '');
+            setFieldValue('new-person-profession', '');
+            setFieldValue('new-person-marital-status', '');
+            setFieldValue('new-person-address-city', '');
+            setFieldValue('new-person-address-state', '');
+            setFieldValue('new-person-address-street', '');
+            setFieldValue('new-person-birth-city', '');
+            setFieldValue('new-person-birth-state', '');
+            setFieldValue('new-person-birth-date', '');
+            setFieldValue('new-person-father-name', '');
+            setFieldValue('new-person-mother-name', '');
+            setFieldValue('new-person-bank-account', '');
+            setFieldValue('new-person-pix-key', '');
+            setFieldValue('new-person-qualification', '');
+            setFieldValue('new-person-notes', '');
+        }
+
+        function fillNewPersonModalForm(person) {
+            setFieldValue('new-person-name', person?.name || '');
+            setFieldValue('new-person-phone', person?.phone || '');
+            setFieldValue('new-person-email', person?.email || '');
+            setFieldValue('new-person-cpfcnpj', person?.cpfCnpj || '');
+            setFieldValue('new-person-rg', person?.rg || '');
+            setFieldValue('new-person-nationality', person?.nationality || '');
+            setFieldValue('new-person-profession', person?.profession || '');
+            setFieldValue('new-person-marital-status', person?.maritalStatus || '');
+            setFieldValue('new-person-address-city', person?.address?.cidade || '');
+            setFieldValue('new-person-address-state', person?.address?.estado || '');
+            setFieldValue('new-person-address-street', person?.address?.rua || '');
+            setFieldValue('new-person-birth-city', person?.birthCity || '');
+            setFieldValue('new-person-birth-state', person?.birthState || '');
+            setFieldValue('new-person-birth-date', person?.birthDate || '');
+            setFieldValue('new-person-father-name', person?.fatherName || '');
+            setFieldValue('new-person-mother-name', person?.motherName || '');
+            setFieldValue('new-person-bank-account', person?.bankAccount || '');
+            setFieldValue('new-person-pix-key', person?.pixKey || '');
+            setFieldValue('new-person-qualification', person?.qualification || '');
+            setFieldValue('new-person-notes', person?.notes || '');
+        }
+
+        function configurePersonModalUi(isEditing) {
+            const title = document.getElementById('new-person-title');
+            const description = document.getElementById('new-person-description');
+            const saveButton = document.getElementById('btn-new-person-save');
+            if (title) title.textContent = isEditing ? 'Editar pessoa' : 'Nova pessoa';
+            if (description) description.textContent = isEditing
+                ? 'Edite os dados da pessoa selecionada e clique em salvar para atualizar.'
+                : 'Cadastre uma nova pessoa. Role o formulário para preencher todos os campos necessários.';
+            if (saveButton) saveButton.textContent = isEditing ? 'Salvar alterações' : 'Salvar pessoa';
+        }
+
+        function openNewPersonModal() {
+            const modal = document.getElementById('new-person-modal');
+            if (!modal) return;
+            editingPersonId = null;
+            configurePersonModalUi(false);
+            resetNewPersonModalForm();
+            modal.classList.remove('hidden');
+            document.getElementById('new-person-name')?.focus();
+        }
+
+        function openEditPersonModal(personId) {
+            const modal = document.getElementById('new-person-modal');
+            if (!modal) return;
+            const person = landlordsCache.find((item) => item.id === personId) || null;
+            if (!person) {
+                alert('Selecione uma pessoa válida para editar.');
+                return;
+            }
+
+            editingPersonId = person.id;
+            configurePersonModalUi(true);
+            fillNewPersonModalForm(person);
+            currentLandlordId = person.id;
+            currentTenantId = person.id;
+            refreshPeopleList();
+            modal.classList.remove('hidden');
+            document.getElementById('new-person-name')?.focus();
+        }
+
+        function closeNewPersonModal() {
+            const modal = document.getElementById('new-person-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            editingPersonId = null;
+        }
+
+        function buildNewPersonFromModal(base = null) {
+            const nowIso = new Date().toISOString();
+            return {
+                id: base?.id || generatePersonId('person'),
+                name: fieldValue('new-person-name'),
+                phone: fieldValue('new-person-phone'),
+                email: fieldValue('new-person-email'),
+                cpfCnpj: fieldValue('new-person-cpfcnpj'),
+                rg: fieldValue('new-person-rg'),
+                nationality: fieldValue('new-person-nationality'),
+                profession: fieldValue('new-person-profession'),
+                maritalStatus: fieldValue('new-person-marital-status'),
+                address: {
+                    cidade: fieldValue('new-person-address-city'),
+                    estado: fieldValue('new-person-address-state'),
+                    rua: fieldValue('new-person-address-street')
+                },
+                birthCity: fieldValue('new-person-birth-city'),
+                birthState: fieldValue('new-person-birth-state'),
+                birthDate: fieldValue('new-person-birth-date'),
+                fatherName: fieldValue('new-person-father-name'),
+                motherName: fieldValue('new-person-mother-name'),
+                bankAccount: fieldValue('new-person-bank-account'),
+                pixKey: fieldValue('new-person-pix-key'),
+                qualification: fieldValue('new-person-qualification'),
+                notes: fieldValue('new-person-notes'),
+                createdAt: base?.createdAt || nowIso,
+                updatedAt: nowIso
+            };
+        }
+
+        async function saveNewPersonFromModal() {
+            const existing = editingPersonId ? landlordsCache.find((item) => item.id === editingPersonId) : null;
+            const next = buildNewPersonFromModal(existing || null);
+            if (!next.name) {
+                alert('Informe o nome da pessoa.');
+                return;
+            }
+
+            try {
+                await saveLandlordToFirestore(next);
+                const index = landlordsCache.findIndex((item) => item.id === next.id);
+                if (index >= 0) landlordsCache[index] = next;
+                else landlordsCache.push(next);
+                tenantsCache = landlordsCache;
+                currentLandlordId = next.id;
+                currentTenantId = next.id;
+                refreshLandlordList();
+                refreshLandlordSelectInContract();
+                refreshTenantSelectInContract();
+                refreshParticipantRoleSelects();
+                refreshVersionFilterOptions();
+                refreshVersionList();
+                setPersonFormData(next);
+                closeNewPersonModal();
+                alert(existing ? 'Pessoa atualizada com sucesso.' : 'Pessoa salva com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao salvar pessoa no Firestore.');
+            }
+        }
+
         function refreshLandlordList() { refreshPeopleList(); }
         function refreshTenantList() { refreshPeopleList(); }
         function setLandlordFormData(landlord) { setPersonFormData(landlord); }
@@ -4417,6 +4627,78 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             refreshPropertyList();
         }
 
+        function resetNewPropertyModalForm() {
+            setFieldValue('new-property-label', '');
+            setFieldValue('new-property-cidade', '');
+            setFieldValue('new-property-estado', '');
+            setFieldValue('new-property-bairro', '');
+            setFieldValue('new-property-rua', '');
+            setFieldValue('new-property-numero', '');
+            setFieldValue('new-property-complemento', '');
+            setFieldValue('new-property-cep', '');
+            setFieldValue('new-property-owner', '');
+        }
+
+        function openNewPropertyModal() {
+            const modal = document.getElementById('new-property-modal');
+            if (!modal) return;
+            resetNewPropertyModalForm();
+            modal.classList.remove('hidden');
+            document.getElementById('new-property-label')?.focus();
+        }
+
+        function closeNewPropertyModal() {
+            const modal = document.getElementById('new-property-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+        }
+
+        function buildNewPropertyFromModal() {
+            const nowIso = new Date().toISOString();
+            const empty = createEmptyProperty();
+            return {
+                ...empty,
+                label: fieldValue('new-property-label'),
+                owner: fieldValue('new-property-owner'),
+                address: {
+                    cidade: fieldValue('new-property-cidade'),
+                    estado: fieldValue('new-property-estado'),
+                    bairro: fieldValue('new-property-bairro'),
+                    rua: fieldValue('new-property-rua'),
+                    numero: fieldValue('new-property-numero'),
+                    complemento: fieldValue('new-property-complemento'),
+                    cep: fieldValue('new-property-cep')
+                },
+                createdAt: nowIso,
+                updatedAt: nowIso
+            };
+        }
+
+        async function saveNewPropertyFromModal() {
+            const nextProperty = buildNewPropertyFromModal();
+            if (!nextProperty.label) {
+                alert('Informe o nome (label) do imóvel.');
+                return;
+            }
+
+            try {
+                await savePropertyToFirestore(nextProperty);
+                propertiesCache.push(nextProperty);
+                currentPropertyId = nextProperty.id;
+                propertyFormDirty = false;
+                refreshPropertyList();
+                refreshPropertySelectInContract();
+                refreshVersionFilterOptions();
+                refreshInviteContractOptions();
+                refreshVersionList();
+                setPropertyFormData(nextProperty);
+                closeNewPropertyModal();
+                alert('Imóvel salvo com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao salvar imóvel no Firestore.');
+            }
+        }
+
         async function saveCurrentProperty() {
             const existing = currentPropertyId ? propertiesCache.find((item) => item.id === currentPropertyId) : null;
             const nextProperty = getPropertyFormData(existing);
@@ -4704,6 +4986,10 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const btnNew = document.getElementById('btn-save-mode-new');
             const btnOverwrite = document.getElementById('btn-save-mode-overwrite');
             const btnCancel = document.getElementById('btn-save-mode-cancel');
+
+            if (!openedVersionId) {
+                return Promise.resolve('new');
+            }
 
             if (!modal || !btnNew || !btnOverwrite || !btnCancel) {
                 return Promise.resolve(openedVersionId ? 'overwrite' : 'new');
@@ -5225,6 +5511,22 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     closeContractPersonModal();
                 }
             });
+
+            document.getElementById('btn-new-person-cancel')?.addEventListener('click', closeNewPersonModal);
+            document.getElementById('btn-new-person-save')?.addEventListener('click', saveNewPersonFromModal);
+            document.getElementById('new-person-modal')?.addEventListener('click', function (event) {
+                if (event.target?.id === 'new-person-modal') {
+                    closeNewPersonModal();
+                }
+            });
+
+            document.getElementById('btn-new-property-cancel')?.addEventListener('click', closeNewPropertyModal);
+            document.getElementById('btn-new-property-save')?.addEventListener('click', saveNewPropertyFromModal);
+            document.getElementById('new-property-modal')?.addEventListener('click', function (event) {
+                if (event.target?.id === 'new-property-modal') {
+                    closeNewPropertyModal();
+                }
+            });
             const propertyFields = [
                 'p-label', 'p-cidade', 'p-estado', 'p-bairro', 'p-rua', 'p-numero', 'p-complemento', 'p-cep', 'p-proprietario',
                 'p-memorial-enabled', 'p-memorial-page-break', 'p-memorial-title', 'p-memorial-text', 'p-memorial-note'
@@ -5246,7 +5548,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 selectPropertyForEditor(nextId);
             });
 
-            document.getElementById('btn-property-new').addEventListener('click', beginNewProperty);
+            document.getElementById('btn-property-new').addEventListener('click', openNewPropertyModal);
             document.getElementById('btn-property-save').addEventListener('click', saveCurrentProperty);
             document.getElementById('btn-property-duplicate').addEventListener('click', duplicateCurrentProperty);
             document.getElementById('btn-property-delete').addEventListener('click', deleteCurrentProperty);
@@ -5257,9 +5559,16 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 selectPersonForEditor(nextId);
             });
 
-            document.getElementById('btn-person-new').addEventListener('click', beginNewPerson);
-            document.getElementById('btn-person-save').addEventListener('click', saveCurrentLandlord);
-            document.getElementById('btn-person-delete').addEventListener('click', deleteCurrentLandlord);
+            document.getElementById('person-list').addEventListener('dblclick', function () {
+                const personId = fieldValue('person-list');
+                if (!personId) {
+                    alert('Selecione uma pessoa para editar.');
+                    return;
+                }
+                openEditPersonModal(personId);
+            });
+
+            document.getElementById('btn-person-new').addEventListener('click', openNewPersonModal);
 
             document.getElementById('invite-list').addEventListener('change', function () {
                 currentInvitationId = fieldValue('invite-list') || null;
