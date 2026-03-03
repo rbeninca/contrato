@@ -4761,8 +4761,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         function getVersionRefIds(version) {
             return {
                 propertyId: (version.propertyId || version.data?.selectedPropertyId || '').toString().trim(),
-                landlordId: (version.landlordId || version.data?.selectedLandlordId || '').toString().trim(),
-                tenantId: (version.tenantId || version.data?.selectedTenantId || '').toString().trim()
+                landlordId: (version.landlordId || version.participants?.landlordId || version.data?.selectedPeople?.landlordId || version.data?.selectedLandlordId || '').toString().trim(),
+                tenantId: (version.tenantId || version.participants?.tenantId || version.data?.selectedPeople?.tenantId || version.data?.selectedTenantId || '').toString().trim(),
+                ownerId: (version.participants?.ownerId || version.data?.selectedPeople?.ownerId || '').toString().trim(),
+                pixPayeeId: (version.participants?.pixPayeeId || version.data?.selectedPeople?.pixPayeeId || '').toString().trim(),
+                guarantor1Id: (version.participants?.guarantor1Id || version.data?.selectedPeople?.guarantor1Id || '').toString().trim(),
+                guarantor2Id: (version.participants?.guarantor2Id || version.data?.selectedPeople?.guarantor2Id || '').toString().trim()
             };
         }
 
@@ -6827,10 +6831,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     fotos.push(file); // Salva o File para upload posterior
                 }
             }
+            const ownerId = fieldValue('p-proprietario');
+            const ownerObj = getUnifiedPeopleList().find(p => p.id === ownerId);
+            
             return {
                 id: baseProperty?.id || generatePropertyId(),
                 label: fieldValue('p-label'),
-                owner: fieldValue('p-proprietario'),
+                ownerId: ownerId,
+                owner: ownerObj ? ownerObj.name : fieldValue('p-proprietario'),
                 address: {
                     cidade: fieldValue('p-cidade'),
                     estado: fieldValue('p-estado'),
@@ -7106,6 +7114,16 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             applyPropertyToContractFields(property);
+            
+            // AUTOMATIZAÇÃO: Define o proprietário com base no imóvel selecionado
+            if (property.ownerId) {
+                setFieldValue('f-owner-selected', property.ownerId);
+                if (db.selectedPeople) db.selectedPeople.ownerId = property.ownerId;
+            } else if (property.owner) {
+                // Fallback para legados onde owner era texto
+                setFieldValue('f-imovel-proprietario', property.owner);
+            }
+
             render();
         }
 
