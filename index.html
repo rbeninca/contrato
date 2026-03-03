@@ -1465,6 +1465,32 @@
                 <span>Pessoas</span>
             </button>
         </nav>
+        <!-- Botão que só aparecerá para o Administrador Mestre -->
+<button id="btn-manage-access" style="display: none; background-color: var(--warning); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+  ⚙️ Gerenciar Acessos
+</button>
+
+<!-- Modal de Gerenciamento de Acessos -->
+<div id="access-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:24px; border-radius:8px; width:100%; max-width:400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-top:0; font-size:18px; color:var(--text-primary);">Usuários Autorizados</h2>
+    <p style="font-size:14px; color:var(--text-secondary); margin-bottom:16px;">Adicione o e-mail Google (Gmail) das pessoas que podem acessar e editar o sistema.</p>
+    
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <input type="email" id="new-user-email" placeholder="exemplo@gmail.com" style="flex:1; padding:8px; border:1px solid var(--border); border-radius:4px;">
+      <button id="btn-add-user" style="background:var(--success); color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Adicionar</button>
+    </div>
+
+    <ul id="authorized-users-list" style="list-style:none; padding:0; margin:0 0 16px 0; max-height:200px; overflow-y:auto;">
+      <!-- A lista de e-mails aparecerá aqui -->
+    </ul>
+
+    <div style="text-align:right;">
+      <button id="btn-close-access-modal" style="background:var(--secondary); color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Fechar</button>
+    </div>
+  </div>
+</div>
+            
         
         <div class="sidebar-footer">
             <div class="sidebar-user">
@@ -2337,6 +2363,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         let lastTenantSelectionId = '';
         let isApplyingPropertySelection = false;
         let currentAuthUser = null;
+        const MASTER_EMAIL = 'rbeninca@gmail.com';
 
         // === Avisos de conexão/estado ===
         function setGistConnectionNote(message, isError = false) {
@@ -2369,7 +2396,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             const normalizedFilters = filters || getVersionFiltersFromUi();
-            const remoteVersions = await window.ContractsRepo.listContracts(currentAuthUser.uid, normalizedFilters);
+            const remoteVersions = await window.ContractsRepo.listContracts(normalizedFilters);
             const keepOpened = !!options.keepOpened;
 
             versionsCache = remoteVersions;
@@ -2400,7 +2427,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
 
-            const remoteProperties = await window.PropertiesRepo.listProperties(currentAuthUser.uid);
+            const remoteProperties = await window.PropertiesRepo.listProperties();
             propertiesCache = remoteProperties;
             currentPropertyId = propertiesCache[0]?.id || null;
         }
@@ -2414,7 +2441,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
 
-            const remotePeople = await window.PeopleRepo.listPeople(currentAuthUser.uid);
+            const remotePeople = await window.PeopleRepo.listPeople();
             landlordsCache = remotePeople;
             tenantsCache = landlordsCache;
             currentLandlordId = landlordsCache[0]?.id || null;
@@ -2431,7 +2458,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
 
-            const remoteInvitations = await window.InvitationsRepo.listInvitations(currentAuthUser.uid);
+            const remoteInvitations = await window.InvitationsRepo.listInvitations();
             invitationsCache = remoteInvitations;
             currentInvitationId = invitationsCache[0]?.id || null;
         }
@@ -2522,8 +2549,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         }
 
         window.handleFirebaseAuthChanged = async function (user) {
+            const manageAccessBtn = document.getElementById('btn-manage-access');
+            const accessModal = document.getElementById('access-modal');
             currentAuthUser = user || null;
             if (!currentAuthUser) {
+                if (manageAccessBtn) manageAccessBtn.style.display = 'none';
+                if (accessModal) accessModal.style.display = 'none';
                 versionsCache = [];
                 openedVersionId = null;
                 propertiesCache = [];
@@ -2551,6 +2582,31 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 setPropertyFormData(createEmptyProperty());
                 setSyncStatus('Sem login Firebase');
                 setGistConnectionNote('Faça login para carregar versões, imóveis e pessoas do Firestore.', true);
+                return;
+            }
+
+            if (manageAccessBtn) manageAccessBtn.style.display = 'none';
+
+            try {
+                const fb = window.AppFirebase;
+                const testQuery = fb.query(fb.collection(fb.db, 'properties'), fb.limit(1));
+                await fb.getDocs(testQuery);
+
+                if (currentAuthUser?.email === MASTER_EMAIL && manageAccessBtn) {
+                    manageAccessBtn.style.display = 'inline-block';
+                    if (accessModal) {
+                        accessModal.style.display = 'flex';
+                        accessModal.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Acesso negado', error);
+                alert(`Acesso Negado: Seu e-mail (${currentAuthUser.email || 'sem e-mail'}) não tem permissão para usar este sistema.`);
+                try {
+                    await window.AppFirebase?.signOut(window.AppFirebase?.auth);
+                } catch (signOutError) {
+                    console.error('Falha ao deslogar usuário sem acesso', signOutError);
+                }
                 return;
             }
 
@@ -2586,6 +2642,81 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             } catch (error) {
                 setSyncStatus('Erro Firestore');
                 setGistConnectionNote(error.message || 'Falha ao carregar dados do Firestore.', true);
+            }
+        };
+
+        async function loadAuthorizedUsers() {
+            const modal = document.getElementById('access-modal');
+            const listEl = document.getElementById('authorized-users-list');
+            if (!modal || !listEl) return;
+
+            modal.style.display = 'flex';
+            listEl.innerHTML = '<li style="padding:8px; text-align:center; color:gray;">Carregando...</li>';
+
+            try {
+                const fb = window.AppFirebase;
+                const snapshot = await fb.getDocs(fb.collection(fb.db, 'authorized_users'));
+                listEl.innerHTML = '';
+
+                if (snapshot.empty) {
+                    listEl.innerHTML = '<li style="padding:8px; text-align:center; color:gray;">Nenhum usuário extra autorizado.</li>';
+                    return;
+                }
+
+                snapshot.forEach((item) => {
+                    const email = item.id;
+                    const li = document.createElement('li');
+                    li.style.display = 'flex';
+                    li.style.justifyContent = 'space-between';
+                    li.style.alignItems = 'center';
+                    li.style.padding = '8px';
+                    li.style.borderBottom = '1px solid var(--border-light)';
+                    li.innerHTML = `
+                        <span style="font-size:14px;">${email}</span>
+                        <button onclick="removeAuthorizedUser('${email}')" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">Remover</button>
+                    `;
+                    listEl.appendChild(li);
+                });
+            } catch (error) {
+                console.error(error);
+                listEl.innerHTML = '<li style="padding:8px; color:red;">Erro ao carregar lista. Você é o admin mestre?</li>';
+            }
+        }
+
+        async function addAuthorizedUserFromInput() {
+            const emailInput = document.getElementById('new-user-email');
+            if (!emailInput) return;
+
+            const email = emailInput.value.trim().toLowerCase();
+            if (!email || !email.includes('@')) {
+                alert('Por favor, digite um e-mail válido.');
+                return;
+            }
+
+            try {
+                const fb = window.AppFirebase;
+                await fb.setDoc(fb.doc(fb.db, 'authorized_users', email), {
+                    addedAt: new Date().toISOString(),
+                    addedBy: fb.auth.currentUser?.email || 'desconhecido'
+                });
+                emailInput.value = '';
+                await loadAuthorizedUsers();
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao adicionar usuário. Verifique se você é o administrador mestre.');
+            }
+        }
+
+        window.removeAuthorizedUser = async function (email) {
+            if (!confirm(`Tem certeza que deseja remover o acesso de ${email}?`)) return;
+
+            try {
+                const fb = window.AppFirebase;
+                await fb.deleteDoc(fb.doc(fb.db, 'authorized_users', email));
+                await loadAuthorizedUsers();
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao remover usuário.');
             }
         };
 
@@ -4969,6 +5100,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             applyDataFromSource();
             toggleLocatariaConjugeVisibility();
             toggleFiador2Visibility();
+
+            document.getElementById('btn-manage-access')?.addEventListener('click', loadAuthorizedUsers);
+            document.getElementById('btn-close-access-modal')?.addEventListener('click', function () {
+                document.getElementById('access-modal').style.display = 'none';
+            });
+            document.getElementById('btn-add-user')?.addEventListener('click', addAuthorizedUserFromInput);
 
             document.getElementById('f-financeiro-valor').addEventListener('input', function () {
                 syncValorExtensoFromValor();

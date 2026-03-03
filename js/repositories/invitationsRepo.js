@@ -377,14 +377,13 @@ async function bindInvitationContractParticipant(fb, invitation, person, spouse 
   };
 }
 
-async function listInvitations(ownerId, rawFilters = {}) {
+async function listInvitations(rawFilters = {}) {
   const fb = await waitForFirebase();
   const filters = normalizeFilters(rawFilters);
 
   try {
     const q = fb.query(
       fb.collection(fb.db, 'invitations'),
-      fb.where('ownerId', '==', ownerId),
       fb.orderBy('createdAt', 'desc')
     );
     const snap = await fb.getDocs(q);
@@ -392,8 +391,7 @@ async function listInvitations(ownerId, rawFilters = {}) {
     return applyFilters(normalized, filters);
   } catch {
     const qFallback = fb.query(
-      fb.collection(fb.db, 'invitations'),
-      fb.where('ownerId', '==', ownerId)
+      fb.collection(fb.db, 'invitations')
     );
     const snapFallback = await fb.getDocs(qFallback);
     const normalized = snapFallback.docs

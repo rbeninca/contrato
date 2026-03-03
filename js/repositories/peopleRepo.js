@@ -73,21 +73,19 @@ function normalizePersonPayload(raw) {
   };
 }
 
-async function listPeople(ownerId) {
+async function listPeople() {
   const fb = await waitForFirebase();
 
   try {
     const q = fb.query(
       fb.collection(fb.db, 'people'),
-      fb.where('ownerId', '==', ownerId),
       fb.orderBy('updatedAt', 'desc')
     );
     const snap = await fb.getDocs(q);
     return snap.docs.map((item) => normalizePersonPayload({ ...item.data(), id: item.id }));
   } catch {
     const qFallback = fb.query(
-      fb.collection(fb.db, 'people'),
-      fb.where('ownerId', '==', ownerId)
+      fb.collection(fb.db, 'people')
     );
     const snapFallback = await fb.getDocs(qFallback);
     return snapFallback.docs

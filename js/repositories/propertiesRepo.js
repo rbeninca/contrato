@@ -42,11 +42,10 @@ function normalizePropertyPayload(raw) {
   };
 }
 
-async function listProperties(ownerId) {
+async function listProperties() {
   const fb = await waitForFirebase();
   const q = fb.query(
     fb.collection(fb.db, 'properties'),
-    fb.where('ownerId', '==', ownerId),
     fb.orderBy('updatedAt', 'desc')
   );
   const snap = await fb.getDocs(q);

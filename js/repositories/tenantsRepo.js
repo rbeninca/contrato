@@ -57,21 +57,19 @@ function normalizeTenantPayload(raw) {
   };
 }
 
-async function listTenants(ownerId) {
+async function listTenants() {
   const fb = await waitForFirebase();
 
   try {
     const q = fb.query(
       fb.collection(fb.db, 'tenants'),
-      fb.where('ownerId', '==', ownerId),
       fb.orderBy('updatedAt', 'desc')
     );
     const snap = await fb.getDocs(q);
     return snap.docs.map((item) => normalizeTenantPayload({ ...item.data(), id: item.id }));
   } catch {
     const qFallback = fb.query(
-      fb.collection(fb.db, 'tenants'),
-      fb.where('ownerId', '==', ownerId)
+      fb.collection(fb.db, 'tenants')
     );
     const snapFallback = await fb.getDocs(qFallback);
     return snapFallback.docs
