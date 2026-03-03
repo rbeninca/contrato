@@ -5288,12 +5288,22 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             if (!window.PaymentsManager) return;
             await window.PaymentsManager.markAsPaid(contractId, paymentId, paidDate, paidAmount);
             await loadPaymentDashboard(contractId);
+            
+            // Se estiver na aba financeiro, atualiza os dados lá também
+            if (!document.getElementById('tab-financeiro').classList.contains('hidden')) {
+                await loadFinancialDashboard(true);
+            }
         }
 
         async function undoPayment(contractId, paymentId) {
             if (!window.PaymentsManager) return;
             await window.PaymentsManager.undoPayment(contractId, paymentId);
             await loadPaymentDashboard(contractId);
+
+            // Se estiver na aba financeiro, atualiza os dados lá também
+            if (!document.getElementById('tab-financeiro').classList.contains('hidden')) {
+                await loadFinancialDashboard(true);
+            }
         }
 
         async function undoPaymentAction(contractId, paymentId) {
@@ -7775,9 +7785,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             selectedOwnerId: ''
         };
 
-        async function loadFinancialDashboard() {
+        async function loadFinancialDashboard(silent = false) {
             const grid = document.getElementById('dash-contracts-grid');
-            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="spinner"></div><p>Carregando dados financeiros...</p></div>';
+            if (!silent) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="spinner"></div><p>Carregando dados financeiros...</p></div>';
+            }
 
             try {
                 const ownerId = currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid;
@@ -7936,7 +7948,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                         <div style="padding: 10px 16px; border-bottom: 1px solid var(--bg-main); display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <div style="font-size: 14px; font-weight: 500;">${new Date(p.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')}</div>
-                                <div style="font-size: 11px; color: ${statusColor}; font-weight: 700; text-transform: uppercase;">${statusLabel}</div>
+                                <div style="font-size: 11px; color: ${statusColor}; font-weight: 700; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                                    ${statusLabel}
+                                    ${p.status === 'paid' 
+                                        ? `<button class="btn-secondary" style="padding: 2px 6px; font-size: 9px;" type="button" onclick="undoPaymentAction('${c.id}','${p.id}')">Estornar</button>`
+                                        : (p.status === 'pending' ? `<button class="btn-primary" style="padding: 2px 6px; font-size: 9px;" type="button" onclick="openPaymentMarkModal('${c.id}','${p.id}','${p.amount || 0}','${p.dueDate || ''}')">Baixar</button>` : '')
+                                    }
+                                </div>
                             </div>
                             <div style="font-weight: 600;">${window.PaymentsManager.formatCurrencyBR(p.amount)}</div>
                         </div>
