@@ -1076,6 +1076,11 @@
             color: var(--success);
         }
 
+        .contract-card-status.closed {
+            background: #efe4ff;
+            color: #6f42c1;
+        }
+
         .contract-card-title {
             font-size: 14px;
             font-weight: 700;
@@ -1289,6 +1294,126 @@
             padding: 16px;
             margin: 16px 0;
             border-radius: var(--radius);
+        }
+
+        .payment-dashboard-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 20px;
+            margin-top: 12px;
+        }
+
+        .payment-dashboard-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .payment-dashboard-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .payment-dashboard-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .payment-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn-highlight {
+            box-shadow: 0 0 0 2px var(--warning-light);
+            border-color: var(--warning);
+            animation: pulse-highlight 1.5s infinite;
+        }
+
+        @keyframes pulse-highlight {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .payment-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 10px;
+            max-height: 65vh;
+            overflow-y: auto;
+            padding-right: 4px;
+            align-content: start;
+        }
+
+        .payment-item {
+            border: 1px solid var(--border);
+            border-left-width: 4px;
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            padding: 12px;
+        }
+
+        .payment-item.pending {
+            border-left-color: var(--warning);
+        }
+
+        .payment-item.paid {
+            border-left-color: var(--success);
+            background: var(--success-light);
+        }
+
+        .payment-item.overdue {
+            border-left-color: var(--danger);
+            background: #fff5f5;
+        }
+
+        .payment-item.canceled {
+            border-left-color: #a0aec0;
+            background: #f7fafc;
+            opacity: 0.85;
+        }
+
+        .payment-item.deleted {
+            border-left-color: #718096;
+            background: #f8f9fb;
+            opacity: 0.7;
+        }
+
+        .payment-item-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .payment-item-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .payment-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .payment-item-actions button {
+            flex: 1;
         }
 
         /* Área de Assinaturas */
@@ -1703,6 +1828,127 @@
         </div>
     </div>
 
+    <div id="payment-mark-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="payment-mark-title">
+        <div class="modal-card">
+            <div id="payment-mark-title" class="modal-title">Marcar parcela como paga</div>
+            <div class="editor-grid">
+                <div class="editor-field full"><label for="payment-mark-date">Data do pagamento</label><input id="payment-mark-date" type="date"></div>
+                <div class="editor-field full"><label for="payment-mark-correction">Correção monetária (R$)</label><input id="payment-mark-correction" type="text" placeholder="0,00"></div>
+                <div class="editor-field full"><label>Resumo do atraso</label><div id="payment-mark-breakdown" class="status-note">Sem atraso até o momento.</div></div>
+                <div class="editor-field full"><label for="payment-mark-value">Valor pago</label><input id="payment-mark-value" type="text" placeholder="0,00"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-payment-mark-cancel" type="button">Cancelar</button>
+                <button class="btn-primary" id="btn-payment-mark-confirm" type="button">Confirmar pagamento</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-adjustment-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="payment-adjustment-title">
+        <div class="modal-card">
+            <div id="payment-adjustment-title" class="modal-title">Renovar / Reajustar ciclo</div>
+            <div class="modal-text">Informe o índice acumulado (%), escolhendo o maior índice aplicável entre IGPM e IPCA.</div>
+            <div class="editor-grid">
+                <div class="editor-field full"><label for="payment-adjustment-percent">Índice de reajuste acumulado (%)</label><input id="payment-adjustment-percent" type="number" min="0" step="0.01" placeholder="Ex.: 8.5"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-payment-adjustment-cancel" type="button">Cancelar</button>
+                <button class="btn-primary" id="btn-payment-adjustment-confirm" type="button">Aplicar reajuste</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-manual-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="payment-manual-title">
+        <div class="modal-card">
+            <div id="payment-manual-title" class="modal-title">Adicionar pagamento manual</div>
+            <div class="modal-text">Crie um lançamento manual para um mês específico.</div>
+            <div class="editor-grid">
+                <div class="editor-field"><label for="payment-manual-month">Mês (monthIndex)</label><input id="payment-manual-month" type="number" min="1" step="1" placeholder="Ex.: 13"></div>
+                <div class="editor-field"><label for="payment-manual-date">Vencimento</label><input id="payment-manual-date" type="date"></div>
+                <div class="editor-field"><label for="payment-manual-amount">Valor</label><input id="payment-manual-amount" type="text" placeholder="0,00"></div>
+                <div class="editor-field"><label for="payment-manual-type">Tipo</label>
+                    <select id="payment-manual-type">
+                        <option value="rent">Aluguel</option>
+                        <option value="other">Outro</option>
+                        <option value="penalty">Multa</option>
+                    </select>
+                </div>
+                <div class="editor-field full"><label for="payment-manual-description">Descrição</label><textarea id="payment-manual-description" placeholder="Ex.: ajuste manual do mês"></textarea></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-payment-manual-cancel" type="button">Cancelar</button>
+                <button class="btn-primary" id="btn-payment-manual-confirm" type="button">Criar pagamento</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-clear-all-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="payment-clear-all-title">
+        <div class="modal-card">
+            <div id="payment-clear-all-title" class="modal-title">Limpar todos os pagamentos</div>
+            <div class="modal-text">
+                Esta ação remove permanentemente todos os pagamentos do contrato e <strong>não possui recuperação</strong>.
+                Para confirmar, digite exatamente o nome do imóvel abaixo.
+            </div>
+            <div class="editor-grid">
+                <div class="editor-field full">
+                    <label>Imóvel esperado para confirmação</label>
+                    <input id="payment-clear-all-expected" type="text" readonly>
+                </div>
+                <div class="editor-field full">
+                    <label for="payment-clear-all-confirm-name">Digite o nome do imóvel para confirmar</label>
+                    <input id="payment-clear-all-confirm-name" type="text" placeholder="Digite exatamente o nome do imóvel">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-payment-clear-all-cancel" type="button">Cancelar</button>
+                <button class="btn-danger" id="btn-payment-clear-all-confirm" type="button">Limpar sem recuperação</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="contract-close-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="contract-close-title">
+        <div class="modal-card">
+            <div id="contract-close-title" class="modal-title">Encerrar contrato</div>
+            <div class="modal-text">Ao encerrar, parcelas futuras pendentes serão canceladas e poderá ser criada multa rescisória de 10%.</div>
+            <div class="editor-grid">
+                <div class="editor-field full"><label for="contract-close-date">Data de encerramento</label><input id="contract-close-date" type="date"></div>
+                <div class="editor-field full"><label for="contract-close-reason">Motivo do encerramento</label><textarea id="contract-close-reason" placeholder="Ex.: rescisão antecipada solicitada pelo locatário"></textarea></div>
+                <div class="editor-field full"><label><input id="contract-close-confirm" type="checkbox"> Confirmo o encerramento do contrato.</label></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-contract-close-cancel" type="button">Cancelar</button>
+                <button class="btn-primary" id="btn-contract-close-confirm" type="button">Encerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="contract-reopen-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="contract-reopen-title">
+        <div class="modal-card">
+            <div id="contract-reopen-title" class="modal-title">Reabrir contrato</div>
+            <div class="modal-text">Escolha o status de reabertura. Os pagamentos existentes não serão regenerados.</div>
+            <div class="editor-grid">
+                <div class="editor-field full">
+                    <label for="contract-reopen-target">Reabrir como</label>
+                    <select id="contract-reopen-target">
+                        <option value="active">Ativo</option>
+                        <option value="draft">Rascunho</option>
+                    </select>
+                </div>
+                <div class="editor-field full"><label><input id="contract-reopen-confirm" type="checkbox"> Confirmo a reabertura do contrato.</label></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-contract-reopen-cancel" type="button">Cancelar</button>
+                <button class="btn-primary" id="btn-contract-reopen-confirm" type="button">Reabrir</button>
+            </div>
+        </div>
+    </div>
+
     <div class="content-layout">
         <div class="editor-panel">
             <h3 class="hidden">Dados do Contrato (não aparece na impressão)</h3>
@@ -1837,6 +2083,7 @@
                             <div class="editor-field"><label for="f-financeiro-extenso">Valor por Extenso</label><input id="f-financeiro-extenso" type="text" placeholder="Gerado automaticamente">
                             <span class="field-hint">Gerado automaticamente ao digitar o valor</span></div>
                             <div class="editor-field"><label for="f-financeiro-prazo">Prazo (meses)</label><input id="f-financeiro-prazo" type="text" placeholder="12"></div>
+                            <div class="editor-field"><label for="f-financeiro-vencimento-dia">Dia do vencimento</label><input id="f-financeiro-vencimento-dia" type="number" min="1" max="31" step="1" placeholder="10"><span class="field-hint">Ex.: 10</span></div>
                             <div class="editor-field"><label for="f-financeiro-inicio">Data de Início</label><input id="f-financeiro-inicio" type="text" placeholder="01/03/2026"></div>
                             <div class="editor-field"><label for="f-financeiro-termino">Data de Término</label><input id="f-financeiro-termino" type="text" placeholder="Calculado automaticamente">
                             <span class="field-hint">Calculado automaticamente com base no início e prazo</span></div>
@@ -1953,8 +2200,12 @@
 
                 <div class="editor-actions editor-actions-sticky">
                     <button class="btn-primary" id="btn-salvar" type="button">Salvar</button>
+                    <button class="btn-primary hidden" id="btn-activate-contract" type="button">Ativar contrato</button>
+                    <button class="btn-secondary btn-danger-subtle hidden" id="btn-close-contract" type="button">Encerrar contrato</button>
+                    <button class="btn-secondary hidden" id="btn-reopen-contract" type="button">Reabrir contrato</button>
+                    <button class="btn-secondary hidden" id="btn-return-draft-contract" type="button">Retornar para rascunho</button>
                     <button class="btn-secondary" id="btn-atualizar" type="button">Atualizar Contrato</button>
-                    <button class="btn-secondary" id="btn-close-contract-editor" type="button">Voltar ao dashboard</button>
+                    <button class="btn-secondary" id="btn-close-contract-editor" type="button">Voltar</button>
                 </div>
                 <div style="display:none;"><button id="btn-json" type="button"></button></div>
 
@@ -1967,6 +2218,31 @@
                         <div class="editor-field"><label>Coleção de imóveis</label><input type="text" value="properties" disabled></div>
                     </div>
                 </div>
+                </div>
+
+                <div id="payment-dashboard-section" class="hidden">
+                    <div class="payment-dashboard-panel">
+                        <div class="payment-dashboard-head">
+                            <div>
+                                <h4 id="payment-dashboard-title" class="payment-dashboard-title">Dashboard de Pagamentos</h4>
+                                <p id="payment-dashboard-subtitle" class="payment-dashboard-subtitle">Acompanhe as parcelas do ciclo atual.</p>
+                            </div>
+                        </div>
+
+                        <div class="payment-toolbar">
+                            <button class="btn-secondary" id="btn-payment-view-readonly" type="button">Visualizar contrato (somente leitura)</button>
+                            <button class="btn-primary" id="btn-payment-renew-cycle" type="button">Renovar / Reajustar Ciclo</button>
+                            <button class="btn-secondary" id="btn-payment-create-manual" type="button">Adicionar pagamento manual</button>
+                            <button class="btn-secondary btn-danger-subtle" id="btn-payment-clear-all" type="button">Limpar todos os pagamentos</button>
+                            <button class="btn-secondary" id="btn-payment-refresh" type="button">Atualizar pagamentos</button>
+                            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); padding:0 6px;">
+                                <input id="payment-filter-hide-deleted" type="checkbox" checked>
+                                Ocultar pagamentos excluídos
+                            </label>
+                        </div>
+
+                        <div id="payment-dashboard-list" class="payment-list"></div>
+                    </div>
                 </div>
 
             </div>
@@ -2116,7 +2392,7 @@
                     MENSAIS.
 
                     <div class="payment-box">
-                        <strong>FORMA DE PAGAMENTO:</strong> O ALUGUEL SERÁ PAGO IMPRETERIVELMENTE ATÉ O DIA 10 (DEZ) DO
+                        <strong>FORMA DE PAGAMENTO:</strong> O ALUGUEL SERÁ PAGO IMPRETERIVELMENTE ATÉ O DIA <span id="txt-vencimento-dia" class="var-text">10</span> DE CADA MÊS
                         MÊS ATRAVÉS DE PIX PARA:
                         <ul style="margin-top: 8px; list-style: none; padding-left: 0;">
                             <li>• <strong>Favorecida:</strong> <strong id="txt-pix-titular" class="var-text"></strong>
@@ -2324,6 +2600,7 @@
     <script type="module" src="./js/repositories/landlordsRepo.js"></script>
     <script type="module" src="./js/repositories/tenantsRepo.js"></script>
     <script type="module" src="./js/repositories/invitationsRepo.js"></script>
+    <script src="./js/paymentsManager.js"></script>
     <script type="module" src="./js/auth.js"></script>
     <script>
 
@@ -2350,6 +2627,7 @@
                 valor: "1.000,00",
                 extenso: "um mil reais",
                 prazo: "12",
+                vencimentoDia: "10",
                 inicio: "01 de janeiro de 2026",
                 termino: "01 de janeiro de 2027",
                 assinatura: "01 de janeiro de 2026"
@@ -2419,6 +2697,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         let lastTenantSelectionId = '';
         let isApplyingPropertySelection = false;
         let currentAuthUser = null;
+        let currentPaymentContractId = null;
+        let pendingPaymentAction = null;
         const MASTER_EMAIL = 'rbeninca@gmail.com';
 
         // === Avisos de conexão/estado ===
@@ -3094,6 +3374,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             return person?.name || '';
         }
 
+        function getPersonPhoneById(personId) {
+            if (!personId) return '';
+            const person = getUnifiedPeopleList().find((item) => item.id === personId);
+            return person?.phone || '';
+        }
+
         function getPropertyLabelById(propertyId) {
             if (!propertyId) return '';
             const property = propertiesCache.find((item) => item.id === propertyId);
@@ -3101,6 +3387,528 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         }
 
         let selectedDashboardVersionId = null;
+
+        function getContractStatus(version) {
+            const status = (version?.status || 'draft').toString().toLowerCase();
+            if (status === 'active' || status === 'closed') return status;
+            return 'draft';
+        }
+
+        function getContractStatusLabel(status) {
+            if (status === 'active') return 'Ativo';
+            if (status === 'closed') return 'Encerrado';
+            return 'Rascunho';
+        }
+
+        function getVersionById(versionId) {
+            return versionsCache.find((item) => item.id === versionId) || null;
+        }
+
+        function setContractEditorReadOnly(isReadOnly) {
+            const section = document.getElementById('contract-editor-section');
+            if (!section) return;
+
+            section.querySelectorAll('input, select, textarea').forEach((field) => {
+                field.disabled = !!isReadOnly;
+            });
+
+            const btnSalvar = document.getElementById('btn-salvar');
+            if (btnSalvar) btnSalvar.classList.toggle('hidden', !!isReadOnly);
+        }
+
+        function syncContractActionButtons(version) {
+            const btnActivate = document.getElementById('btn-activate-contract');
+            const btnClose = document.getElementById('btn-close-contract');
+            const btnReopen = document.getElementById('btn-reopen-contract');
+            const btnReturnDraft = document.getElementById('btn-return-draft-contract');
+            if (!btnActivate || !btnClose || !btnReopen || !btnReturnDraft) return;
+
+            if (!version?.id) {
+                btnActivate.classList.add('hidden');
+                btnClose.classList.add('hidden');
+                btnReopen.classList.add('hidden');
+                btnReturnDraft.classList.add('hidden');
+                btnActivate.dataset.contractId = '';
+                btnClose.dataset.contractId = '';
+                btnReopen.dataset.contractId = '';
+                btnReturnDraft.dataset.contractId = '';
+                return;
+            }
+
+            const status = getContractStatus(version);
+            btnActivate.classList.toggle('hidden', status !== 'draft');
+            btnClose.classList.toggle('hidden', status !== 'active');
+            btnReopen.classList.toggle('hidden', status !== 'closed');
+            btnReturnDraft.classList.toggle('hidden', status === 'draft');
+            btnActivate.dataset.contractId = version.id;
+            btnClose.dataset.contractId = version.id;
+            btnReopen.dataset.contractId = version.id;
+            btnReturnDraft.dataset.contractId = version.id;
+        }
+
+        function setPaymentDashboardVisible(visible) {
+            const editor = document.getElementById('contract-editor-section');
+            const dashboard = document.getElementById('contract-dashboard-section');
+            const payment = document.getElementById('payment-dashboard-section');
+            const layout = document.querySelector('.content-layout');
+
+            if (editor) editor.classList.add('hidden');
+            if (dashboard) dashboard.classList.toggle('hidden', !!visible);
+            if (payment) payment.classList.toggle('hidden', !visible);
+            if (layout) layout.classList.toggle('dashboard-mode', true);
+        }
+
+        function closePaymentDashboard() {
+            currentPaymentContractId = null;
+            setPaymentDashboardVisible(false);
+        }
+
+        function openContractReadOnlyFromDashboard(contractId) {
+            if (!contractId) return;
+            const version = getVersionById(contractId);
+            if (!version) {
+                alert('Contrato não encontrado no cache local. Atualize a lista.');
+                return;
+            }
+
+            openedVersionId = version.id;
+            setFormData(version.data);
+            syncValorExtensoFromValor();
+            render();
+            setContractEditorVisible(true);
+            setContractEditorReadOnly(true);
+            syncContractActionButtons(version);
+        }
+
+        function openCloseContractModal(contractId) {
+            const modal = document.getElementById('contract-close-modal');
+            const dateInput = document.getElementById('contract-close-date');
+            const reasonInput = document.getElementById('contract-close-reason');
+            const confirmInput = document.getElementById('contract-close-confirm');
+            if (!modal || !dateInput || !reasonInput || !confirmInput) return;
+            dateInput.value = new Date().toISOString().slice(0, 10);
+            reasonInput.value = '';
+            confirmInput.checked = false;
+            pendingPaymentAction = { contractId };
+            modal.classList.remove('hidden');
+        }
+
+        function closeCloseContractModal() {
+            document.getElementById('contract-close-modal')?.classList.add('hidden');
+            pendingPaymentAction = null;
+        }
+
+        function openReopenContractModal(contractId) {
+            const modal = document.getElementById('contract-reopen-modal');
+            const targetSelect = document.getElementById('contract-reopen-target');
+            const confirmInput = document.getElementById('contract-reopen-confirm');
+            if (!modal || !targetSelect || !confirmInput) return;
+            targetSelect.value = 'active';
+            confirmInput.checked = false;
+            pendingPaymentAction = { contractId };
+            modal.classList.remove('hidden');
+        }
+
+        function closeReopenContractModal() {
+            document.getElementById('contract-reopen-modal')?.classList.add('hidden');
+            pendingPaymentAction = null;
+        }
+
+        function getPaymentVisualStatus(payment) {
+            const base = (payment?.status || 'pending').toString().toLowerCase();
+            if (base === 'canceled') return 'canceled';
+            if (base === 'deleted') return 'deleted';
+            if (base === 'paid') return 'paid';
+            const due = payment?.dueDate ? new Date(`${payment.dueDate}T00:00:00`) : null;
+            if (due && !Number.isNaN(due.getTime()) && due.getTime() < Date.now()) {
+                return 'overdue';
+            }
+            return 'pending';
+        }
+
+        function recalculatePaymentMarkValue() {
+            const dateInput = document.getElementById('payment-mark-date');
+            const valueInput = document.getElementById('payment-mark-value');
+            const correctionInput = document.getElementById('payment-mark-correction');
+            const breakdownEl = document.getElementById('payment-mark-breakdown');
+            if (!dateInput || !valueInput || !breakdownEl || !window.PaymentsManager || !pendingPaymentAction?.baseAmount) return;
+
+            const breakdown = window.PaymentsManager.calculateLatePaymentBreakdown(
+                pendingPaymentAction.baseAmount,
+                pendingPaymentAction.dueDate,
+                dateInput.value,
+                correctionInput?.value || 0
+            );
+
+            valueInput.value = String(breakdown.totalAmount || 0).replace('.', ',');
+            if (breakdown.lateDays > 0) {
+                const fineText = window.PaymentsManager.formatCurrencyBR(breakdown.fineAmount || 0);
+                const interestText = window.PaymentsManager.formatCurrencyBR(breakdown.interestAmount || 0);
+                const correctionText = window.PaymentsManager.formatCurrencyBR(breakdown.correctionAmount || 0);
+                breakdownEl.textContent = `Atraso: ${breakdown.lateDays} dia(s) • Multa 2%: ${fineText} • Juros 1% a.m.: ${interestText} • Correção: ${correctionText}`;
+            } else {
+                const correctionText = window.PaymentsManager.formatCurrencyBR(breakdown.correctionAmount || 0);
+                breakdownEl.textContent = `Sem atraso. Correção monetária informada: ${correctionText}.`;
+            }
+        }
+
+        function openPaymentMarkModal(contractId, paymentId, amount, dueDate) {
+            const modal = document.getElementById('payment-mark-modal');
+            const dateInput = document.getElementById('payment-mark-date');
+            const valueInput = document.getElementById('payment-mark-value');
+            const correctionInput = document.getElementById('payment-mark-correction');
+            if (!modal || !dateInput || !valueInput) return;
+
+            const todayIso = new Date().toISOString().slice(0, 10);
+            dateInput.value = todayIso;
+            if (correctionInput) correctionInput.value = '0,00';
+            pendingPaymentAction = { contractId, paymentId, baseAmount: Number(amount || 0), dueDate: dueDate || null };
+            modal.classList.remove('hidden');
+            recalculatePaymentMarkValue();
+        }
+
+        function closePaymentMarkModal() {
+            const modal = document.getElementById('payment-mark-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            pendingPaymentAction = null;
+        }
+
+        function openAdjustmentModal(contractId) {
+            const modal = document.getElementById('payment-adjustment-modal');
+            const input = document.getElementById('payment-adjustment-percent');
+            if (!modal || !input) return;
+            input.value = '';
+            pendingPaymentAction = { contractId };
+            modal.classList.remove('hidden');
+            input.focus();
+        }
+
+        function closeAdjustmentModal() {
+            const modal = document.getElementById('payment-adjustment-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            pendingPaymentAction = null;
+        }
+
+        function openManualPaymentModal(contractId) {
+            const modal = document.getElementById('payment-manual-modal');
+            if (!modal) return;
+            const today = new Date().toISOString().slice(0, 10);
+            setFieldValue('payment-manual-month', '');
+            setFieldValue('payment-manual-date', today);
+            setFieldValue('payment-manual-amount', '');
+            setFieldValue('payment-manual-type', 'rent');
+            setFieldValue('payment-manual-description', '');
+            pendingPaymentAction = { contractId };
+            modal.classList.remove('hidden');
+        }
+
+        function closeManualPaymentModal() {
+            const modal = document.getElementById('payment-manual-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            pendingPaymentAction = null;
+        }
+
+        function normalizeConfirmationText(value) {
+            return String(value || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
+        }
+
+        function requestRandomDeleteConfirmation(message) {
+            const challenge = String(Math.floor(1000 + Math.random() * 9000));
+            const typed = window.prompt(`${message}\nDigite o número ${challenge} para confirmar:`);
+            if (typed === null) return false;
+            if (typed.trim() !== challenge) {
+                alert('Confirmação inválida. Operação cancelada.');
+                return false;
+            }
+            return true;
+        }
+
+        function openClearAllPaymentsModal(contractId) {
+            const modal = document.getElementById('payment-clear-all-modal');
+            const expectedInput = document.getElementById('payment-clear-all-expected');
+            const typedInput = document.getElementById('payment-clear-all-confirm-name');
+            if (!modal || !expectedInput || !typedInput) return;
+
+            const version = getVersionById(contractId);
+            if (!version) {
+                alert('Contrato não encontrado para confirmar a limpeza.');
+                return;
+            }
+
+            const propertyLabel = getPropertyLabelById(getVersionRefIds(version).propertyId) || 'Imóvel sem identificação';
+            expectedInput.value = propertyLabel;
+            typedInput.value = '';
+            pendingPaymentAction = { contractId, expectedPropertyLabel: propertyLabel };
+            modal.classList.remove('hidden');
+            typedInput.focus();
+        }
+
+        function closeClearAllPaymentsModal() {
+            const modal = document.getElementById('payment-clear-all-modal');
+            const typedInput = document.getElementById('payment-clear-all-confirm-name');
+            if (typedInput) typedInput.value = '';
+            if (modal) modal.classList.add('hidden');
+            pendingPaymentAction = null;
+        }
+
+        async function loadPaymentDashboard(contractId) {
+            if (!contractId || !window.PaymentsManager) return;
+            currentPaymentContractId = contractId;
+
+            const version = getVersionById(contractId);
+            if (!version) {
+                alert('Contrato não encontrado no cache local. Atualize a lista.');
+                return;
+            }
+
+            const titleEl = document.getElementById('payment-dashboard-title');
+            const subtitleEl = document.getElementById('payment-dashboard-subtitle');
+            const listEl = document.getElementById('payment-dashboard-list');
+            const renewBtn = document.getElementById('btn-payment-renew-cycle');
+            if (!titleEl || !subtitleEl || !listEl || !renewBtn) return;
+
+            setPaymentDashboardVisible(true);
+
+            const propertyLabel = getPropertyLabelById(getVersionRefIds(version).propertyId) || 'Contrato';
+            titleEl.textContent = `Pagamentos • ${propertyLabel}`;
+
+            try {
+                const dashboard = await window.PaymentsManager.loadPaymentDashboard(contractId);
+                const payments = dashboard.payments || [];
+                const hideDeleted = !!document.getElementById('payment-filter-hide-deleted')?.checked;
+                const displayPayments = hideDeleted
+                    ? payments.filter((payment) => getPaymentVisualStatus(payment) !== 'deleted')
+                    : payments;
+                const statusSource = (dashboard.contract && dashboard.contract.status)
+                    ? dashboard.contract
+                    : (version && version.status ? version : { status: 'draft' });
+                const contractStatus = getContractStatus(statusSource);
+                syncContractActionButtons({ ...(version || {}), status: contractStatus, id: contractId });
+
+                const refs = getVersionRefIds(version);
+                const participants = version?.participants || version?.data?.selectedPeople || {};
+                const tenantName = getPersonNameById(refs.tenantId) || version?.data?.locataria?.nome || 'Inquilino não informado';
+                const tenantPhone = getPersonPhoneById(refs.tenantId) || '-';
+                const guarantorId = participants?.guarantor1Id || participants?.guarantor2Id || '';
+                const guarantorName = getPersonNameById(guarantorId) || version?.data?.fiadores?.[0]?.nome || 'Fiador não informado';
+                const guarantorPhone = getPersonPhoneById(guarantorId) || '-';
+
+                subtitleEl.textContent = `Inquilino: ${tenantName} (${tenantPhone}) • Fiador: ${guarantorName} (${guarantorPhone}) • Total ${payments.length} parcela(s) • ciclo atual ${dashboard.cycleNumber} (${dashboard.cycleStartIndex} a ${dashboard.cycleEndIndex})`;
+                renewBtn.classList.toggle('btn-highlight', !!dashboard.canRenewCycle);
+                renewBtn.classList.toggle('hidden', contractStatus !== 'active');
+
+                if (!displayPayments.length) {
+                    listEl.innerHTML = hideDeleted
+                        ? '<div class="contracts-empty">Nenhuma parcela para exibir com o filtro atual.</div>'
+                        : '<div class="contracts-empty">Nenhuma parcela encontrada para este contrato.</div>';
+                    return;
+                }
+
+                listEl.innerHTML = displayPayments.map((payment) => {
+                    const visualStatus = getPaymentVisualStatus(payment);
+                    const statusLabel = visualStatus === 'paid'
+                        ? 'Pago'
+                        : visualStatus === 'overdue'
+                            ? 'Atrasado'
+                            : visualStatus === 'canceled'
+                                ? 'Cancelado'
+                                : visualStatus === 'deleted'
+                                    ? 'Excluído'
+                                    : 'Pendente';
+                    const dueLabel = payment.dueDate ? new Date(`${payment.dueDate}T00:00:00`).toLocaleDateString('pt-BR') : '-';
+                    const amountText = window.PaymentsManager.formatCurrencyBR(payment.amount || 0);
+                    const paidText = payment.paidAmount != null ? window.PaymentsManager.formatCurrencyBR(payment.paidAmount) : '-';
+                    const isActionDisabled = visualStatus === 'canceled' || visualStatus === 'deleted';
+                    const deletedNote = visualStatus === 'deleted' && payment.deletedReason
+                        ? `<div class="payment-item-meta"><span><strong>Observação:</strong> ${payment.deletedReason}</span></div>`
+                        : '';
+
+                    return `
+                        <div class="payment-item ${visualStatus}" data-visual-status="${visualStatus}">
+                            <div class="payment-item-title">Parcela ${payment.monthIndex} • ${statusLabel}${payment.type === 'penalty' ? ' • Multa' : ''}</div>
+                            <div class="payment-item-meta"><span>Vencimento: ${dueLabel}</span><strong>${amountText}</strong></div>
+                            <div class="payment-item-meta"><span>Pago: ${paidText}</span><span>${payment.paidDate ? new Date(`${payment.paidDate}T00:00:00`).toLocaleDateString('pt-BR') : ''}</span></div>
+                            ${deletedNote}
+                            <div class="payment-item-actions">
+                                ${visualStatus === 'paid'
+                            ? `<button class="btn-secondary" type="button" onclick="undoPaymentAction('${contractId}','${payment.id}')">Remover baixa</button>`
+                            : `<button class="btn-primary" type="button" ${isActionDisabled ? 'disabled' : ''} onclick="openPaymentMarkModal('${contractId}','${payment.id}','${payment.amount || 0}','${payment.dueDate || ''}')">Marcar como pago</button>`}
+                                <button class="btn-secondary" type="button" ${isActionDisabled ? 'disabled' : ''} onclick="editPaymentAction('${contractId}','${payment.id}','${payment.amount || 0}')">Editar valor</button>
+                                <button class="btn-secondary btn-danger-subtle" type="button" ${isActionDisabled ? 'disabled' : ''} onclick="deletePaymentAction('${contractId}','${payment.id}')">Excluir</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const nextPendingItem = listEl.querySelector('.payment-item.pending, .payment-item.overdue');
+                if (nextPendingItem) {
+                    nextPendingItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                }
+            } catch (error) {
+                listEl.innerHTML = '<div class="contracts-empty">Falha ao carregar pagamentos.</div>';
+                alert(error.message || 'Não foi possível carregar o dashboard de pagamentos.');
+            }
+        }
+
+        async function activateContract(contractId) {
+            if (!contractId || !window.PaymentsManager) return;
+            const version = getVersionById(contractId);
+            if (!version) return;
+            if (!window.confirm('Confirmar ativação do contrato?')) return;
+
+            try {
+                await window.PaymentsManager.activateContract(contractId, version);
+                await loadVersionsFromFirestore(getVersionFiltersFromUi(), { keepOpened: true });
+                refreshVersionList();
+                const refreshed = getVersionById(contractId);
+                syncContractActionButtons(refreshed);
+                alert('Contrato ativado com sucesso.');
+                await loadPaymentDashboard(contractId);
+            } catch (error) {
+                alert(error.message || 'Falha ao ativar contrato.');
+            }
+        }
+
+        async function closeContract(contractId, closeDate, closeReason) {
+            if (!contractId || !window.PaymentsManager) return;
+
+            try {
+                const result = await window.PaymentsManager.closeContract(contractId, closeDate, closeReason);
+                await loadVersionsFromFirestore(getVersionFiltersFromUi(), { keepOpened: true });
+                refreshVersionList();
+                const multaTxt = result?.penaltyAmount ? ` Multa: ${window.PaymentsManager.formatCurrencyBR(result.penaltyAmount)}.` : '';
+                alert(`Contrato encerrado com sucesso.${multaTxt}`);
+                await loadPaymentDashboard(contractId);
+            } catch (error) {
+                alert(error.message || 'Falha ao encerrar contrato.');
+            }
+        }
+
+        async function reopenContract(contractId, targetStatus) {
+            if (!contractId || !window.PaymentsManager) return;
+            try {
+                await window.PaymentsManager.reopenContract(contractId, targetStatus);
+                await loadVersionsFromFirestore(getVersionFiltersFromUi(), { keepOpened: true });
+                refreshVersionList();
+                await loadPaymentDashboard(contractId);
+                alert(`Contrato reaberto como ${targetStatus === 'active' ? 'Ativo' : 'Rascunho'}.`);
+            } catch (error) {
+                alert(error.message || 'Falha ao reabrir contrato.');
+            }
+        }
+
+        async function returnContractToDraft(contractId) {
+            if (!contractId || !window.PaymentsManager) return;
+            if (!window.confirm('Confirmar retorno do contrato para rascunho?')) return;
+            const reason = window.prompt('Motivo do retorno para rascunho:', 'Ajuste administrativo') || 'Ajuste administrativo';
+            try {
+                await window.PaymentsManager.returnToDraft(contractId, reason);
+                await loadVersionsFromFirestore(getVersionFiltersFromUi(), { keepOpened: true });
+                refreshVersionList();
+                const refreshed = getVersionById(contractId);
+                if (refreshed) {
+                    openedVersionId = contractId;
+                    setFormData(refreshed.data);
+                    syncValorExtensoFromValor();
+                    render();
+                    setContractEditorVisible(true);
+                    setContractEditorReadOnly(false);
+                    syncContractActionButtons(refreshed);
+                }
+                alert('Contrato retornou para rascunho com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falha ao retornar contrato para rascunho.');
+            }
+        }
+
+        async function markAsPaid(contractId, paymentId, paidDate, paidAmount) {
+            if (!window.PaymentsManager) return;
+            await window.PaymentsManager.markAsPaid(contractId, paymentId, paidDate, paidAmount);
+            await loadPaymentDashboard(contractId);
+        }
+
+        async function undoPayment(contractId, paymentId) {
+            if (!window.PaymentsManager) return;
+            await window.PaymentsManager.undoPayment(contractId, paymentId);
+            await loadPaymentDashboard(contractId);
+        }
+
+        async function undoPaymentAction(contractId, paymentId) {
+            const challenge = String(Math.floor(1000 + Math.random() * 9000));
+            const typed = window.prompt(`Atenção: esta ação remove a baixa do pagamento.\nDigite o número ${challenge} para confirmar:`);
+            if (typed === null) return;
+            if (typed.trim() !== challenge) {
+                alert('Confirmação inválida. A baixa não foi removida.');
+                return;
+            }
+            await undoPayment(contractId, paymentId);
+        }
+
+        async function editPayment(contractId, paymentId, newAmount) {
+            if (!window.PaymentsManager) return;
+            await window.PaymentsManager.editPayment(contractId, paymentId, newAmount);
+            await loadPaymentDashboard(contractId);
+        }
+
+        async function editPaymentAction(contractId, paymentId, currentAmount) {
+            const promptValue = window.prompt('Novo valor da parcela:', String(currentAmount || '').replace('.', ','));
+            if (promptValue === null) return;
+            try {
+                await editPayment(contractId, paymentId, promptValue);
+            } catch (error) {
+                alert(error.message || 'Falha ao editar parcela.');
+            }
+        }
+
+        async function deletePayment(contractId, paymentId, reason) {
+            if (!window.PaymentsManager) return;
+            await window.PaymentsManager.deletePayment(contractId, paymentId, reason);
+            await loadPaymentDashboard(contractId);
+        }
+
+        async function deletePaymentAction(contractId, paymentId) {
+            const reason = window.prompt('Motivo da exclusão lógica da parcela:', 'Ajuste administrativo');
+            if (reason === null) return;
+            if (!requestRandomDeleteConfirmation('Atenção: esta ação excluirá a parcela selecionada.')) return;
+            try {
+                await deletePayment(contractId, paymentId, reason);
+            } catch (error) {
+                alert(error.message || 'Falha ao excluir parcela.');
+            }
+        }
+
+        async function applyIGPMReadjustment(contractId, adjustmentPercent) {
+            if (!window.PaymentsManager) return;
+            await window.PaymentsManager.applyIGPMReadjustment(contractId, adjustmentPercent);
+            await loadVersionsFromFirestore(getVersionFiltersFromUi(), { keepOpened: true });
+            refreshVersionList();
+            await loadPaymentDashboard(contractId);
+        }
+
+        async function createManualPayment(contractId, payload) {
+            if (!window.PaymentsManager) return;
+            await window.PaymentsManager.createManualPayment(contractId, payload);
+            await loadPaymentDashboard(contractId);
+        }
+
+        async function clearAllPayments(contractId) {
+            if (!window.PaymentsManager) return { deletedCount: 0 };
+            const result = await window.PaymentsManager.clearAllPayments(contractId);
+            await loadPaymentDashboard(contractId);
+            return result;
+        }
+
+        async function applyIndexReadjustment(contractId, adjustmentPercent) {
+            await applyIGPMReadjustment(contractId, adjustmentPercent);
+        }
+
+        window.openPaymentMarkModal = openPaymentMarkModal;
+        window.undoPaymentAction = undoPaymentAction;
+        window.editPaymentAction = editPaymentAction;
+        window.deletePaymentAction = deletePaymentAction;
 
         function renderContractsDashboardCards(versions) {
             const grid = document.getElementById('contracts-dashboard-grid');
@@ -3137,9 +3945,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 const dataFim = version.data?.financeiro?.termino || '';
                 const valorInicial = version.data?.financeiro?.valor || '';
                 const when = new Date(version.savedAt || version.updatedAt || Date.now()).toLocaleString('pt-BR');
+                const status = getContractStatus(version);
+                const statusLabel = getContractStatusLabel(status);
 
                 card.innerHTML = `
-                    <div class="contract-card-title">${index + 1}. ${propertyText}</div>
+                    <div class="contract-card-header">
+                        <div class="contract-card-title">${index + 1}. ${propertyText}</div>
+                        <span class="contract-card-status ${status}">${statusLabel}</span>
+                    </div>
                     <div class="contract-card-meta">Locador: ${landlordText} | Locatário: ${tenantText}</div>
                     <div class="contract-card-details">
                         <span>Início: ${dataInicio || '-'}</span>
@@ -3150,12 +3963,26 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 `;
 
                 // Click seleciona, double-click abre
-                card.addEventListener('click', function (e) {
+                card.addEventListener('click', async function () {
                     document.querySelectorAll('.contract-card.selected').forEach(c => c.classList.remove('selected'));
                     card.classList.add('selected');
                     selectedDashboardVersionId = version.id;
                     const select = document.getElementById('version-list');
                     if (select) select.value = version.id;
+
+                    if (status === 'active' || status === 'closed') {
+                        await loadPaymentDashboard(version.id);
+                        return;
+                    }
+
+                    openedVersionId = version.id;
+                    setFormData(version.data);
+                    syncValorExtensoFromValor();
+                    render();
+                    refreshVersionList();
+                    setContractEditorVisible(true);
+                    setContractEditorReadOnly(status !== 'draft');
+                    syncContractActionButtons(version);
                 });
 
                 card.addEventListener('dblclick', function () {
@@ -3576,6 +4403,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     valor: fieldValue('f-financeiro-valor'),
                     extenso: fieldValue('f-financeiro-extenso'),
                     prazo: fieldValue('f-financeiro-prazo'),
+                    vencimentoDia: fieldValue('f-financeiro-vencimento-dia'),
                     inicio: fieldValue('f-financeiro-inicio'),
                     termino: fieldValue('f-financeiro-termino'),
                     assinatura: fieldValue('f-financeiro-assinatura')
@@ -3625,6 +4453,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setFieldValue('f-financeiro-valor', data.financeiro?.valor || '');
             setFieldValue('f-financeiro-extenso', data.financeiro?.extenso || '');
             setFieldValue('f-financeiro-prazo', data.financeiro?.prazo || '');
+            setFieldValue('f-financeiro-vencimento-dia', data.financeiro?.vencimentoDia || '10');
             setFieldValue('f-financeiro-inicio', data.financeiro?.inicio || '');
             setFieldValue('f-financeiro-termino', data.financeiro?.termino || '');
             setFieldValue('f-financeiro-assinatura', data.financeiro?.assinatura || '');
@@ -4220,6 +5049,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
             if (!window.confirm(`Excluir o locador "${current.name}"?`)) return;
+            if (!requestRandomDeleteConfirmation('Atenção: esta ação excluirá o locador selecionado.')) return;
 
             try {
                 await deleteLandlordFromFirestore(current.id);
@@ -4256,6 +5086,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
             if (!window.confirm(`Excluir o locatário "${current.name}"?`)) return;
+            if (!requestRandomDeleteConfirmation('Atenção: esta ação excluirá o locatário selecionado.')) return;
 
             try {
                 await deleteTenantFromFirestore(current.id);
@@ -4769,6 +5600,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             if (!window.confirm(`Excluir o imóvel "${source.label}"?`)) return;
+            if (!requestRandomDeleteConfirmation('Atenção: esta ação excluirá o imóvel selecionado.')) return;
 
             const nextProperties = propertiesCache.filter((item) => item.id !== source.id);
             try {
@@ -4946,6 +5778,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('txt-foro').innerText = foro.toUpperCase();
             document.getElementById('txt-local-assinatura').innerText = foro;
             document.getElementById('txt-prazo').innerText = db.financeiro.prazo;
+            document.getElementById('txt-vencimento-dia').innerText = db.financeiro.vencimentoDia || '10';
             document.getElementById('txt-inicio').innerText = db.financeiro.inicio.toUpperCase();
             document.getElementById('txt-termino').innerText = db.financeiro.termino.toUpperCase();
             document.getElementById('txt-valor').innerText = db.financeiro.valor;
@@ -5089,9 +5922,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         function setContractEditorVisible(visible) {
             const editor = document.getElementById('contract-editor-section');
             const dashboard = document.getElementById('contract-dashboard-section');
+            const paymentDashboard = document.getElementById('payment-dashboard-section');
             const layout = document.querySelector('.content-layout');
             if (editor) editor.classList.toggle('hidden', !visible);
             if (dashboard) dashboard.classList.toggle('hidden', !!visible);
+            if (paymentDashboard) paymentDashboard.classList.add('hidden');
             if (layout) layout.classList.toggle('dashboard-mode', !visible);
             
             // Atualiza visibilidade condicional dos campos de cônjuge
@@ -5104,11 +5939,23 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     chkFiador2.checked = !!guarantor2Id;
                     toggleFiador2Section();
                 }
+
+                const openedVersion = openedVersionId ? getVersionById(openedVersionId) : null;
+                const status = getContractStatus(openedVersion);
+                setContractEditorReadOnly(status !== 'draft');
+                syncContractActionButtons(openedVersion);
             }
         }
 
-        function closeContractEditorSection() {
+        async function closeContractEditorSection() {
+            const openedVersion = openedVersionId ? getVersionById(openedVersionId) : null;
+            const status = getContractStatus(openedVersion);
+            if (openedVersion?.id && status === 'active') {
+                await loadPaymentDashboard(openedVersion.id);
+                return;
+            }
             setContractEditorVisible(false);
+            syncContractActionButtons(null);
         }
 
         async function saveCurrentVersion() {
@@ -5240,9 +6087,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             syncValorExtensoFromValor();
             render();
             setContractEditorVisible(true);
+            setContractEditorReadOnly(false);
+            syncContractActionButtons(null);
         }
 
-        function openSelectedVersion() {
+        async function openSelectedVersion() {
             const select = document.getElementById('version-list');
             const id = select.value;
             if (!id) return;
@@ -5250,12 +6099,21 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const version = versionsCache.find(item => item.id === id);
             if (!version) return;
 
+            const status = getContractStatus(version);
+            if (status === 'active' || status === 'closed') {
+                openedVersionId = version.id;
+                await loadPaymentDashboard(version.id);
+                return;
+            }
+
             openedVersionId = version.id;
             setFormData(version.data);
             syncValorExtensoFromValor();
             render();
             refreshVersionList();
             setContractEditorVisible(true);
+            setContractEditorReadOnly(status !== 'draft');
+            syncContractActionButtons(version);
         }
 
         async function deleteSelectedVersion() {
@@ -5277,6 +6135,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const inquilino = version.data?.locataria?.nome || 'Inquilino não informado';
             const confirmDelete = window.confirm(`Excluir este contrato?\n${endereco} — ${inquilino} (${when})`);
             if (!confirmDelete) return;
+            if (!requestRandomDeleteConfirmation('Atenção: esta ação excluirá o contrato selecionado.')) return;
 
             const updatedVersions = versionsCache.filter(item => item.id !== id);
 
@@ -5408,6 +6267,10 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 render();
             });
 
+            document.getElementById('f-financeiro-vencimento-dia').addEventListener('input', function () {
+                render();
+            });
+
             document.getElementById('btn-hoje-assinatura').addEventListener('click', function () {
                 setAssinaturaHoje();
                 render();
@@ -5480,6 +6343,170 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             if (btnCloseContractEditor) {
                 btnCloseContractEditor.addEventListener('click', closeContractEditorSection);
             }
+            const btnActivateContract = document.getElementById('btn-activate-contract');
+            if (btnActivateContract) {
+                btnActivateContract.addEventListener('click', async function () {
+                    const contractId = btnActivateContract.dataset.contractId || openedVersionId;
+                    await activateContract(contractId);
+                });
+            }
+            const btnCloseContract = document.getElementById('btn-close-contract');
+            if (btnCloseContract) {
+                btnCloseContract.addEventListener('click', function () {
+                    const contractId = btnCloseContract.dataset.contractId || openedVersionId;
+                    if (contractId) openCloseContractModal(contractId);
+                });
+            }
+            const btnReopenContract = document.getElementById('btn-reopen-contract');
+            if (btnReopenContract) {
+                btnReopenContract.addEventListener('click', function () {
+                    const contractId = btnReopenContract.dataset.contractId || openedVersionId;
+                    if (contractId) openReopenContractModal(contractId);
+                });
+            }
+            const btnReturnDraftContract = document.getElementById('btn-return-draft-contract');
+            if (btnReturnDraftContract) {
+                btnReturnDraftContract.addEventListener('click', async function () {
+                    const contractId = btnReturnDraftContract.dataset.contractId || openedVersionId;
+                    if (contractId) await returnContractToDraft(contractId);
+                });
+            }
+            document.getElementById('btn-payment-refresh')?.addEventListener('click', async function () {
+                if (currentPaymentContractId) {
+                    await loadPaymentDashboard(currentPaymentContractId);
+                }
+            });
+            document.getElementById('btn-payment-view-readonly')?.addEventListener('click', function () {
+                if (currentPaymentContractId) {
+                    openContractReadOnlyFromDashboard(currentPaymentContractId);
+                }
+            });
+            document.getElementById('payment-filter-hide-deleted')?.addEventListener('change', async function () {
+                if (currentPaymentContractId) {
+                    await loadPaymentDashboard(currentPaymentContractId);
+                }
+            });
+            document.getElementById('btn-payment-create-manual')?.addEventListener('click', function () {
+                if (currentPaymentContractId) openManualPaymentModal(currentPaymentContractId);
+            });
+            document.getElementById('btn-payment-clear-all')?.addEventListener('click', function () {
+                if (currentPaymentContractId) openClearAllPaymentsModal(currentPaymentContractId);
+            });
+            document.getElementById('btn-payment-renew-cycle')?.addEventListener('click', function () {
+                if (currentPaymentContractId) {
+                    openAdjustmentModal(currentPaymentContractId);
+                }
+            });
+
+            document.getElementById('btn-payment-mark-cancel')?.addEventListener('click', closePaymentMarkModal);
+            document.getElementById('payment-mark-date')?.addEventListener('change', recalculatePaymentMarkValue);
+            document.getElementById('payment-mark-correction')?.addEventListener('input', recalculatePaymentMarkValue);
+            document.getElementById('btn-payment-mark-confirm')?.addEventListener('click', async function () {
+                if (!pendingPaymentAction?.contractId || !pendingPaymentAction?.paymentId) return;
+                const paidDate = fieldValue('payment-mark-date');
+                const paidAmount = fieldValue('payment-mark-value');
+                try {
+                    await markAsPaid(pendingPaymentAction.contractId, pendingPaymentAction.paymentId, paidDate, paidAmount);
+                    closePaymentMarkModal();
+                } catch (error) {
+                    alert(error.message || 'Falha ao registrar pagamento.');
+                }
+            });
+
+            document.getElementById('btn-contract-close-cancel')?.addEventListener('click', closeCloseContractModal);
+            document.getElementById('btn-contract-close-confirm')?.addEventListener('click', async function () {
+                if (!pendingPaymentAction?.contractId) return;
+                const confirmed = document.getElementById('contract-close-confirm')?.checked;
+                if (!confirmed) {
+                    alert('Confirme o encerramento para continuar.');
+                    return;
+                }
+                const closeDate = fieldValue('contract-close-date');
+                const reason = fieldValue('contract-close-reason');
+                try {
+                    await closeContract(pendingPaymentAction.contractId, closeDate, reason);
+                    closeCloseContractModal();
+                } catch (error) {
+                    alert(error.message || 'Falha ao encerrar contrato.');
+                }
+            });
+
+            document.getElementById('btn-contract-reopen-cancel')?.addEventListener('click', closeReopenContractModal);
+            document.getElementById('btn-contract-reopen-confirm')?.addEventListener('click', async function () {
+                if (!pendingPaymentAction?.contractId) return;
+                const confirmed = document.getElementById('contract-reopen-confirm')?.checked;
+                if (!confirmed) {
+                    alert('Confirme a reabertura para continuar.');
+                    return;
+                }
+                const targetStatus = fieldValue('contract-reopen-target') || 'active';
+                try {
+                    await reopenContract(pendingPaymentAction.contractId, targetStatus);
+                    closeReopenContractModal();
+                } catch (error) {
+                    alert(error.message || 'Falha ao reabrir contrato.');
+                }
+            });
+
+            document.getElementById('btn-payment-adjustment-cancel')?.addEventListener('click', closeAdjustmentModal);
+            document.getElementById('btn-payment-adjustment-confirm')?.addEventListener('click', async function () {
+                if (!pendingPaymentAction?.contractId) return;
+                const percent = Number(fieldValue('payment-adjustment-percent'));
+                if (!Number.isFinite(percent) || percent < 0) {
+                    alert('Informe um índice de reajuste válido.');
+                    return;
+                }
+                try {
+                    await applyIndexReadjustment(pendingPaymentAction.contractId, percent);
+                    closeAdjustmentModal();
+                    alert('Reajuste aplicado e novo ciclo de 12 parcelas criado.');
+                } catch (error) {
+                    alert(error.message || 'Falha ao aplicar reajuste.');
+                }
+            });
+
+            document.getElementById('btn-payment-manual-cancel')?.addEventListener('click', closeManualPaymentModal);
+            document.getElementById('btn-payment-manual-confirm')?.addEventListener('click', async function () {
+                if (!pendingPaymentAction?.contractId) return;
+                const payload = {
+                    monthIndex: Number(fieldValue('payment-manual-month')),
+                    dueDate: fieldValue('payment-manual-date'),
+                    amount: fieldValue('payment-manual-amount'),
+                    type: fieldValue('payment-manual-type') || 'other',
+                    description: fieldValue('payment-manual-description') || null
+                };
+                try {
+                    await createManualPayment(pendingPaymentAction.contractId, payload);
+                    closeManualPaymentModal();
+                    alert('Pagamento manual criado com sucesso.');
+                } catch (error) {
+                    alert(error.message || 'Falha ao criar pagamento manual.');
+                }
+            });
+
+            document.getElementById('btn-payment-clear-all-cancel')?.addEventListener('click', closeClearAllPaymentsModal);
+            document.getElementById('btn-payment-clear-all-confirm')?.addEventListener('click', async function () {
+                if (!pendingPaymentAction?.contractId) return;
+                const expected = pendingPaymentAction.expectedPropertyLabel || '';
+                const typed = fieldValue('payment-clear-all-confirm-name');
+                if (normalizeConfirmationText(typed) !== normalizeConfirmationText(expected)) {
+                    alert('O nome digitado não confere com o imóvel. Operação cancelada.');
+                    return;
+                }
+                if (!window.confirm('Atenção: esta ação remove todos os pagamentos e não possui recuperação. Deseja continuar?')) {
+                    return;
+                }
+                if (!requestRandomDeleteConfirmation('Atenção: esta ação limpará todos os pagamentos do contrato sem recuperação.')) {
+                    return;
+                }
+                try {
+                    const result = await clearAllPayments(pendingPaymentAction.contractId);
+                    closeClearAllPaymentsModal();
+                    alert(`Limpeza concluída. ${result?.deletedCount || 0} pagamento(s) removido(s) sem recuperação.`);
+                } catch (error) {
+                    alert(error.message || 'Falha ao limpar pagamentos do contrato.');
+                }
+            });
             document.getElementById('backup-import-input').addEventListener('change', async function (event) {
                 const file = event.target.files?.[0];
                 await importBackupJsonFile(file);
@@ -5591,6 +6618,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             refreshInviteContractOptions();
             refreshInvitationList();
             setContractEditorVisible(false);
+            syncContractActionButtons(null);
             switchTab('contrato');
 
             document.querySelectorAll('.editor-panel input, .editor-panel textarea, .editor-panel select').forEach(field => {

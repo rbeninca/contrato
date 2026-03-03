@@ -121,6 +121,20 @@ service cloud.firestore {
       );
 
       allow delete: if isOwner(resource.data);
+
+      match /payments/{paymentId} {
+        allow read: if isSignedIn()
+          && get(/databases/$(database)/documents/contracts/$(contractId)).data.ownerId == request.auth.uid;
+
+        allow create: if isSignedIn()
+          && get(/databases/$(database)/documents/contracts/$(contractId)).data.ownerId == request.auth.uid;
+
+        allow update: if isSignedIn()
+          && get(/databases/$(database)/documents/contracts/$(contractId)).data.ownerId == request.auth.uid;
+
+        allow delete: if isSignedIn()
+          && get(/databases/$(database)/documents/contracts/$(contractId)).data.ownerId == request.auth.uid;
+      }
     }
 
     match /invitations/{invitationId} {
