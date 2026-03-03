@@ -85,3 +85,5 @@ async function initAuthUi() {
 }
 
 initAuthUi();
+window.loginWithGoogle = loginWithGoogle;
+window.logoutAuth = logoutAuth;
