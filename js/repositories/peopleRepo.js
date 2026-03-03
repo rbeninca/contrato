@@ -73,19 +73,22 @@ function normalizePersonPayload(raw) {
   };
 }
 
-async function listPeople() {
+async function listPeople(ownerId) {
+  if (!ownerId) throw new Error('ownerId é obrigatório para listar pessoas.');
   const fb = await waitForFirebase();
 
   try {
     const q = fb.query(
       fb.collection(fb.db, 'people'),
+      fb.where('ownerId', '==', ownerId),
       fb.orderBy('updatedAt', 'desc')
     );
     const snap = await fb.getDocs(q);
     return snap.docs.map((item) => normalizePersonPayload({ ...item.data(), id: item.id }));
   } catch {
     const qFallback = fb.query(
-      fb.collection(fb.db, 'people')
+      fb.collection(fb.db, 'people'),
+      fb.where('ownerId', '==', ownerId)
     );
     const snapFallback = await fb.getDocs(qFallback);
     return snapFallback.docs

@@ -15,107 +15,28 @@ function waitForFirebase(timeoutMs = 10000) {
   });
 }
 
-function toIsoDate(value) {
-  if (!value) return null;
-
-  if (typeof value === 'string') {
-    const d = new Date(value);
-    return Number.isNaN(d.getTime()) ? null : d.toISOString();
-  }
-
-  if (value instanceof Date) {
-    return Number.isNaN(value.getTime()) ? null : value.toISOString();
-  }
-
-  if (typeof value?.toDate === 'function') {
-    const d = value.toDate();
-    return d instanceof Date && !Number.isNaN(d.getTime()) ? d.toISOString() : null;
-  }
-
-  return null;
+// Redireciona para PeopleRepo, pois landlords é uma coleção legada bloqueada
+async function listLandlords(ownerId) {
+  if (!ownerId) throw new Error('ownerId é obrigatório para listar locadores.');
+  const allPeople = await window.PeopleRepo.listPeople(ownerId);
+  // Filtra pessoas que tem qualificação de locador ou proprietário, ou simplesmente todas para compatibilidade
+  return allPeople.filter(p => {
+    const qual = (p.qualification || '').toLowerCase();
+    return qual.includes('locador') || qual.includes('proprietário') || qual.includes('locadora') || qual.includes('proprietária');
+  });
 }
 
-function generateId() {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
-}
-
-function normalizeLandlordPayload(raw) {
-  const nowIso = new Date().toISOString();
-  return {
-    id: raw?.id || generateId(),
-    name: raw?.name || '',
-    phone: raw?.phone || '',
-    email: raw?.email || '',
-    cpfCnpj: raw?.cpfCnpj || '',
-    qualification: raw?.qualification || '',
-    notes: raw?.notes || '',
-    createdAt: toIsoDate(raw?.createdAt) || nowIso,
-    updatedAt: toIsoDate(raw?.updatedAt) || nowIso
-  };
-}
-
-async function listLandlords() {
-  const fb = await waitForFirebase();
-
-  try {
-    const q = fb.query(
-      fb.collection(fb.db, 'landlords'),
-      fb.orderBy('updatedAt', 'desc')
-    );
-    const snap = await fb.getDocs(q);
-    return snap.docs.map((item) => normalizeLandlordPayload({ ...item.data(), id: item.id }));
-  } catch {
-    const qFallback = fb.query(
-      fb.collection(fb.db, 'landlords')
-    );
-    const snapFallback = await fb.getDocs(qFallback);
-    return snapFallback.docs
-      .map((item) => normalizeLandlordPayload({ ...item.data(), id: item.id }))
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  }
-}
 async function upsertLandlord(ownerId, landlord) {
-  const fb = await waitForFirebase();
-  const safe = normalizeLandlordPayload(landlord);
-  const ref = fb.doc(fb.db, 'landlords', safe.id);
-
-  // Não leia antes. Crie/atualize direto.
-  const payload = {
-    ownerId,
-    name: safe.name,
-    phone: safe.phone,
-    email: safe.email,
-    cpfCnpj: safe.cpfCnpj,
-    qualification: safe.qualification,
-    notes: safe.notes,
-    createdAt: safe.createdAt,              // mantém estável (vem do cache)
-    updatedAt: safe.updatedAt,
-    createdAtServer: fb.serverTimestamp(),  // ok mesmo se sobrescrever (pode remover se quiser)
-    updatedAtServer: fb.serverTimestamp()
+  // Garante que a qualificação inclua Locador ao salvar via este repo
+  const person = {
+    ...landlord,
+    qualification: landlord.qualification || 'Locador'
   };
-
-  await fb.setDoc(ref, payload, { merge: true });
-  return safe;
+  return window.PeopleRepo.upsertPerson(ownerId, person);
 }
-
-
 
 async function deleteLandlord(ownerId, landlordId) {
-  const fb = await waitForFirebase();
-  const ref = fb.doc(fb.db, 'landlords', landlordId);
-
-  const current = await fb.getDoc(ref);
-  if (!current.exists()) return;
-
-  const currentData = current.data();
-  if (currentData?.ownerId !== ownerId) {
-    throw new Error('Você não tem permissão para excluir este locador.');
-  }
-
-  await fb.deleteDoc(ref);
+  return window.PeopleRepo.deletePerson(ownerId, landlordId);
 }
 
 window.LandlordsRepo = {

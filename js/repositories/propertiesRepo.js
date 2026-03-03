@@ -42,10 +42,12 @@ function normalizePropertyPayload(raw) {
   };
 }
 
-async function listProperties() {
+async function listProperties(ownerId) {
+  if (!ownerId) throw new Error('ownerId é obrigatório para listar imóveis.');
   const fb = await waitForFirebase();
   const q = fb.query(
     fb.collection(fb.db, 'properties'),
+    fb.where('ownerId', '==', ownerId),
     fb.orderBy('updatedAt', 'desc')
   );
   const snap = await fb.getDocs(q);

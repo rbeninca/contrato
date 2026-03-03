@@ -163,9 +163,10 @@ function normalizeContractPayload(raw) {
   };
 }
 
-function buildContractQueryParts(fb, filters) {
+function buildContractQueryParts(fb, ownerId, filters) {
   const queryParts = [
-    fb.collection(fb.db, 'contracts')
+    fb.collection(fb.db, 'contracts'),
+    fb.where('ownerId', '==', ownerId)
   ];
 
   if (filters.propertyId) {
@@ -191,17 +192,20 @@ function buildContractQueryParts(fb, filters) {
   return queryParts;
 }
 
-async function listContracts(rawFilters = {}) {
+async function listContracts(ownerId, rawFilters = {}) {
+  if (!ownerId) throw new Error('ownerId é obrigatório para listar contratos.');
   const fb = await waitForFirebase();
   const filters = normalizeContractFilters(rawFilters);
 
   try {
-    const q = fb.query(...buildContractQueryParts(fb, filters));
+    const qParts = buildContractQueryParts(fb, ownerId, filters);
+    const q = fb.query(...qParts);
     const snap = await fb.getDocs(q);
     return snap.docs.map((item) => normalizeContractPayload({ ...item.data(), id: item.id }));
   } catch {
     const qFallback = fb.query(
-      fb.collection(fb.db, 'contracts')
+      fb.collection(fb.db, 'contracts'),
+      fb.where('ownerId', '==', ownerId)
     );
     const snapFallback = await fb.getDocs(qFallback);
     const normalized = snapFallback.docs
@@ -259,7 +263,7 @@ async function upsertManyContracts(ownerId, contracts) {
 
 // Compatibilidade com o código legado
 async function listVersions(ownerId, filters = {}) {
-  return listContracts(filters);
+  return listContracts(ownerId, filters);
 }
 
 async function upsertVersion(ownerId, version) {

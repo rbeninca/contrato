@@ -2920,6 +2920,14 @@
                 </svg>
                 <span>Pessoas</span>
             </button>
+            <button class="sidebar-btn" id="nav-finance" type="button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                <span>Financeiro</span>
+            </button>
         </nav>
         <!-- Botão que só aparecerá para o Administrador Mestre -->
 <button id="btn-manage-access" style="display: none; background-color: var(--warning); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold;">
@@ -3674,6 +3682,52 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Dashboard Financeiro -->
+            <div id="tab-financeiro" class="tab-content hidden">
+                <div class="contracts-dashboard-head" style="margin-bottom: 20px;">
+                    <div>
+                        <h4 class="contracts-dashboard-title" style="font-size: 24px;">Dashboard Financeiro</h4>
+                        <p class="contracts-dashboard-subtitle">Visão geral de recebimentos e status de todos os contratos ativos.</p>
+                    </div>
+                </div>
+
+                <div class="summaries-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                    <div class="summary-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--primary);">
+                        <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Total Geral</span>
+                        <span id="dash-total-amount" style="font-size: 20px; font-weight: 700; color: var(--text-primary);">R$ 0,00</span>
+                    </div>
+                    <div class="summary-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--success);">
+                        <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Total Recebido</span>
+                        <span id="dash-paid-amount" style="font-size: 20px; font-weight: 700; color: var(--success);">R$ 0,00</span>
+                    </div>
+                    <div class="summary-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--warning);">
+                        <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px;">A Receber</span>
+                        <span id="dash-pending-amount" style="font-size: 20px; font-weight: 700; color: var(--warning);">R$ 0,00</span>
+                    </div>
+                    <div class="summary-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--danger);">
+                        <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Em Atraso</span>
+                        <span id="dash-late-amount" style="font-size: 20px; font-weight: 700; color: var(--danger);">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <div class="version-wrap" style="margin-bottom: 24px;">
+                    <div class="editor-grid">
+                        <div class="editor-field full">
+                            <label for="dash-landlord-filter">Filtrar por Proprietário</label>
+                            <select id="dash-landlord-filter">
+                                <option value="">Todos os Proprietários</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dash-contracts-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">
+                        Carregando dados financeiros...
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="document-page">
@@ -4061,7 +4115,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             const normalizedFilters = filters || getVersionFiltersFromUi();
-            const remoteVersions = await window.ContractsRepo.listContracts(normalizedFilters);
+            const remoteVersions = await window.ContractsRepo.listContracts(currentAuthUser.uid, normalizedFilters);
             const keepOpened = !!options.keepOpened;
 
             versionsCache = remoteVersions;
@@ -4086,19 +4140,21 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         }
 
         async function loadPropertiesFromFirestore() {
-            if (!currentAuthUser?.uid || !window.PropertiesRepo) {
+            const ownerId = window.AppFirebase?.auth?.currentUser?.uid;
+            if (!ownerId || !window.PropertiesRepo) {
                 propertiesCache = [];
                 currentPropertyId = null;
                 return;
             }
 
-            const remoteProperties = await window.PropertiesRepo.listProperties();
+            const remoteProperties = await window.PropertiesRepo.listProperties(ownerId);
             propertiesCache = remoteProperties;
             currentPropertyId = propertiesCache[0]?.id || null;
         }
 
         async function loadPeopleFromFirestore() {
-            if (!currentAuthUser?.uid || !window.PeopleRepo) {
+            const ownerId = window.AppFirebase?.auth?.currentUser?.uid;
+            if (!ownerId || !window.PeopleRepo) {
                 landlordsCache = [];
                 tenantsCache = [];
                 currentLandlordId = null;
@@ -4106,7 +4162,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
 
-            const remotePeople = await window.PeopleRepo.listPeople();
+            const remotePeople = await window.PeopleRepo.listPeople(ownerId);
             landlordsCache = remotePeople;
             tenantsCache = landlordsCache;
             currentLandlordId = landlordsCache[0]?.id || null;
@@ -4117,13 +4173,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         async function loadTenantsFromFirestore() { return loadPeopleFromFirestore(); }
 
         async function loadInvitationsFromFirestore() {
-            if (!currentAuthUser?.uid || !window.InvitationsRepo) {
+            const ownerId = window.AppFirebase?.auth?.currentUser?.uid;
+            if (!ownerId || !window.InvitationsRepo) {
                 invitationsCache = [];
                 currentInvitationId = null;
                 return;
             }
 
-            const remoteInvitations = await window.InvitationsRepo.listInvitations();
+            const remoteInvitations = await window.InvitationsRepo.listInvitations(ownerId);
             invitationsCache = remoteInvitations;
             currentInvitationId = invitationsCache[0]?.id || null;
         }
@@ -4254,7 +4311,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             try {
                 const fb = window.AppFirebase;
-                const testQuery = fb.query(fb.collection(fb.db, 'properties'), fb.limit(1));
+                // Busca apenas 1 documento do próprio usuário para testar acesso
+                const testQuery = fb.query(
+                    fb.collection(fb.db, 'properties'), 
+                    fb.where('ownerId', '==', currentAuthUser.uid),
+                    fb.limit(1)
+                );
                 await fb.getDocs(testQuery);
 
                 if (currentAuthUser?.email === MASTER_EMAIL && manageAccessBtn) {
@@ -7588,26 +7650,213 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const isContrato = tabName === 'contrato';
             const isImoveis = tabName === 'imoveis';
             const isPessoas = tabName === 'pessoas';
+            const isFinanceiro = tabName === 'financeiro';
+
             document.getElementById('tab-contrato').classList.toggle('hidden', !isContrato);
             document.getElementById('tab-imoveis').classList.toggle('hidden', !isImoveis);
             document.getElementById('tab-pessoas').classList.toggle('hidden', !isPessoas);
-            document.getElementById('tab-btn-contrato').classList.toggle('active', isContrato);
-            document.getElementById('tab-btn-imoveis').classList.toggle('active', isImoveis);
-            document.getElementById('tab-btn-pessoas').classList.toggle('active', isPessoas);
+            document.getElementById('tab-financeiro').classList.toggle('hidden', !isFinanceiro);
+
+            document.getElementById('tab-btn-contrato')?.classList.toggle('active', isContrato);
+            document.getElementById('tab-btn-imoveis')?.classList.toggle('active', isImoveis);
+            document.getElementById('tab-btn-pessoas')?.classList.toggle('active', isPessoas);
+            
             document.getElementById('nav-dashboard')?.classList.toggle('active', isContrato);
             document.getElementById('nav-properties')?.classList.toggle('active', isImoveis);
             document.getElementById('nav-people')?.classList.toggle('active', isPessoas);
+            document.getElementById('nav-finance')?.classList.toggle('active', isFinanceiro);
 
             // Atualiza título do header
             const headerTitle = document.getElementById('header-page-title');
             if (headerTitle) {
-                headerTitle.textContent = isContrato ? 'Contratos' : isImoveis ? 'Imóveis' : 'Pessoas';
+                headerTitle.textContent = isContrato ? 'Contratos' : isImoveis ? 'Imóveis' : isPessoas ? 'Pessoas' : 'Financeiro';
             }
 
             // Fecha sidebar no mobile
             document.getElementById('app-sidebar')?.classList.remove('open');
 
             setContractEditorVisible(false);
+
+            if (isFinanceiro) {
+                loadFinancialDashboard();
+            }
+        }
+
+        let dashState = {
+            people: [],
+            landlords: [],
+            properties: [],
+            contracts: [],
+            paymentsByContract: {},
+            selectedLandlordId: ''
+        };
+
+        async function loadFinancialDashboard() {
+            const grid = document.getElementById('dash-contracts-grid');
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="spinner"></div><p>Carregando dados financeiros...</p></div>';
+
+            try {
+                const ownerId = currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid;
+                if (!ownerId) throw new Error('Usuário não autenticado.');
+
+                // Carregar todas as pessoas para resolver nomes e popular o filtro
+                if (landlordsCache && landlordsCache.length > 0) {
+                    dashState.people = [...landlordsCache];
+                } else {
+                    dashState.people = await window.PeopleRepo.listPeople(ownerId);
+                }
+
+                // Carregar todos os imóveis para resolver nomes
+                if (propertiesCache && propertiesCache.length > 0) {
+                    dashState.properties = [...propertiesCache];
+                } else {
+                    dashState.properties = await window.PropertiesRepo.listProperties(ownerId);
+                }
+                
+                // No sistema original, locadores e locatários são todos da mesma lista de pessoas
+                dashState.landlords = [...dashState.people];
+                dashState.landlords.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                
+                const filter = document.getElementById('dash-landlord-filter');
+                filter.innerHTML = '<option value="">Todos os Proprietários</option>';
+                dashState.landlords.forEach(l => {
+                    if (!l.name) return;
+                    const opt = document.createElement('option');
+                    opt.value = l.id;
+                    opt.textContent = l.name;
+                    filter.appendChild(opt);
+                });
+                filter.value = dashState.selectedLandlordId;
+                filter.onchange = (e) => {
+                    dashState.selectedLandlordId = e.target.value;
+                    renderFinancialDashboard();
+                };
+
+                // Carregar contratos ativos
+                dashState.contracts = await window.ContractsRepo.listContracts(ownerId, { status: 'active' });
+                
+                // Carregar pagamentos
+                const promises = dashState.contracts.map(async (c) => {
+                    const res = await window.PaymentsManager.loadPaymentDashboard(c.id);
+                    dashState.paymentsByContract[c.id] = res.payments || [];
+                });
+                await Promise.all(promises);
+
+                renderFinancialDashboard();
+            } catch (error) {
+                console.error('Erro dashboard:', error);
+                grid.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); padding: 20px;">Erro: ${error.message}</div>`;
+            }
+        }
+
+        function renderFinancialDashboard() {
+            const filtered = dashState.contracts.filter(c => {
+                if (!dashState.selectedLandlordId) return true;
+                return c.participants?.landlordId === dashState.selectedLandlordId;
+            });
+
+            // Sumarizações
+            let total = 0, paid = 0, pending = 0, late = 0;
+            const now = new Date();
+            now.setHours(0,0,0,0);
+
+            filtered.forEach(c => {
+                const payments = dashState.paymentsByContract[c.id] || [];
+                payments.forEach(p => {
+                    if (p.status === 'deleted' || p.status === 'canceled') return;
+                    const val = window.PaymentsManager.parseCurrencyToNumber(p.amount);
+                    total += val;
+                    if (p.status === 'paid') {
+                        paid += window.PaymentsManager.parseCurrencyToNumber(p.paidAmount || p.amount);
+                    } else {
+                        const due = new Date(p.dueDate + 'T00:00:00');
+                        if (due < now) late += val;
+                        else pending += val;
+                    }
+                });
+            });
+
+            document.getElementById('dash-total-amount').textContent = window.PaymentsManager.formatCurrencyBR(total);
+            document.getElementById('dash-paid-amount').textContent = window.PaymentsManager.formatCurrencyBR(paid);
+            document.getElementById('dash-pending-amount').textContent = window.PaymentsManager.formatCurrencyBR(pending);
+            document.getElementById('dash-late-amount').textContent = window.PaymentsManager.formatCurrencyBR(late);
+
+            const grid = document.getElementById('dash-contracts-grid');
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">Nenhum contrato ativo encontrado.</div>';
+                return;
+            }
+
+            filtered.forEach(c => {
+                const refs = getVersionRefIds(c);
+                const property = getPropertyLabelById(refs.propertyId) || c.data?.selectedPropertyName || c.data?.imovel?.endereco || 'Imóvel não identificado';
+                
+                // Proprietário (Owner)
+                const proprietario = getPersonNameById(refs.ownerId) || c.data?.imovel?.proprietario || 'N/A';
+                
+                // Locador (Landlord)
+                const locador = getPersonNameById(refs.landlordId) || c.data?.selectedLandlordName || c.data?.locador?.nome || 'Locador não identificado';
+                
+                // Locatário (Tenant)
+                const locatario = getPersonNameById(refs.tenantId) || c.data?.selectedTenantName || c.data?.locataria?.nome || 'Locatário não identificado';
+                
+                // Inquilino
+                const inquilino = c.data?.inquilino?.nome || locatario;
+                
+                const payments = dashState.paymentsByContract[c.id] || [];
+
+                const card = document.createElement('div');
+                card.style = 'background: white; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; max-height: 400px; overflow: hidden;';
+                
+                let paymentsHtml = payments.filter(p => p.status !== 'deleted').map(p => {
+                    let statusColor = 'var(--warning)';
+                    let statusLabel = 'Pendente';
+                    if (p.status === 'paid') {
+                        statusColor = 'var(--success)';
+                        statusLabel = 'Pago';
+                    } else if (p.status === 'canceled') {
+                        statusColor = 'var(--text-secondary)';
+                        statusLabel = 'Cancelado';
+                    } else {
+                        const due = new Date(p.dueDate + 'T00:00:00');
+                        if (due < now) {
+                            statusColor = 'var(--danger)';
+                            statusLabel = 'Atrasado';
+                        }
+                    }
+
+                    return `
+                        <div style="padding: 10px 16px; border-bottom: 1px solid var(--bg-main); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 500;">${new Date(p.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')}</div>
+                                <div style="font-size: 11px; color: ${statusColor}; font-weight: 700; text-transform: uppercase;">${statusLabel}</div>
+                            </div>
+                            <div style="font-weight: 600;">${window.PaymentsManager.formatCurrencyBR(p.amount)}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                if (!paymentsHtml) paymentsHtml = '<div style="padding: 20px; text-align: center; color: var(--text-secondary); font-size: 14px;">Sem pagamentos</div>';
+
+                card.innerHTML = `
+                    <div style="padding: 16px; background: var(--bg-main); border-bottom: 1px solid var(--border);">
+                        <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">${c.name || 'Contrato sem nome'}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                            <strong>Imóvel:</strong> ${property}<br>
+                            <strong>Proprietário:</strong> ${proprietario}<br>
+                            <strong>Locador:</strong> ${locador}<br>
+                            <strong>Locatário:</strong> ${locatario}<br>
+                            <strong>Inquilino:</strong> ${inquilino}
+                        </div>
+                    </div>
+                    <div style="flex: 1; overflow-y: auto;">
+                        ${paymentsHtml}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
         }
 
         // Toggle sidebar no mobile
@@ -7675,6 +7924,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('nav-people').addEventListener('click', function () {
                 switchTab('pessoas');
             });
+            document.getElementById('nav-finance').addEventListener('click', function () {
+                switchTab('financeiro');
+            });
 
             // Toggle de filtros de contrato
             document.getElementById('btn-toggle-filters')?.addEventListener('click', function () {
@@ -7700,15 +7952,15 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 sidebarToggle.addEventListener('click', toggleSidebar);
             }
 
-            document.getElementById('btn-salvar').addEventListener('click', saveCurrentVersion);
-            document.getElementById('btn-carregar').addEventListener('click', openSelectedVersion);
-            document.getElementById('btn-excluir-versao').addEventListener('click', deleteSelectedVersion);
-            document.getElementById('version-filter-property').addEventListener('change', reloadVersionsWithActiveFilters);
-            document.getElementById('version-filter-landlord').addEventListener('change', reloadVersionsWithActiveFilters);
-            document.getElementById('version-filter-tenant').addEventListener('change', reloadVersionsWithActiveFilters);
-            document.getElementById('version-filter-role').addEventListener('change', reloadVersionsWithActiveFilters);
-            document.getElementById('version-filter-participant').addEventListener('change', reloadVersionsWithActiveFilters);
-            document.getElementById('btn-clear-version-filters').addEventListener('click', async function () {
+            document.getElementById('btn-salvar')?.addEventListener('click', saveCurrentVersion);
+            document.getElementById('btn-carregar')?.addEventListener('click', openSelectedVersion);
+            document.getElementById('btn-excluir-versao')?.addEventListener('click', deleteSelectedVersion);
+            document.getElementById('version-filter-property')?.addEventListener('change', reloadVersionsWithActiveFilters);
+            document.getElementById('version-filter-landlord')?.addEventListener('change', reloadVersionsWithActiveFilters);
+            document.getElementById('version-filter-tenant')?.addEventListener('change', reloadVersionsWithActiveFilters);
+            document.getElementById('version-filter-role')?.addEventListener('change', reloadVersionsWithActiveFilters);
+            document.getElementById('version-filter-participant')?.addEventListener('change', reloadVersionsWithActiveFilters);
+            document.getElementById('btn-clear-version-filters')?.addEventListener('click', async function () {
                 setFieldValue('version-filter-property', '');
                 setFieldValue('version-filter-landlord', '');
                 setFieldValue('version-filter-tenant', '');
@@ -7716,7 +7968,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 setFieldValue('version-filter-participant', '');
                 await reloadVersionsWithActiveFilters();
             });
-            document.getElementById('btn-json').addEventListener('click', resetToDefault);
+            document.getElementById('btn-json')?.addEventListener('click', resetToDefault);
             document.getElementById('btn-open-invite-panel')?.addEventListener('click', function () {
                 switchTab('pessoas');
                 const inviteBlock = document.getElementById('invite-contract-version');
