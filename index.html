@@ -5223,6 +5223,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 setSyncStatus('Fonte: Firestore');
                 setGistConnectionNote('Versões, imóveis e pessoas carregados do Firestore');
             }
+
+            if (!document.getElementById('tab-pagamentos')?.classList.contains('hidden')) {
+                await loadFinancialDashboard(true, { focusCurrentMonth: true });
+            }
+            if (!document.getElementById('tab-financeiro')?.classList.contains('hidden')) {
+                await loadFinanceOverviewDashboard(true);
+            }
         };
 
         async function loadAuthorizedUsers() {
@@ -7378,6 +7385,27 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         function setTenantFormData(tenant) { setPersonFormData(tenant); }
         function getLandlordFormData(base = null) { return getPersonFormData(base); }
         function getTenantFormData(base = null) { return getPersonFormData(base); }
+        function selectPersonForEditor(id) {
+            const person = landlordsCache.find((item) => item.id === id)
+                || tenantsCache.find((item) => item.id === id)
+                || null;
+
+            if (!person) {
+                currentLandlordId = null;
+                currentTenantId = null;
+                setPersonFormData(createEmptyPerson());
+                return;
+            }
+
+            currentLandlordId = person.id;
+            currentTenantId = person.id;
+            setPersonFormData(person);
+
+            const peopleList = document.getElementById('person-list');
+            if (peopleList) {
+                peopleList.value = person.id;
+            }
+        }
         function selectLandlordForEditor(id) { selectPersonForEditor(id); }
         function selectTenantForEditor(id) { selectPersonForEditor(id); }
         function beginNewLandlord() { beginNewPerson(); }
@@ -8930,8 +8958,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             return (contract?.id || '').toString();
         }
 
+        function getAuthenticatedOwnerId() {
+            return currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid || '';
+        }
+
         async function loadFinancialData() {
-            const ownerId = currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid;
+            const ownerId = getAuthenticatedOwnerId();
             if (!ownerId) throw new Error('Usuário não autenticado.');
 
             if (landlordsCache && landlordsCache.length > 0) {
@@ -9252,6 +9284,19 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const listEl = document.getElementById('finance-overview-list');
             if (!kpiEl || !listEl) return;
 
+            if (!getAuthenticatedOwnerId()) {
+                if (!silent) {
+                    kpiEl.innerHTML = `
+                        <div class="finance-overview-card">
+                            <div class="finance-overview-label">Aguardando autenticação...</div>
+                            <div class="finance-overview-value">-</div>
+                        </div>
+                    `;
+                    listEl.innerHTML = '<div class="contracts-empty" style="margin:0; border:none; border-radius:0;">Conectando usuário para carregar o dashboard financeiro...</div>';
+                }
+                return;
+            }
+
             if (!silent) {
                 kpiEl.innerHTML = `
                     <div class="finance-overview-card">
@@ -9283,6 +9328,15 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const grid = document.getElementById('dash-months-list');
             const picker = document.getElementById('finance-month-picker');
             if (!grid || !picker) return;
+
+            if (!getAuthenticatedOwnerId()) {
+                if (!silent) {
+                    grid.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Aguardando autenticação para carregar pagamentos...</div>';
+                    picker.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 40px 12px;">Conectando usuário...</div>';
+                }
+                return;
+            }
+
             if (!silent) {
                 grid.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p>Carregando pagamentos...</p></div>';
                 if (picker) picker.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 40px 12px;">Carregando meses...</div>';
