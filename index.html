@@ -986,6 +986,83 @@
             padding: 20px;
         }
 
+        .payments-months-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            max-height: calc(100vh - 240px);
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .payment-month-board {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .payment-month-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            background: var(--border-light);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .payment-month-list {
+            display: block;
+            max-height: none;
+            min-height: 56px;
+            overflow: visible;
+        }
+
+        .payment-month-card {
+            border-bottom: 1px solid var(--border-light);
+            padding: 12px 14px;
+            display: grid;
+            gap: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .payment-month-card:last-child {
+            border-bottom: none;
+        }
+
+        .payment-month-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 6px 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .payment-month-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .payment-contract-link {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
         .config-wrap {
             margin-top: 20px;
             border: 1px solid var(--border);
@@ -3156,11 +3233,21 @@
             </button>
             <button class="sidebar-btn" id="nav-finance" type="button">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="20" x2="18" y2="10"></line>
-                    <line x1="12" y1="20" x2="12" y2="4"></line>
-                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                    <path d="M3 6h18"></path>
+                    <path d="M5 6v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"></path>
+                    <path d="M9 14h6"></path>
+                    <path d="M10 10h4"></path>
                 </svg>
                 <span>Financeiro</span>
+            </button>
+            <button class="sidebar-btn" id="nav-payments" type="button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <span>Pagamentos</span>
             </button>
         </nav>
         <!-- Botão que só aparecerá para o Administrador Mestre -->
@@ -3875,55 +3962,17 @@
                 </div>
             </div>
 
-            <!-- Dashboard Financeiro -->
+            <!-- Tela de Pagamentos -->
             <div id="tab-financeiro" class="tab-content hidden">
                 <div class="contracts-dashboard-head" style="margin-bottom: 20px;">
                     <div>
-                        <h4 class="contracts-dashboard-title" style="font-size: 24px;">Dashboard Financeiro</h4>
-                        <p class="contracts-dashboard-subtitle">Visão geral de recebimentos e status de todos os contratos ativos.</p>
+                        <h4 class="contracts-dashboard-title" style="font-size: 24px;">Pagamentos</h4>
+                        <p class="contracts-dashboard-subtitle">Listagem mensal com baixa de pagamentos e acesso rápido ao contrato.</p>
                     </div>
                 </div>
 
-                <div class="summaries-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                    <div class="summary-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--primary);">
-                        <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Total Geral</span>
-                        <span id="dash-total-amount" style="font-size: 20px; font-weight: 700; color: var(--text-primary);">R$ 0,00</span>
-                    </div>
-                    <div class="summary-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--success);">
-                        <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Total Recebido</span>
-                        <span id="dash-paid-amount" style="font-size: 20px; font-weight: 700; color: var(--success);">R$ 0,00</span>
-                    </div>
-                    <div class="summary-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--warning);">
-                        <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px;">A Receber</span>
-                        <span id="dash-pending-amount" style="font-size: 20px; font-weight: 700; color: var(--warning);">R$ 0,00</span>
-                    </div>
-                    <div class="summary-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--danger);">
-                        <span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Em Atraso</span>
-                        <span id="dash-late-amount" style="font-size: 20px; font-weight: 700; color: var(--danger);">R$ 0,00</span>
-                    </div>
-                </div>
-
-                <div class="version-wrap" style="margin-bottom: 24px;">
-                    <div class="editor-grid">
-                        <div class="editor-field">
-                            <label for="dash-landlord-filter">Filtrar por Locador</label>
-                            <select id="dash-landlord-filter">
-                                <option value="">Todos os Locadores</option>
-                            </select>
-                        </div>
-                        <div class="editor-field">
-                            <label for="dash-owner-filter">Filtrar por Proprietário</label>
-                            <select id="dash-owner-filter">
-                                <option value="">Todos os Proprietários</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="dash-contracts-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
-                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">
-                        Carregando dados financeiros...
-                    </div>
+                <div id="dash-months-list" class="payments-months-wrap">
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">Carregando pagamentos...</div>
                 </div>
             </div>
         </div>
@@ -8124,6 +8173,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('nav-properties')?.classList.toggle('active', isImoveis);
             document.getElementById('nav-people')?.classList.toggle('active', isPessoas);
             document.getElementById('nav-finance')?.classList.toggle('active', isFinanceiro);
+            document.getElementById('nav-payments')?.classList.toggle('active', false);
 
             // Atualiza título do header
             const headerTitle = document.getElementById('header-page-title');
@@ -8148,25 +8198,91 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         let dashState = {
             people: [],
-            landlords: [],
             properties: [],
             contracts: [],
-            paymentsByContract: {},
-            selectedLandlordId: '',
-            selectedOwnerId: ''
+            paymentsByContract: {}
         };
 
+        function formatMonthYearFromIso(isoDate) {
+            const date = isoDate ? new Date(`${isoDate}T00:00:00`) : null;
+            if (!date || Number.isNaN(date.getTime())) return 'Mês indefinido';
+            return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        }
+
+        function parsePaymentDateValue(value) {
+            if (!value) return null;
+            if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+
+            if (typeof value === 'object') {
+                if (typeof value.toDate === 'function') {
+                    const fromToDate = value.toDate();
+                    return fromToDate instanceof Date && !Number.isNaN(fromToDate.getTime()) ? fromToDate : null;
+                }
+                if (Number.isFinite(value.seconds)) {
+                    const fromSeconds = new Date(value.seconds * 1000);
+                    return Number.isNaN(fromSeconds.getTime()) ? null : fromSeconds;
+                }
+            }
+
+            const text = String(value).trim();
+            if (!text) return null;
+
+            const isoMatch = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            if (isoMatch) {
+                const d = new Date(Number(isoMatch[1]), Number(isoMatch[2]) - 1, Number(isoMatch[3]));
+                return Number.isNaN(d.getTime()) ? null : d;
+            }
+
+            const brMatch = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (brMatch) {
+                const d = new Date(Number(brMatch[3]), Number(brMatch[2]) - 1, Number(brMatch[1]));
+                return Number.isNaN(d.getTime()) ? null : d;
+            }
+
+            const parsed = new Date(text);
+            return Number.isNaN(parsed.getTime()) ? null : parsed;
+        }
+
+        function paymentDateToIso(value) {
+            const date = parsePaymentDateValue(value);
+            if (!date) return '';
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function getPaymentMonthKey(isoDate) {
+            const date = parsePaymentDateValue(isoDate);
+            if (!date) return '';
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            return `${y}-${m}`;
+        }
+
+        function getContractCode(contract) {
+            return (contract?.id || '').toString();
+        }
+
+        function openPaymentContractFromFinance(contractId) {
+            if (!contractId) return;
+            switchTab('contrato');
+            openContractReadOnlyFromDashboard(contractId);
+        }
+
+        window.openPaymentContractFromFinance = openPaymentContractFromFinance;
+
         async function loadFinancialDashboard(silent = false) {
-            const grid = document.getElementById('dash-contracts-grid');
+            const grid = document.getElementById('dash-months-list');
             if (!silent) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="spinner"></div><p>Carregando dados financeiros...</p></div>';
+                grid.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p>Carregando pagamentos...</p></div>';
             }
 
             try {
                 const ownerId = currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid;
                 if (!ownerId) throw new Error('Usuário não autenticado.');
 
-                // Carregar todas as pessoas para resolver nomes e popular os filtros
+                // Carregar pessoas para resolver nomes
                 if (landlordsCache && landlordsCache.length > 0) {
                     dashState.people = [...landlordsCache];
                 } else {
@@ -8179,47 +8295,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 } else {
                     dashState.properties = await window.PropertiesRepo.listProperties(ownerId);
                 }
-                
-                // No sistema original, locadores e locatários são todos da mesma lista de pessoas
-                dashState.landlords = [...dashState.people];
-                dashState.landlords.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-                
-                // Popular Filtro de Locador
-                const landlordFilter = document.getElementById('dash-landlord-filter');
-                landlordFilter.innerHTML = '<option value="">Todos os Locadores</option>';
-                
-                // Popular Filtro de Proprietário (mesma lista de pessoas)
-                const ownerFilter = document.getElementById('dash-owner-filter');
-                ownerFilter.innerHTML = '<option value="">Todos os Proprietários</option>';
-
-                dashState.landlords.forEach(l => {
-                    if (!l.name) return;
-                    
-                    const optL = document.createElement('option');
-                    optL.value = l.id;
-                    optL.textContent = l.name;
-                    landlordFilter.appendChild(optL);
-
-                    const optO = document.createElement('option');
-                    optO.value = l.id;
-                    optO.textContent = l.name;
-                    ownerFilter.appendChild(optO);
-                });
-
-                landlordFilter.value = dashState.selectedLandlordId;
-                landlordFilter.onchange = (e) => {
-                    dashState.selectedLandlordId = e.target.value;
-                    renderFinancialDashboard();
-                };
-
-                ownerFilter.value = dashState.selectedOwnerId;
-                ownerFilter.onchange = (e) => {
-                    dashState.selectedOwnerId = e.target.value;
-                    renderFinancialDashboard();
-                };
-
-                // Carregar contratos ativos
-                dashState.contracts = await window.ContractsRepo.listContracts(ownerId, { status: 'active' });
+                // Carregar contratos
+                dashState.contracts = await window.ContractsRepo.listContracts(ownerId);
                 
                 // Carregar pagamentos
                 const promises = dashState.contracts.map(async (c) => {
@@ -8231,125 +8308,188 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 renderFinancialDashboard();
             } catch (error) {
                 console.error('Erro dashboard:', error);
-                grid.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); padding: 20px;">Erro: ${error.message}</div>`;
+                grid.innerHTML = `<div style="color: var(--danger); padding: 20px;">Erro: ${error.message}</div>`;
             }
         }
 
         function renderFinancialDashboard() {
-            const filtered = dashState.contracts.filter(c => {
-                const refs = getVersionRefIds(c);
-                if (dashState.selectedLandlordId && refs.landlordId !== dashState.selectedLandlordId) return false;
-                if (dashState.selectedOwnerId && refs.ownerId !== dashState.selectedOwnerId) return false;
-                return true;
-            });
+            const grid = document.getElementById('dash-months-list');
+            grid.innerHTML = '';
 
-            // Sumarizações
-            let total = 0, paid = 0, pending = 0, late = 0;
-            const now = new Date();
-            now.setHours(0,0,0,0);
+            const monthlyMap = new Map();
 
-            filtered.forEach(c => {
-                const payments = dashState.paymentsByContract[c.id] || [];
-                payments.forEach(p => {
-                    if (p.status === 'deleted' || p.status === 'canceled') return;
-                    const val = window.PaymentsManager.parseCurrencyToNumber(p.amount);
-                    total += val;
-                    if (p.status === 'paid') {
-                        paid += window.PaymentsManager.parseCurrencyToNumber(p.paidAmount || p.amount);
-                    } else {
-                        const due = new Date(p.dueDate + 'T00:00:00');
-                        if (due < now) late += val;
-                        else pending += val;
-                    }
+            dashState.contracts.forEach((contract) => {
+                const refs = getVersionRefIds(contract);
+                const contractCode = getContractCode(contract);
+                const propertyLabel = getPropertyLabelById(refs.propertyId) || contract.data?.imovel?.endereco || 'Imóvel não identificado';
+                const tenantName = getPersonNameById(refs.tenantId) || contract.data?.locataria?.nome || 'Locatário não identificado';
+                const pixPayee = getPersonNameById(refs.pixPayeeId) || contract.data?.pagamento?.recebedor_nome || 'Beneficiário não identificado';
+                const payments = dashState.paymentsByContract[contract.id] || [];
+
+                payments.forEach((payment) => {
+                    if (payment.status === 'deleted' || payment.status === 'canceled') return;
+                    const monthKey = getPaymentMonthKey(payment.dueDate);
+                    if (!monthKey) return;
+                    if (!monthlyMap.has(monthKey)) monthlyMap.set(monthKey, []);
+                    monthlyMap.get(monthKey).push({
+                        contractId: contract.id,
+                        contractCode,
+                        propertyLabel,
+                        tenantName,
+                        pixPayee,
+                        payment
+                    });
                 });
             });
 
-            document.getElementById('dash-total-amount').textContent = window.PaymentsManager.formatCurrencyBR(total);
-            document.getElementById('dash-paid-amount').textContent = window.PaymentsManager.formatCurrencyBR(paid);
-            document.getElementById('dash-pending-amount').textContent = window.PaymentsManager.formatCurrencyBR(pending);
-            document.getElementById('dash-late-amount').textContent = window.PaymentsManager.formatCurrencyBR(late);
+            const monthKeys = Array.from(monthlyMap.keys()).sort((a, b) => a.localeCompare(b));
 
-            const grid = document.getElementById('dash-contracts-grid');
-            grid.innerHTML = '';
-
-            if (filtered.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">Nenhum contrato ativo encontrado.</div>';
+            if (!monthKeys.length) {
+                grid.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Nenhum pagamento encontrado.</div>';
                 return;
             }
 
-            filtered.forEach(c => {
-                const refs = getVersionRefIds(c);
-                const property = getPropertyLabelById(refs.propertyId) || c.data?.selectedPropertyName || c.data?.imovel?.endereco || 'Imóvel não identificado';
-                
-                // Proprietário (Owner)
-                const proprietario = getPersonNameById(refs.ownerId) || c.data?.imovel?.proprietario || 'N/A';
-                
-                // Locador (Landlord)
-                const locador = getPersonNameById(refs.landlordId) || c.data?.selectedLandlordName || c.data?.locador?.nome || 'Locador não identificado';
-                
-                // Locatário (Tenant)
-                const locatario = getPersonNameById(refs.tenantId) || c.data?.selectedTenantName || c.data?.locataria?.nome || 'Locatário não identificado';
-                
-                // Inquilino
-                const inquilino = c.data?.inquilino?.nome || locatario;
-                
-                const payments = dashState.paymentsByContract[c.id] || [];
+            monthKeys.forEach((monthKey) => {
+                const entries = monthlyMap.get(monthKey) || [];
+                entries.sort((a, b) => {
+                    const dateA = parsePaymentDateValue(a?.payment?.dueDate);
+                    const dateB = parsePaymentDateValue(b?.payment?.dueDate);
+                    const tsA = dateA ? dateA.getTime() : 0;
+                    const tsB = dateB ? dateB.getTime() : 0;
+                    return tsA - tsB;
+                });
 
-                const card = document.createElement('div');
-                card.style = 'background: white; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; max-height: 400px; overflow: hidden;';
-                
-                let paymentsHtml = payments.filter(p => p.status !== 'deleted').map(p => {
-                    let statusColor = 'var(--warning)';
-                    let statusLabel = 'Pendente';
-                    if (p.status === 'paid') {
-                        statusColor = 'var(--success)';
-                        statusLabel = 'Pago';
-                    } else if (p.status === 'canceled') {
-                        statusColor = 'var(--text-secondary)';
-                        statusLabel = 'Cancelado';
+                const board = document.createElement('section');
+                board.className = 'payment-month-board';
+                board.style.display = 'block';
+                board.style.width = '100%';
+                board.style.overflow = 'visible';
+                const monthLabel = formatMonthYearFromIso(`${monthKey}-01`);
+
+                const head = document.createElement('header');
+                head.className = 'payment-month-head';
+
+                const strongMonth = document.createElement('strong');
+                strongMonth.style.textTransform = 'capitalize';
+                strongMonth.textContent = monthLabel;
+
+                const count = document.createElement('span');
+                count.style.fontSize = '12px';
+                count.style.color = 'var(--text-muted)';
+                count.textContent = `${entries.length} pagamento(s)`;
+
+                head.appendChild(strongMonth);
+                head.appendChild(count);
+
+                const list = document.createElement('div');
+                list.className = 'payment-month-list';
+                list.style.setProperty('display', 'block', 'important');
+                list.style.setProperty('width', '100%', 'important');
+                list.style.setProperty('min-height', '84px', 'important');
+                list.style.setProperty('overflow', 'visible', 'important');
+                list.style.setProperty('visibility', 'visible', 'important');
+                list.style.setProperty('opacity', '1', 'important');
+                list.style.setProperty('padding', '8px 0', 'important');
+
+                entries.forEach((entry) => {
+                    const payment = entry.payment;
+                    const dueDateIso = paymentDateToIso(payment?.dueDate);
+                    const dueDateObj = parsePaymentDateValue(payment?.dueDate);
+                    const dueText = dueDateObj ? dueDateObj.toLocaleDateString('pt-BR') : '-';
+                    const amountText = window.PaymentsManager.formatCurrencyBR(payment?.amount || 0);
+
+                    const card = document.createElement('article');
+                    card.className = 'payment-month-card';
+                    card.style.setProperty('display', 'grid', 'important');
+                    card.style.setProperty('gap', '10px', 'important');
+                    card.style.setProperty('padding', '12px 14px', 'important');
+                    card.style.setProperty('margin', '0 0 8px 0', 'important');
+                    card.style.setProperty('border', '1px solid var(--border)', 'important');
+                    card.style.setProperty('border-radius', '10px', 'important');
+                    card.style.setProperty('background', 'var(--bg-card)', 'important');
+                    card.style.setProperty('color', 'var(--text-primary)', 'important');
+                    card.style.setProperty('width', '100%', 'important');
+                    card.style.setProperty('box-sizing', 'border-box', 'important');
+                    card.style.setProperty('min-height', '88px', 'important');
+                    card.style.setProperty('visibility', 'visible', 'important');
+                    card.style.setProperty('opacity', '1', 'important');
+
+                    const meta = document.createElement('div');
+                    meta.className = 'payment-month-meta';
+                    meta.style.display = 'grid';
+                    meta.style.gridTemplateColumns = 'repeat(auto-fit, minmax(220px, 1fr))';
+                    meta.style.gap = '6px 12px';
+                    meta.style.fontSize = '13px';
+                    meta.style.color = 'var(--text-secondary)';
+
+                    const metaItems = [
+                        ['Contrato (código):', entry.contractCode],
+                        ['Imóvel:', entry.propertyLabel],
+                        ['Locatário:', entry.tenantName],
+                        ['Beneficiário do PIX:', entry.pixPayee],
+                        ['Vencimento:', dueText],
+                        ['Valor:', amountText]
+                    ];
+
+                    metaItems.forEach(([label, value]) => {
+                        const row = document.createElement('div');
+                        const labelStrong = document.createElement('strong');
+                        labelStrong.textContent = `${label} `;
+                        row.appendChild(labelStrong);
+                        row.appendChild(document.createTextNode(String(value || '-')));
+                        meta.appendChild(row);
+                    });
+
+                    const actions = document.createElement('div');
+                    actions.className = 'payment-month-actions';
+
+                    const actionWrap = document.createElement('div');
+                    const actionBtn = document.createElement('button');
+                    actionBtn.type = 'button';
+                    actionBtn.className = payment?.status === 'paid' ? 'btn-secondary btn-sm' : 'btn-primary btn-sm';
+                    actionBtn.textContent = payment?.status === 'paid' ? 'Remover baixa' : 'Marcar como pago';
+                    if (payment?.status === 'paid') {
+                        actionBtn.addEventListener('click', () => undoPaymentAction(entry.contractId, payment.id));
                     } else {
-                        const due = new Date(p.dueDate + 'T00:00:00');
-                        if (due < now) {
-                            statusColor = 'var(--danger)';
-                            statusLabel = 'Atrasado';
-                        }
+                        actionBtn.addEventListener('click', () => openPaymentMarkModal(entry.contractId, payment.id, payment.amount || 0, dueDateIso));
                     }
+                    actionWrap.appendChild(actionBtn);
 
-                    return `
-                        <div style="padding: 10px 16px; border-bottom: 1px solid var(--bg-main); display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-size: 14px; font-weight: 500;">${new Date(p.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')}</div>
-                                <div style="font-size: 11px; color: ${statusColor}; font-weight: 700; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
-                                    ${statusLabel}
-                                    ${p.status === 'paid' 
-                                        ? `<button class="btn-secondary" style="padding: 2px 6px; font-size: 9px;" type="button" onclick="undoPaymentAction('${c.id}','${p.id}')">Estornar</button>`
-                                        : (p.status === 'pending' ? `<button class="btn-primary" style="padding: 2px 6px; font-size: 9px;" type="button" onclick="openPaymentMarkModal('${c.id}','${p.id}','${p.amount || 0}','${p.dueDate || ''}')">Baixar</button>` : '')
-                                    }
-                                </div>
-                            </div>
-                            <div style="font-weight: 600;">${window.PaymentsManager.formatCurrencyBR(p.amount)}</div>
-                        </div>
+                    const contractBtn = document.createElement('button');
+                    contractBtn.className = 'payment-contract-link';
+                    contractBtn.type = 'button';
+                    contractBtn.title = 'Abrir contrato';
+                    contractBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
                     `;
-                }).join('');
+                    contractBtn.addEventListener('click', () => openPaymentContractFromFinance(entry.contractId));
 
-                if (!paymentsHtml) paymentsHtml = '<div style="padding: 20px; text-align: center; color: var(--text-secondary); font-size: 14px;">Sem pagamentos</div>';
+                    actions.appendChild(actionWrap);
+                    actions.appendChild(contractBtn);
 
-                card.innerHTML = `
-                    <div style="padding: 16px; background: var(--bg-main); border-bottom: 1px solid var(--border);">
-                        <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">${c.name || 'Contrato sem nome'}</div>
-                        <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
-                            <strong>Imóvel:</strong> ${property}<br>
-                            <strong>Proprietário:</strong> ${proprietario}<br>
-                            <strong>Locador:</strong> ${locador}<br>
-                            <strong>Locatário:</strong> ${locatario}<br>
-                            <strong>Inquilino:</strong> ${inquilino}
-                        </div>
-                    </div>
-                    <div style="flex: 1; overflow-y: auto;">
-                        ${paymentsHtml}
-                    </div>
-                `;
-                grid.appendChild(card);
+                    card.appendChild(meta);
+                    card.appendChild(actions);
+                    list.appendChild(card);
+                });
+
+                board.appendChild(head);
+                board.appendChild(list);
+
+                if (!list.children.length) {
+                    const emptyInfo = document.createElement('div');
+                    emptyInfo.style.padding = '12px 14px';
+                    emptyInfo.style.fontSize = '13px';
+                    emptyInfo.style.color = 'var(--text-secondary)';
+                    emptyInfo.textContent = 'Sem pagamentos visíveis neste mês.';
+                    list.appendChild(emptyInfo);
+                }
+
+                grid.appendChild(board);
             });
         }
 
@@ -8410,6 +8550,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 switchTab('pessoas');
             });
             document.getElementById('nav-finance').addEventListener('click', function () {
+                switchTab('financeiro');
+            });
+            document.getElementById('nav-payments')?.addEventListener('click', function () {
                 switchTab('financeiro');
             });
 
@@ -8725,7 +8868,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             refreshInvitationList();
             setContractEditorVisible(false);
             syncContractActionButtons(null);
-            switchTab('contrato');
+            switchTab('financeiro');
 
             document.querySelectorAll('.editor-panel input, .editor-panel textarea, .editor-panel select').forEach(field => {
                 field.addEventListener('focus', function () {
