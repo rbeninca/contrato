@@ -1257,7 +1257,7 @@
             min-height: 56px;
             overflow-y: visible;
             overflow-x: hidden;
-            padding: 8px;
+            padding: 6px;
             background: var(--bg-card);
             width: 100%;
             box-sizing: border-box;
@@ -1265,10 +1265,8 @@
 
         .payment-month-card {
             border: 1px solid var(--border);
-            padding: 10px 8px;
-            display: flex;
-            align-items: stretch;
-            gap: 8px;
+            padding: 8px 6px;
+            display: block;
             width: 100%;
             box-sizing: border-box;
             border-radius: var(--radius);
@@ -1293,35 +1291,29 @@
             background: #fef2f2;
         }
 
-        .payment-month-tag {
-            width: 18px;
-            min-width: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 1px dashed var(--border);
-            padding-right: 0;
-            overflow: visible;
-        }
-
-        .payment-month-tag span {
-            display: inline-block;
-            transform: rotate(-90deg);
-            transform-origin: center;
-            white-space: nowrap;
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--text-muted);
-            letter-spacing: 0.2px;
-            text-transform: capitalize;
-            line-height: 1;
-        }
-
         .payment-month-body {
-            flex: 1;
-            min-width: 0;
-            display: grid;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .payment-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
             gap: 8px;
+        }
+
+        .payment-card-property {
+            margin: 0;
+            min-width: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.25;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .payment-month-card:last-child {
@@ -1329,11 +1321,44 @@
         }
 
         .payment-month-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 5px 10px;
-            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 11px;
             color: var(--text-secondary);
+        }
+
+        .payment-payment-highlight {
+            display: grid;
+            gap: 4px;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            padding: 6px;
+        }
+
+        .payment-highlight-item {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .payment-highlight-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .payment-highlight-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: right;
+        }
+
+        .payment-highlight-value.is-money {
+            font-size: 14px;
         }
 
         .payment-month-actions {
@@ -1392,15 +1417,25 @@
 
         .payment-meta-row {
             display: flex;
-            align-items: center;
-            gap: 6px;
+            align-items: baseline;
+            gap: 4px;
             min-width: 0;
         }
 
         .payment-meta-label {
             font-weight: 700;
             color: var(--text-primary);
-            font-size: 12px;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .payment-meta-value {
+            min-width: 0;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 11px;
         }
 
         .payment-inline-link {
@@ -1418,41 +1453,33 @@
             color: var(--primary-hover);
         }
 
-        .payment-contract-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-            grid-column: 1 / -1;
-        }
-
-        .payment-value-highlight {
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
         @media (max-width: 768px) {
+            #tab-pagamentos .finance-period-column {
+                padding: 6px;
+            }
+
+            #tab-pagamentos .payment-month-section {
+                margin-bottom: 8px;
+            }
+
+            #tab-pagamentos .payment-month-list {
+                padding: 4px;
+                gap: 8px;
+            }
+
             #tab-pagamentos .payment-month-card {
                 padding: 8px 6px;
-                gap: 6px;
-            }
-
-            #tab-pagamentos .payment-month-tag {
-                width: 14px;
-                min-width: 14px;
-            }
-
-            #tab-pagamentos .payment-month-tag span {
-                font-size: 8px;
             }
 
             #tab-pagamentos .payment-month-body {
                 gap: 6px;
             }
 
+            #tab-pagamentos .payment-card-property {
+                font-size: 13px;
+            }
+
             #tab-pagamentos .payment-month-meta {
-                grid-template-columns: 1fr;
                 gap: 4px 8px;
                 font-size: 11px;
             }
@@ -1462,13 +1489,41 @@
             }
 
             #tab-pagamentos .payment-inline-link,
-            #tab-pagamentos .payment-value-highlight {
+            #tab-pagamentos .payment-meta-value {
                 font-size: 11px;
+            }
+
+            #tab-pagamentos .payment-highlight-label {
+                font-size: 10px;
+            }
+
+            #tab-pagamentos .payment-highlight-value {
+                font-size: 12px;
+            }
+
+            #tab-pagamentos .payment-highlight-value.is-money {
+                font-size: 13px;
             }
 
             #tab-pagamentos .payment-month-actions .btn-sm {
                 font-size: 11px;
                 padding: 6px 8px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            #tab-pagamentos .payment-month-card {
+                padding: 10px;
+            }
+
+            #tab-pagamentos .payment-month-meta {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px 12px;
+            }
+
+            #tab-pagamentos .payment-payment-highlight {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
@@ -9495,30 +9550,26 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const payment = entry.payment;
             const visualStatus = getPaymentVisualStatus(payment);
             const statusKey = visualStatus === 'paid' ? 'paid' : (visualStatus === 'overdue' ? 'overdue' : 'open');
-            const statusLabel = statusKey === 'paid' ? 'Pago' : (statusKey === 'overdue' ? 'Atrasado' : 'Aberto');
+            const statusLabel = statusKey === 'paid' ? 'Pago' : 'Pendente';
             const dueDateIso = paymentDateToIso(payment?.dueDate);
             const dueDateObj = parsePaymentDateValue(payment?.dueDate);
             const dueText = dueDateObj ? dueDateObj.toLocaleDateString('pt-BR') : '-';
             const amountText = window.PaymentsManager.formatCurrencyBR(payment?.amount || 0);
-            const monthYearTag = dueDateObj
-                ? dueDateObj.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
-                : 'mês indefinido';
 
             const card = document.createElement('article');
             card.className = 'payment-month-card';
             card.classList.add(`status-${statusKey}`);
 
-            const monthTag = document.createElement('div');
-            monthTag.className = 'payment-month-tag';
-            const monthTagText = document.createElement('span');
-            monthTagText.textContent = monthYearTag;
-            monthTag.appendChild(monthTagText);
+            const body = document.createElement('div');
+            body.className = 'payment-month-body';
 
-            const meta = document.createElement('div');
-            meta.className = 'payment-month-meta';
+            const top = document.createElement('div');
+            top.className = 'payment-card-top';
 
-            const contractRow = document.createElement('div');
-            contractRow.className = 'payment-contract-row';
+            const propertyTitle = document.createElement('h4');
+            propertyTitle.className = 'payment-card-property';
+            propertyTitle.textContent = String(entry.propertyLabel || 'Imóvel não identificado');
+
             const contractBtn = document.createElement('button');
             contractBtn.className = 'payment-contract-link';
             contractBtn.type = 'button';
@@ -9532,8 +9583,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 </svg>
             `;
             contractBtn.addEventListener('click', () => openPaymentContractFromFinance(entry.contractId));
-            contractRow.appendChild(contractBtn);
-            meta.appendChild(contractRow);
+            top.appendChild(propertyTitle);
+            top.appendChild(contractBtn);
+
+            const meta = document.createElement('div');
+            meta.className = 'payment-month-meta';
 
             const createMetaRow = (label, value, options = {}) => {
                 const row = document.createElement('div');
@@ -9552,18 +9606,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     row.appendChild(valueBtn);
                 } else {
                     const valueSpan = document.createElement('span');
-                    if (options.highlight) valueSpan.className = 'payment-value-highlight';
+                    valueSpan.className = 'payment-meta-value';
                     valueSpan.textContent = String(value || '-');
                     row.appendChild(valueSpan);
                 }
 
                 meta.appendChild(row);
             };
-
-            createMetaRow('Imóvel:', entry.propertyLabel, {
-                clickable: !!entry.propertyId,
-                onClick: () => openEditPropertyModal(entry.propertyId)
-            });
 
             createMetaRow('Locatário:', entry.tenantName, {
                 clickable: !!entry.tenantId,
@@ -9575,7 +9624,19 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 onClick: () => openEditPersonModal(entry.pixPayeeId)
             });
 
-            createMetaRow('Valor • Vencimento:', `${amountText} • ${dueText}`, { highlight: true });
+            const paymentHighlight = document.createElement('div');
+            paymentHighlight.className = 'payment-payment-highlight';
+
+            const amountItem = document.createElement('div');
+            amountItem.className = 'payment-highlight-item';
+            amountItem.innerHTML = `<span class="payment-highlight-label">Valor</span><span class="payment-highlight-value is-money">${amountText}</span>`;
+
+            const dueItem = document.createElement('div');
+            dueItem.className = 'payment-highlight-item';
+            dueItem.innerHTML = `<span class="payment-highlight-label">Vencimento</span><span class="payment-highlight-value">${dueText}</span>`;
+
+            paymentHighlight.appendChild(amountItem);
+            paymentHighlight.appendChild(dueItem);
 
             const actions = document.createElement('div');
             actions.className = 'payment-month-actions';
@@ -9598,12 +9659,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             actionWrap.appendChild(actionBtn);
             actions.appendChild(actionWrap);
 
-            const body = document.createElement('div');
-            body.className = 'payment-month-body';
+            body.appendChild(top);
             body.appendChild(meta);
+            body.appendChild(paymentHighlight);
             body.appendChild(actions);
 
-            card.appendChild(monthTag);
             card.appendChild(body);
             return card;
         }
