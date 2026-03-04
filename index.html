@@ -3266,21 +3266,22 @@
         </div>
     </div>
 
-    <div id="contract-person-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
-        aria-labelledby="contract-person-title">
+    <div id="person-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="person-modal-title">
         <div class="modal-card">
             <div class="modal-header-sticky">
-                <div id="contract-person-title" class="modal-title">Cadastrar pessoa no contrato</div>
+                <div id="person-modal-title" class="modal-title">Pessoa</div>
                 <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-contract-person-cancel" type="button">Voltar</button>
-                    <button class="btn-primary" id="btn-contract-person-save" type="button">Salvar pessoa</button>
+                    <button class="btn-secondary" id="btn-person-modal-cancel" type="button">Voltar</button>
+                    <button class="btn-primary" id="btn-person-modal-save" type="button">Salvar pessoa</button>
                 </div>
             </div>
-            <div class="modal-text">Cadastre a pessoa e selecione em qual papel ela deve ser aplicada no contrato aberto.</div>
+            <div id="person-modal-description" class="modal-text">Cadastre ou edite os dados da pessoa.</div>
             <div class="editor-grid">
                 <div class="editor-field full"><label for="modal-person-name">Nome</label><input id="modal-person-name" type="text"></div>
+                <div class="editor-field"><label for="modal-person-phone">Telefone</label><input id="modal-person-phone" type="text"></div>
                 <div class="editor-field"><label for="modal-person-email">E-mail</label><input id="modal-person-email" type="text"></div>
-                <div class="editor-field"><label for="modal-person-cpfcnpj">CPF</label><input id="modal-person-cpfcnpj" type="text"></div>
+                <div class="editor-field"><label for="modal-person-cpfcnpj">CPF / CNPJ</label><input id="modal-person-cpfcnpj" type="text"></div>
                 <div class="editor-field"><label for="modal-person-rg">RG</label><input id="modal-person-rg" type="text" placeholder="0.000.000-0/SSP-PR"></div>
                 <div class="editor-field"><label for="modal-person-nationality">Nacionalidade</label><input id="modal-person-nationality" type="text" placeholder="brasileiro(a)"></div>
                 <div class="editor-field"><label for="modal-person-profession">Profissão</label><input id="modal-person-profession" type="text"></div>
@@ -3306,8 +3307,10 @@
                 <div class="editor-field"><label for="modal-person-pix-key">Chave PIX</label><input id="modal-person-pix-key" type="text"></div>
                 <div class="editor-field full"><label for="modal-person-qualification">Qualificação</label><textarea id="modal-person-qualification"></textarea></div>
                 <div class="editor-field full"><label for="modal-person-notes">Observações</label><textarea id="modal-person-notes"></textarea></div>
-                <div class="editor-field full"><label for="modal-person-assign">Aplicar no campo</label>
+                <div id="modal-person-assign-container" class="editor-field full hidden">
+                    <label for="modal-person-assign">Aplicar no contrato como</label>
                     <select id="modal-person-assign">
+                        <option value="">(Não aplicar agora)</option>
                         <option value="f-landlord-selected">Locador</option>
                         <option value="f-tenant-selected">Locatário</option>
                         <option value="f-owner-selected">Proprietário</option>
@@ -3318,74 +3321,49 @@
                         <option value="f-guarantor2-spouse-selected">Cônjuge Fiador 2</option>
                     </select>
                 </div>
+                <div class="editor-field full hidden" id="modal-person-delete-container" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <button class="btn-secondary btn-danger-subtle" id="btn-person-modal-delete" type="button">Excluir esta pessoa</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="new-person-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
-        aria-labelledby="new-person-title">
+    <div id="property-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+        aria-labelledby="property-modal-title">
         <div class="modal-card">
             <div class="modal-header-sticky">
-                <div id="new-person-title" class="modal-title">Nova pessoa</div>
+                <div id="property-modal-title" class="modal-title">Imóvel</div>
                 <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-new-person-cancel" type="button">Voltar</button>
-                    <button class="btn-primary" id="btn-new-person-save" type="button">Salvar pessoa</button>
+                    <button class="btn-secondary" id="btn-property-modal-cancel" type="button">Voltar</button>
+                    <button class="btn-primary" id="btn-property-modal-save" type="button">Salvar imóvel</button>
                 </div>
             </div>
-            <div id="new-person-description" class="modal-text">Cadastre uma nova pessoa. Role o formulário para preencher todos os campos necessários.</div>
+            <div class="modal-text">Cadastre ou edite as informações do imóvel. Role para ver todos os campos, incluindo o memorial descritivo.</div>
             <div class="editor-grid">
-                <div class="editor-field full"><label for="new-person-name">Nome</label><input id="new-person-name" type="text"></div>
-                <div class="editor-field"><label for="new-person-phone">Telefone</label><input id="new-person-phone" type="text"></div>
-                <div class="editor-field"><label for="new-person-email">E-mail</label><input id="new-person-email" type="text"></div>
-                <div class="editor-field"><label for="new-person-cpfcnpj">CPF</label><input id="new-person-cpfcnpj" type="text"></div>
-                <div class="editor-field"><label for="new-person-rg">RG</label><input id="new-person-rg" type="text" placeholder="0.000.000-0/SSP-PR"></div>
-                <div class="editor-field"><label for="new-person-nationality">Nacionalidade</label><input id="new-person-nationality" type="text" placeholder="brasileiro(a)"></div>
-                <div class="editor-field"><label for="new-person-profession">Profissão</label><input id="new-person-profession" type="text"></div>
-                <div class="editor-field"><label for="new-person-marital-status">Estado civil</label>
-                    <select id="new-person-marital-status">
-                        <option value="">(Selecionar)</option>
-                        <option value="solteiro">Solteiro(a)</option>
-                        <option value="casado">Casado(a)</option>
-                        <option value="divorciado">Divorciado(a)</option>
-                        <option value="viuvo">Viúvo(a)</option>
-                        <option value="uniao-estavel">União estável</option>
-                    </select>
+                <div class="editor-field full"><label for="modal-property-label">Nome do imóvel (label)</label><input id="modal-property-label" type="text" placeholder="Ex.: Casa 2482 - Jardim Universitário"></div>
+                <div class="editor-field full">
+                    <label for="modal-property-fotos">Fotos do imóvel</label>
+                    <input id="modal-property-fotos" type="file" accept="image/*" multiple>
+                    <div id="modal-property-fotos-preview" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;"></div>
                 </div>
-                <div class="editor-field"><label for="new-person-address-city">Cidade residência</label><input id="new-person-address-city" type="text"></div>
-                <div class="editor-field"><label for="new-person-address-state">Estado</label><input id="new-person-address-state" type="text"></div>
-                <div class="editor-field full"><label for="new-person-address-street">Endereço completo</label><input id="new-person-address-street" type="text"></div>
-                <div class="editor-field"><label for="new-person-birth-city">Cidade natal</label><input id="new-person-birth-city" type="text"></div>
-                <div class="editor-field"><label for="new-person-birth-state">Estado natal</label><input id="new-person-birth-state" type="text"></div>
-                <div class="editor-field"><label for="new-person-birth-date">Data nascimento</label><input id="new-person-birth-date" type="date"></div>
-                <div class="editor-field"><label for="new-person-father-name">Nome do pai</label><input id="new-person-father-name" type="text"></div>
-                <div class="editor-field"><label for="new-person-mother-name">Nome da mãe</label><input id="new-person-mother-name" type="text"></div>
-                <div class="editor-field"><label for="new-person-bank-account">Conta bancária</label><input id="new-person-bank-account" type="text"></div>
-                <div class="editor-field"><label for="new-person-pix-key">Chave PIX</label><input id="new-person-pix-key" type="text"></div>
-                <div class="editor-field full"><label for="new-person-qualification">Qualificação (override)</label><textarea id="new-person-qualification"></textarea></div>
-                <div class="editor-field full"><label for="new-person-notes">Observações</label><textarea id="new-person-notes"></textarea></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="new-property-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
-        aria-labelledby="new-property-title">
-        <div class="modal-card">
-            <div id="new-property-title" class="modal-title">Novo imóvel</div>
-            <div class="modal-text">Cadastre um novo imóvel. O formulário permite rolagem para preencher tudo.</div>
-            <div class="editor-grid">
-                <div class="editor-field full"><label for="new-property-label">Nome do imóvel (label)</label><input id="new-property-label" type="text" placeholder="Ex.: Casa 2482 - Jardim Universitário"></div>
-                <div class="editor-field"><label for="new-property-cidade">Cidade</label><input id="new-property-cidade" type="text"></div>
-                <div class="editor-field"><label for="new-property-estado">Estado</label><input id="new-property-estado" type="text" placeholder="PR"></div>
-                <div class="editor-field"><label for="new-property-bairro">Bairro</label><input id="new-property-bairro" type="text"></div>
-                <div class="editor-field"><label for="new-property-rua">Rua</label><input id="new-property-rua" type="text"></div>
-                <div class="editor-field"><label for="new-property-numero">Número</label><input id="new-property-numero" type="text"></div>
-                <div class="editor-field"><label for="new-property-complemento">Complemento</label><input id="new-property-complemento" type="text"></div>
-                <div class="editor-field"><label for="new-property-cep">CEP</label><input id="new-property-cep" type="text"></div>
-                <div class="editor-field full"><label for="new-property-owner">Proprietário (opcional)</label><input id="new-property-owner" type="text"></div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-secondary" id="btn-new-property-cancel" type="button">Cancelar</button>
-                <button class="btn-primary" id="btn-new-property-save" type="button">Salvar imóvel</button>
+                <div class="editor-field"><label for="modal-property-cidade">Cidade</label><input id="modal-property-cidade" type="text"></div>
+                <div class="editor-field"><label for="modal-property-estado">Estado</label><input id="modal-property-estado" type="text" placeholder="PR"></div>
+                <div class="editor-field"><label for="modal-property-bairro">Bairro</label><input id="modal-property-bairro" type="text"></div>
+                <div class="editor-field"><label for="modal-property-rua">Rua</label><input id="modal-property-rua" type="text"></div>
+                <div class="editor-field"><label for="modal-property-numero">Número</label><input id="modal-property-numero" type="text"></div>
+                <div class="editor-field"><label for="modal-property-complemento">Complemento</label><input id="modal-property-complemento" type="text"></div>
+                <div class="editor-field"><label for="modal-property-cep">CEP</label><input id="modal-property-cep" type="text"></div>
+                <div class="editor-field full"><label for="modal-property-owner">Proprietário (opcional)</label>
+                    <select id="modal-property-owner"></select>
+                </div>
+                <div class="editor-field full"><label><input id="modal-property-memorial-enabled" type="checkbox"> Anexar memorial ao contrato</label></div>
+                <div class="editor-field full"><label><input id="modal-property-memorial-page-break" type="checkbox"> Iniciar memorial em nova página</label></div>
+                <div class="editor-field full"><label for="modal-property-memorial-title">Título do memorial</label><input id="modal-property-memorial-title" type="text" value="MEMORIAL DESCRITIVO"></div>
+                <div class="editor-field full"><label for="modal-property-memorial-text">Memorial descritivo</label><textarea id="modal-property-memorial-text"></textarea></div>
+                <div class="editor-field full"><label for="modal-property-memorial-note">Observação anexos</label><input id="modal-property-memorial-note" type="text" placeholder="FOTOS ENVIADAS POR E-MAIL (xxxxxx@gmail.com)"></div>
+                <div class="editor-field full" id="modal-property-delete-container" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <button class="btn-secondary btn-danger-subtle" id="btn-property-modal-delete" type="button">Excluir este imóvel</button>
+                </div>
             </div>
         </div>
     </div>
@@ -3816,74 +3794,50 @@
             </div>
 
             <div id="tab-imoveis" class="tab-content hidden">
-                <div class="contracts-dashboard-head" style="margin-bottom: 10px;">
+                <div class="contracts-dashboard-head" style="margin-bottom: 20px;">
                     <div>
                         <h4 class="contracts-dashboard-title" style="font-size: 20px;">Imóveis</h4>
                         <p class="contracts-dashboard-subtitle">Cadastre imóveis para reaproveitar endereço, proprietário e memorial descritivo nos contratos.</p>
                     </div>
-                    <button class="btn-primary" id="btn-property-new" type="button">Novo imóvel</button>
                 </div>
-                <div class="editor-grid">
-                    <div class="editor-field full"><label for="property-list">Imóveis cadastrados</label><select
-                            id="property-list" size="6"></select></div>
-                </div>
-
-                <div class="editor-grid" style="margin-top: 12px;">
-                        <div class="editor-field full"><label for="p-label">Nome do imóvel (label)</label><input
-                            id="p-label" type="text" placeholder="Ex.: Casa 2482 - Jardim Universitário"></div>
+                <div class="version-wrap">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h4 style="margin: 0;">Imóveis cadastrados</h4>
+                        <button class="btn-primary" id="btn-property-new" type="button">Novo imóvel</button>
+                    </div>
+                    <div class="editor-grid">
                         <div class="editor-field full">
-                        <label for="p-fotos">Fotos do imóvel</label>
-                        <input id="p-fotos" type="file" accept="image/*" multiple>
-                        <div id="p-fotos-preview" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;"></div>
+                            <select id="property-list" size="12" style="width: 100%; min-height: 300px; font-family: inherit; font-size: 14px; padding: 8px;"></select>
                         </div>
-                    <div class="editor-field"><label for="p-cidade">Cidade</label><input id="p-cidade" type="text">
                     </div>
-                    <div class="editor-field"><label for="p-estado">Estado</label><input id="p-estado" type="text"
-                            placeholder="PR"></div>
-                    <div class="editor-field"><label for="p-bairro">Bairro</label><input id="p-bairro" type="text">
+                    <div class="property-note" style="margin-top: 12px; color: var(--text-muted); font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        Dica: dê dois cliques em um imóvel da lista para editar.
                     </div>
-                    <div class="editor-field"><label for="p-rua">Rua</label><input id="p-rua" type="text"></div>
-                    <div class="editor-field"><label for="p-numero">Número</label><input id="p-numero" type="text">
-                    </div>
-                    <div class="editor-field"><label for="p-complemento">Complemento</label><input id="p-complemento"
-                            type="text"></div>
-                    <div class="editor-field"><label for="p-cep">CEP</label><input id="p-cep" type="text"></div>
-                    <div class="editor-field full"><label for="p-proprietario">Proprietário (opcional)</label>
-                        <select id="p-proprietario"></select>
-                    </div>
-                    <div class="editor-field full"><label><input id="p-memorial-enabled" type="checkbox"> Anexar
-                            memorial ao contrato</label></div>
-                    <div class="editor-field full"><label><input id="p-memorial-page-break" type="checkbox"> Iniciar
-                            memorial em nova página</label></div>
-                    <div class="editor-field full"><label for="p-memorial-title">Título do memorial</label><input
-                            id="p-memorial-title" type="text" value="MEMORIAL DESCRITIVO"></div>
-                    <div class="editor-field full"><label for="p-memorial-text">Memorial descritivo</label><textarea
-                            id="p-memorial-text"></textarea></div>
-                    <div class="editor-field full"><label for="p-memorial-note">Observação anexos</label><input
-                            id="p-memorial-note" type="text" placeholder="FOTOS ENVIADAS POR E-MAIL (xxxxxx@gmail.com)">
-                    </div>
-                </div>
-                <div class="editor-actions">
-                    <button class="btn-primary" id="btn-property-save" type="button">Salvar imóvel</button>
-                    <button class="btn-secondary" id="btn-property-duplicate" type="button">Duplicar</button>
-                    <button class="btn-secondary btn-danger-subtle" id="btn-property-delete" type="button">Excluir</button>
                 </div>
             </div>
 
             <div id="tab-pessoas" class="tab-content hidden">
-                <div class="contracts-dashboard-head" style="margin-bottom: 10px;">
+                <div class="contracts-dashboard-head" style="margin-bottom: 20px;">
                     <div>
                         <h4 class="contracts-dashboard-title" style="font-size: 20px;">Pessoas</h4>
                         <p class="contracts-dashboard-subtitle">Cadastro único de pessoas reutilizável para todos os papéis do contrato.</p>
                     </div>
-                    <button class="btn-primary" id="btn-person-new" type="button">Nova pessoa</button>
                 </div>
-                <div class="version-wrap" style="margin-top: 10px;">
-                    <h4>Pessoas</h4>
-                    <div class="editor-grid">
-                        <div class="editor-field full"><label for="person-list">Pessoas cadastradas</label><select id="person-list" size="8"></select></div>
+                <div class="version-wrap">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h4 style="margin: 0;">Pessoas cadastradas</h4>
+                        <button class="btn-primary" id="btn-person-new" type="button">Nova pessoa</button>
                     </div>
-                    <div class="property-note" style="margin-top: 10px;">Dica: dê dois cliques em uma pessoa da lista para editar no modal.</div>
+                    <div class="editor-grid">
+                        <div class="editor-field full">
+                            <select id="person-list" size="12" style="width: 100%; min-height: 300px; font-family: inherit; font-size: 14px; padding: 8px;"></select>
+                        </div>
+                    </div>
+                    <div class="property-note" style="margin-top: 12px; color: var(--text-muted); font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        Dica: dê dois cliques em uma pessoa da lista para editar.
+                    </div>
                 </div>
 
                 <div class="version-wrap hidden" style="margin-top: 12px;">
@@ -4391,7 +4345,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         }
 
         async function loadPeopleFromFirestore() {
-            const ownerId = window.AppFirebase?.auth?.currentUser?.uid;
+            const ownerId = currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid;
             if (!ownerId || !window.PeopleRepo) {
                 landlordsCache = [];
                 tenantsCache = [];
@@ -4579,38 +4533,44 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 return;
             }
 
-            try {
-                await Promise.all([
-                    loadVersionsFromFirestore(),
-                    loadPropertiesFromFirestore(),
-                    loadPeopleFromFirestore(),
-                    loadInvitationsFromFirestore()
-                ]);
-                applyDataFromSource();
-                if (propertiesCache.length) {
-                    selectPropertyForEditor(propertiesCache[0].id);
-                } else {
-                    setPropertyFormData(createEmptyProperty());
-                }
-                refreshLandlordList();
-                refreshTenantList();
-                if (landlordsCache.length) {
-                    selectLandlordForEditor(landlordsCache[0].id);
-                } else {
-                    setLandlordFormData(createEmptyLandlord());
-                }
-                if (tenantsCache.length) {
-                    selectTenantForEditor(tenantsCache[0].id);
-                } else {
-                    setTenantFormData(createEmptyTenant());
-                }
-                refreshInviteContractOptions();
-                refreshInvitationList();
+            const loadResults = await Promise.allSettled([
+                loadVersionsFromFirestore(),
+                loadPropertiesFromFirestore(),
+                loadPeopleFromFirestore(),
+                loadInvitationsFromFirestore()
+            ]);
+
+            const loadErrors = loadResults
+                .filter((result) => result.status === 'rejected')
+                .map((result) => result.reason?.message || 'Falha ao carregar uma coleção do Firestore.');
+
+            applyDataFromSource();
+            if (propertiesCache.length) {
+                selectPropertyForEditor(propertiesCache[0].id);
+            } else {
+                setPropertyFormData(createEmptyProperty());
+            }
+            refreshLandlordList();
+            refreshTenantList();
+            if (landlordsCache.length) {
+                selectLandlordForEditor(landlordsCache[0].id);
+            } else {
+                setLandlordFormData(createEmptyLandlord());
+            }
+            if (tenantsCache.length) {
+                selectTenantForEditor(tenantsCache[0].id);
+            } else {
+                setTenantFormData(createEmptyTenant());
+            }
+            refreshInviteContractOptions();
+            refreshInvitationList();
+
+            if (loadErrors.length) {
+                setSyncStatus('Carga parcial Firestore');
+                setGistConnectionNote(loadErrors[0], true);
+            } else {
                 setSyncStatus('Fonte: Firestore');
                 setGistConnectionNote('Versões, imóveis e pessoas carregados do Firestore');
-            } catch (error) {
-                setSyncStatus('Erro Firestore');
-                setGistConnectionNote(error.message || 'Falha ao carregar dados do Firestore.', true);
             }
         };
 
@@ -6549,172 +6509,204 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             };
         }
 
-        function selectPersonForEditor(id) {
-            const person = landlordsCache.find((item) => item.id === id) || null;
-            currentLandlordId = person ? person.id : null;
-            currentTenantId = person ? person.id : null;
-            setPersonFormData(person || createEmptyPerson());
-            refreshPeopleList();
-        }
-
-        function beginNewPerson() {
-            currentLandlordId = null;
-            currentTenantId = null;
-            setPersonFormData(createEmptyPerson());
-            refreshPeopleList();
-        }
-
-        function resetNewPersonModalForm() {
-            setFieldValue('new-person-name', '');
-            setFieldValue('new-person-phone', '');
-            setFieldValue('new-person-email', '');
-            setFieldValue('new-person-cpfcnpj', '');
-            setFieldValue('new-person-rg', '');
-            setFieldValue('new-person-nationality', '');
-            setFieldValue('new-person-profession', '');
-            setFieldValue('new-person-marital-status', '');
-            setFieldValue('new-person-address-city', '');
-            setFieldValue('new-person-address-state', '');
-            setFieldValue('new-person-address-street', '');
-            setFieldValue('new-person-birth-city', '');
-            setFieldValue('new-person-birth-state', '');
-            setFieldValue('new-person-birth-date', '');
-            setFieldValue('new-person-father-name', '');
-            setFieldValue('new-person-mother-name', '');
-            setFieldValue('new-person-bank-account', '');
-            setFieldValue('new-person-pix-key', '');
-            setFieldValue('new-person-qualification', '');
-            setFieldValue('new-person-notes', '');
-        }
-
-        function fillNewPersonModalForm(person) {
-            setFieldValue('new-person-name', person?.name || '');
-            setFieldValue('new-person-phone', person?.phone || '');
-            setFieldValue('new-person-email', person?.email || '');
-            setFieldValue('new-person-cpfcnpj', person?.cpfCnpj || '');
-            setFieldValue('new-person-rg', person?.rg || '');
-            setFieldValue('new-person-nationality', person?.nationality || '');
-            setFieldValue('new-person-profession', person?.profession || '');
-            setFieldValue('new-person-marital-status', person?.maritalStatus || '');
-            setFieldValue('new-person-address-city', person?.address?.cidade || '');
-            setFieldValue('new-person-address-state', person?.address?.estado || '');
-            setFieldValue('new-person-address-street', person?.address?.rua || '');
-            setFieldValue('new-person-birth-city', person?.birthCity || '');
-            setFieldValue('new-person-birth-state', person?.birthState || '');
-            setFieldValue('new-person-birth-date', person?.birthDate || '');
-            setFieldValue('new-person-father-name', person?.fatherName || '');
-            setFieldValue('new-person-mother-name', person?.motherName || '');
-            setFieldValue('new-person-bank-account', person?.bankAccount || '');
-            setFieldValue('new-person-pix-key', person?.pixKey || '');
-            setFieldValue('new-person-qualification', person?.qualification || '');
-            setFieldValue('new-person-notes', person?.notes || '');
-        }
-
-        function configurePersonModalUi(isEditing) {
-            const title = document.getElementById('new-person-title');
-            const description = document.getElementById('new-person-description');
-            const saveButton = document.getElementById('btn-new-person-save');
-            if (title) title.textContent = isEditing ? 'Editar pessoa' : 'Nova pessoa';
-            if (description) description.textContent = isEditing
-                ? 'Edite os dados da pessoa selecionada e clique em salvar para atualizar.'
-                : 'Cadastre uma nova pessoa. Role o formulário para preencher todos os campos necessários.';
-            if (saveButton) saveButton.textContent = isEditing ? 'Salvar alterações' : 'Salvar pessoa';
+        function resetPersonModalForm() {
+            editingPersonId = null;
+            document.getElementById('person-modal-title').textContent = 'Nova pessoa';
+            document.getElementById('person-modal-description').textContent = 'Cadastre uma nova pessoa no sistema.';
+            document.getElementById('modal-person-delete-container').classList.add('hidden');
+            document.getElementById('modal-person-assign-container').classList.add('hidden');
+            
+            setFieldValue('modal-person-name', '');
+            setFieldValue('modal-person-phone', '');
+            setFieldValue('modal-person-email', '');
+            setFieldValue('modal-person-cpfcnpj', '');
+            setFieldValue('modal-person-rg', '');
+            setFieldValue('modal-person-nationality', '');
+            setFieldValue('modal-person-profession', '');
+            setFieldValue('modal-person-marital-status', '');
+            setFieldValue('modal-person-address-city', '');
+            setFieldValue('modal-person-address-state', '');
+            setFieldValue('modal-person-address-street', '');
+            setFieldValue('modal-person-birth-city', '');
+            setFieldValue('modal-person-birth-state', '');
+            setFieldValue('modal-person-birth-date', '');
+            setFieldValue('modal-person-father-name', '');
+            setFieldValue('modal-person-mother-name', '');
+            setFieldValue('modal-person-bank-account', '');
+            setFieldValue('modal-person-pix-key', '');
+            setFieldValue('modal-person-qualification', '');
+            setFieldValue('modal-person-notes', '');
+            setFieldValue('modal-person-assign', '');
         }
 
         function openNewPersonModal() {
-            const modal = document.getElementById('new-person-modal');
+            const modal = document.getElementById('person-modal');
             if (!modal) return;
-            editingPersonId = null;
-            configurePersonModalUi(false);
-            resetNewPersonModalForm();
+            resetPersonModalForm();
             modal.classList.remove('hidden');
-            document.getElementById('new-person-name')?.focus();
+            document.getElementById('modal-person-name')?.focus();
         }
 
-        function openEditPersonModal(personId) {
-            const modal = document.getElementById('new-person-modal');
+        function openContractPersonModal() {
+            const modal = document.getElementById('person-modal');
             if (!modal) return;
-            const person = landlordsCache.find((item) => item.id === personId) || null;
+            resetPersonModalForm();
+            document.getElementById('person-modal-title').textContent = 'Cadastrar no contrato';
+            document.getElementById('person-modal-description').textContent = 'Cadastre a pessoa e selecione o papel no contrato aberto.';
+            document.getElementById('modal-person-assign-container').classList.remove('hidden');
+            document.getElementById('modal-person-assign').value = 'f-tenant-selected'; // padrão locatário
+            modal.classList.remove('hidden');
+            document.getElementById('modal-person-name')?.focus();
+        }
+
+        async function openEditPersonModal(id) {
+            const modal = document.getElementById('person-modal');
+            if (!modal) return;
+            
+            const person = landlordsCache.find(p => p.id === id);
             if (!person) {
-                alert('Selecione uma pessoa válida para editar.');
+                alert('Pessoa não encontrada.');
                 return;
             }
 
-            editingPersonId = person.id;
-            configurePersonModalUi(true);
-            fillNewPersonModalForm(person);
-            currentLandlordId = person.id;
-            currentTenantId = person.id;
-            refreshPeopleList();
+            editingPersonId = id;
+            document.getElementById('person-modal-title').textContent = 'Editar pessoa';
+            document.getElementById('person-modal-description').textContent = 'Atualize os dados da pessoa cadastrada.';
+            document.getElementById('modal-person-delete-container').classList.remove('hidden');
+            document.getElementById('modal-person-assign-container').classList.add('hidden');
+
+            setFieldValue('modal-person-name', person.name || '');
+            setFieldValue('modal-person-phone', person.phone || '');
+            setFieldValue('modal-person-email', person.email || '');
+            setFieldValue('modal-person-cpfcnpj', person.cpfCnpj || '');
+            setFieldValue('modal-person-rg', person.rg || '');
+            setFieldValue('modal-person-nationality', person.nationality || '');
+            setFieldValue('modal-person-profession', person.profession || '');
+            setFieldValue('modal-person-marital-status', person.maritalStatus || '');
+            setFieldValue('modal-person-address-city', person.address?.cidade || '');
+            setFieldValue('modal-person-address-state', person.address?.estado || '');
+            setFieldValue('modal-person-address-street', person.address?.rua || '');
+            setFieldValue('modal-person-birth-city', person.birthCity || '');
+            setFieldValue('modal-person-birth-state', person.birthState || '');
+            setFieldValue('modal-person-birth-date', person.birthDate || '');
+            setFieldValue('modal-person-father-name', person.fatherName || '');
+            setFieldValue('modal-person-mother-name', person.motherName || '');
+            setFieldValue('modal-person-bank-account', person.bankAccount || '');
+            setFieldValue('modal-person-pix-key', person.pixKey || '');
+            setFieldValue('modal-person-qualification', person.qualification || '');
+            setFieldValue('modal-person-notes', person.notes || '');
+
             modal.classList.remove('hidden');
-            document.getElementById('new-person-name')?.focus();
+            document.getElementById('modal-person-name')?.focus();
         }
 
-        function closeNewPersonModal() {
-            const modal = document.getElementById('new-person-modal');
+        function closePersonModal() {
+            const modal = document.getElementById('person-modal');
             if (!modal) return;
             modal.classList.add('hidden');
             editingPersonId = null;
         }
 
-        function buildNewPersonFromModal(base = null) {
+        function getPersonFormDataFromModal() {
             const nowIso = new Date().toISOString();
+            const existing = editingPersonId ? landlordsCache.find(p => p.id === editingPersonId) : null;
+            
             return {
-                id: base?.id || generatePersonId('person'),
-                name: fieldValue('new-person-name'),
-                phone: fieldValue('new-person-phone'),
-                email: fieldValue('new-person-email'),
-                cpfCnpj: fieldValue('new-person-cpfcnpj'),
-                rg: fieldValue('new-person-rg'),
-                nationality: fieldValue('new-person-nationality'),
-                profession: fieldValue('new-person-profession'),
-                maritalStatus: fieldValue('new-person-marital-status'),
+                id: editingPersonId || generatePersonId('person'),
+                name: fieldValue('modal-person-name'),
+                phone: fieldValue('modal-person-phone'),
+                email: fieldValue('modal-person-email'),
+                cpfCnpj: fieldValue('modal-person-cpfcnpj'),
+                rg: fieldValue('modal-person-rg'),
+                nationality: fieldValue('modal-person-nationality'),
+                profession: fieldValue('modal-person-profession'),
+                maritalStatus: fieldValue('modal-person-marital-status'),
                 address: {
-                    cidade: fieldValue('new-person-address-city'),
-                    estado: fieldValue('new-person-address-state'),
-                    rua: fieldValue('new-person-address-street')
+                    cidade: fieldValue('modal-person-address-city'),
+                    estado: fieldValue('modal-person-address-state'),
+                    rua: fieldValue('modal-person-address-street')
                 },
-                birthCity: fieldValue('new-person-birth-city'),
-                birthState: fieldValue('new-person-birth-state'),
-                birthDate: fieldValue('new-person-birth-date'),
-                fatherName: fieldValue('new-person-father-name'),
-                motherName: fieldValue('new-person-mother-name'),
-                bankAccount: fieldValue('new-person-bank-account'),
-                pixKey: fieldValue('new-person-pix-key'),
-                qualification: fieldValue('new-person-qualification'),
-                notes: fieldValue('new-person-notes'),
-                createdAt: base?.createdAt || nowIso,
+                birthCity: fieldValue('modal-person-birth-city'),
+                birthState: fieldValue('modal-person-birth-state'),
+                birthDate: fieldValue('modal-person-birth-date'),
+                fatherName: fieldValue('modal-person-father-name'),
+                motherName: fieldValue('modal-person-mother-name'),
+                bankAccount: fieldValue('modal-person-bank-account'),
+                pixKey: fieldValue('modal-person-pix-key'),
+                qualification: fieldValue('modal-person-qualification'),
+                notes: fieldValue('modal-person-notes'),
+                createdAt: existing ? existing.createdAt : nowIso,
                 updatedAt: nowIso
             };
         }
 
-        async function saveNewPersonFromModal() {
-            const existing = editingPersonId ? landlordsCache.find((item) => item.id === editingPersonId) : null;
-            const next = buildNewPersonFromModal(existing || null);
-            if (!next.name) {
-                alert('Informe o nome da pessoa.');
+        async function savePersonFromModal() {
+            const data = getPersonFormDataFromModal();
+            if (!data.name) {
+                alert('O nome da pessoa é obrigatório.');
                 return;
             }
 
+            const ownerId = currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid;
+            if (!ownerId) return;
+
             try {
-                await saveLandlordToFirestore(next);
-                const index = landlordsCache.findIndex((item) => item.id === next.id);
-                if (index >= 0) landlordsCache[index] = next;
-                else landlordsCache.push(next);
+                await saveLandlordToFirestore(data); // Usa saveLandlordToFirestore que é o wrapper para upsertPerson
+                const index = landlordsCache.findIndex((item) => item.id === data.id);
+                if (index >= 0) {
+                    landlordsCache[index] = data;
+                } else {
+                    landlordsCache.push(data);
+                }
                 tenantsCache = landlordsCache;
-                currentLandlordId = next.id;
-                currentTenantId = next.id;
-                refreshLandlordList();
+                
+                refreshPeopleList();
                 refreshLandlordSelectInContract();
                 refreshTenantSelectInContract();
                 refreshParticipantRoleSelects();
                 refreshVersionFilterOptions();
-                refreshVersionList();
-                setPersonFormData(next);
-                closeNewPersonModal();
-                alert(existing ? 'Pessoa atualizada com sucesso.' : 'Pessoa salva com sucesso.');
+                refreshInviteContractOptions();
+                
+                const targetField = fieldValue('modal-person-assign');
+                if (targetField) {
+                    setFieldValue(targetField, data.id);
+                    document.getElementById(targetField)?.dispatchEvent(new Event('change'));
+                }
+
+                closePersonModal();
+                alert('Pessoa salva com sucesso.');
             } catch (error) {
-                alert(error.message || 'Falhou ao salvar pessoa no Firestore.');
+                alert(error.message || 'Falhou ao salvar pessoa.');
+            }
+        }
+
+        async function deletePersonFromModal() {
+            if (!editingPersonId) return;
+            const person = landlordsCache.find((item) => item.id === editingPersonId);
+            if (!person) return;
+
+            if (!window.confirm(`Excluir a pessoa "${person.name}"?`)) return;
+            if (!requestRandomDeleteConfirmation('Atenção: esta ação excluirá permanentemente a pessoa selecionada.')) return;
+
+            try {
+                await deleteLandlordFromFirestore(editingPersonId);
+                landlordsCache = landlordsCache.filter((item) => item.id !== editingPersonId);
+                tenantsCache = landlordsCache;
+                
+                // Limpa seleções se necessário
+                if (fieldValue('f-landlord-selected') === editingPersonId) setFieldValue('f-landlord-selected', '');
+                if (fieldValue('f-tenant-selected') === editingPersonId) setFieldValue('f-tenant-selected', '');
+                clearParticipantSelectionByPerson(editingPersonId);
+                
+                refreshPeopleList();
+                refreshLandlordSelectInContract();
+                refreshTenantSelectInContract();
+                refreshParticipantRoleSelects();
+                refreshVersionFilterOptions();
+                closePersonModal();
+                alert('Pessoa excluída com sucesso.');
+            } catch (error) {
+                alert(error.message || 'Falhou ao excluir pessoa.');
             }
         }
 
@@ -7185,8 +7177,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setFieldValue('p-proprietario', property?.owner || '');
             // Fotos
             const fotosPreview = document.getElementById('p-fotos-preview');
-            fotosPreview.innerHTML = '';
-            if (property?.fotos && Array.isArray(property.fotos)) {
+            if (fotosPreview) fotosPreview.innerHTML = '';
+            if (fotosPreview && property?.fotos && Array.isArray(property.fotos)) {
                 property.fotos.forEach(url => {
                     const img = document.createElement('img');
                     img.src = url;
@@ -7198,7 +7190,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
             // Preview imediato ao selecionar arquivos
             const inputFotos = document.getElementById('p-fotos');
-            if (inputFotos) {
+            if (inputFotos && fotosPreview) {
                 inputFotos.onchange = function () {
                     fotosPreview.innerHTML = '';
                     const files = Array.from(inputFotos.files || []);
@@ -7328,85 +7320,123 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             refreshPropertyList();
         }
 
-        function resetNewPropertyModalForm() {
-            setFieldValue('new-property-label', '');
-            setFieldValue('new-property-cidade', '');
-            setFieldValue('new-property-estado', '');
-            setFieldValue('new-property-bairro', '');
-            setFieldValue('new-property-rua', '');
-            setFieldValue('new-property-numero', '');
-            setFieldValue('new-property-complemento', '');
-            setFieldValue('new-property-cep', '');
-            setFieldValue('new-property-owner', '');
+        function resetPropertyModalForm() {
+            currentPropertyId = null;
+            document.getElementById('property-modal-title').textContent = 'Novo imóvel';
+            document.getElementById('modal-property-delete-container').classList.add('hidden');
+            
+            setFieldValue('modal-property-label', '');
+            setFieldValue('modal-property-fotos', '');
+            document.getElementById('modal-property-fotos-preview').innerHTML = '';
+            setFieldValue('modal-property-cidade', '');
+            setFieldValue('modal-property-estado', 'PR');
+            setFieldValue('modal-property-bairro', '');
+            setFieldValue('modal-property-rua', '');
+            setFieldValue('modal-property-numero', '');
+            setFieldValue('modal-property-complemento', '');
+            setFieldValue('modal-property-cep', '');
+            setFieldValue('modal-property-owner', '');
+            
+            document.getElementById('modal-property-memorial-enabled').checked = false;
+            document.getElementById('modal-property-memorial-page-break').checked = false;
+            setFieldValue('modal-property-memorial-title', 'MEMORIAL DESCRITIVO');
+            setFieldValue('modal-property-memorial-text', '');
+            setFieldValue('modal-property-memorial-note', '');
         }
 
         function openNewPropertyModal() {
-            const modal = document.getElementById('new-property-modal');
+            const modal = document.getElementById('property-modal');
             if (!modal) return;
-            resetNewPropertyModalForm();
+            resetPropertyModalForm();
             modal.classList.remove('hidden');
-            document.getElementById('new-property-label')?.focus();
+            document.getElementById('modal-property-label')?.focus();
         }
 
-        function closeNewPropertyModal() {
-            const modal = document.getElementById('new-property-modal');
+        async function openEditPropertyModal(id) {
+            const modal = document.getElementById('property-modal');
+            if (!modal) return;
+            
+            const property = propertiesCache.find(p => p.id === id);
+            if (!property) {
+                alert('Imóvel não encontrado.');
+                return;
+            }
+
+            currentPropertyId = id;
+            document.getElementById('property-modal-title').textContent = 'Editar imóvel';
+            document.getElementById('modal-property-delete-container').classList.remove('hidden');
+
+            setFieldValue('modal-property-label', property.label || '');
+            setFieldValue('modal-property-cidade', property.address?.cidade || property.cidade || '');
+            setFieldValue('modal-property-estado', property.address?.estado || property.estado || 'PR');
+            setFieldValue('modal-property-bairro', property.address?.bairro || property.bairro || '');
+            setFieldValue('modal-property-rua', property.address?.rua || property.rua || '');
+            setFieldValue('modal-property-numero', property.address?.numero || property.numero || '');
+            setFieldValue('modal-property-complemento', property.address?.complemento || property.complemento || '');
+            setFieldValue('modal-property-cep', property.address?.cep || property.cep || '');
+            setFieldValue('modal-property-owner', property.owner || '');
+            
+            document.getElementById('modal-property-memorial-enabled').checked = !!property.memorial?.enabled;
+            document.getElementById('modal-property-memorial-page-break').checked = !!property.memorial?.pageBreak;
+            setFieldValue('modal-property-memorial-title', property.memorial?.title || 'MEMORIAL DESCRITIVO');
+            setFieldValue('modal-property-memorial-text', property.memorial?.text || '');
+            setFieldValue('modal-property-memorial-note', property.memorial?.note || '');
+
+            // Fotos
+            document.getElementById('modal-property-fotos-preview').innerHTML = '';
+            if (property.fotos && property.fotos.length > 0) {
+                property.fotos.forEach(url => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.style = 'width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);';
+                    document.getElementById('modal-property-fotos-preview').appendChild(img);
+                });
+            }
+
+            modal.classList.remove('hidden');
+            document.getElementById('modal-property-label')?.focus();
+        }
+
+        function closePropertyModal() {
+            const modal = document.getElementById('property-modal');
             if (!modal) return;
             modal.classList.add('hidden');
+            currentPropertyId = null;
         }
 
-        function buildNewPropertyFromModal() {
+        async function savePropertyFromModal() {
+            const label = fieldValue('modal-property-label');
+            if (!label) {
+                alert('Informe o nome (label) do imóvel.');
+                return;
+            }
+
             const nowIso = new Date().toISOString();
-            const empty = createEmptyProperty();
-            return {
-                ...empty,
-                label: fieldValue('new-property-label'),
-                owner: fieldValue('new-property-owner'),
+            const existing = currentPropertyId ? propertiesCache.find(p => p.id === currentPropertyId) : null;
+            
+            const nextProperty = {
+                id: currentPropertyId || generatePropertyId(),
+                label: label,
+                owner: fieldValue('modal-property-owner'),
                 address: {
-                    cidade: fieldValue('new-property-cidade'),
-                    estado: fieldValue('new-property-estado'),
-                    bairro: fieldValue('new-property-bairro'),
-                    rua: fieldValue('new-property-rua'),
-                    numero: fieldValue('new-property-numero'),
-                    complemento: fieldValue('new-property-complemento'),
-                    cep: fieldValue('new-property-cep')
+                    cidade: fieldValue('modal-property-cidade'),
+                    estado: fieldValue('modal-property-estado'),
+                    bairro: fieldValue('modal-property-bairro'),
+                    rua: fieldValue('modal-property-rua'),
+                    numero: fieldValue('modal-property-numero'),
+                    complemento: fieldValue('modal-property-complemento'),
+                    cep: fieldValue('modal-property-cep')
                 },
-                createdAt: nowIso,
+                memorial: {
+                    enabled: document.getElementById('modal-property-memorial-enabled').checked,
+                    pageBreak: document.getElementById('modal-property-memorial-page-break').checked,
+                    title: fieldValue('modal-property-memorial-title'),
+                    text: fieldValue('modal-property-memorial-text'),
+                    note: fieldValue('modal-property-memorial-note')
+                },
+                createdAt: existing ? existing.createdAt : nowIso,
                 updatedAt: nowIso
             };
-        }
-
-        async function saveNewPropertyFromModal() {
-            const nextProperty = buildNewPropertyFromModal();
-            if (!nextProperty.label) {
-                alert('Informe o nome (label) do imóvel.');
-                return;
-            }
-
-            try {
-                await savePropertyToFirestore(nextProperty);
-                propertiesCache.push(nextProperty);
-                currentPropertyId = nextProperty.id;
-                propertyFormDirty = false;
-                refreshPropertyList();
-                refreshPropertySelectInContract();
-                refreshVersionFilterOptions();
-                refreshInviteContractOptions();
-                refreshVersionList();
-                setPropertyFormData(nextProperty);
-                closeNewPropertyModal();
-                alert('Imóvel salvo com sucesso.');
-            } catch (error) {
-                alert(error.message || 'Falhou ao salvar imóvel no Firestore.');
-            }
-        }
-
-        async function saveCurrentProperty() {
-            const existing = currentPropertyId ? propertiesCache.find((item) => item.id === currentPropertyId) : null;
-            const nextProperty = getPropertyFormData(existing);
-            if (!nextProperty.label) {
-                alert('Informe o nome (label) do imóvel.');
-                return;
-            }
 
             try {
                 await savePropertyToFirestore(nextProperty);
@@ -7416,78 +7446,43 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 } else {
                     propertiesCache.push(nextProperty);
                 }
-                currentPropertyId = nextProperty.id;
-                propertyFormDirty = false;
+                
                 refreshPropertyList();
                 refreshPropertySelectInContract();
                 refreshVersionFilterOptions();
                 refreshInviteContractOptions();
                 refreshVersionList();
+                closePropertyModal();
                 alert('Imóvel salvo com sucesso.');
             } catch (error) {
                 alert(error.message || 'Falhou ao salvar imóvel no Firestore.');
             }
         }
 
-        async function duplicateCurrentProperty() {
-            const source = currentPropertyId ? propertiesCache.find((item) => item.id === currentPropertyId) : null;
-            if (!source) {
-                alert('Selecione um imóvel para duplicar.');
-                return;
-            }
-
-            const nowIso = new Date().toISOString();
-            const copy = {
-                ...source,
-                id: generatePropertyId(),
-                label: `${source.label} (cópia)`,
-                createdAt: nowIso,
-                updatedAt: nowIso
-            };
-
-            const nextProperties = [...propertiesCache, copy];
-            try {
-                await savePropertyToFirestore(copy);
-                propertiesCache = nextProperties;
-                currentPropertyId = copy.id;
-                setPropertyFormData(copy);
-                refreshPropertyList();
-                refreshPropertySelectInContract();
-                refreshVersionFilterOptions();
-                refreshInviteContractOptions();
-                refreshVersionList();
-                alert('Imóvel duplicado com sucesso.');
-            } catch (error) {
-                alert(error.message || 'Falhou ao duplicar imóvel no Firestore.');
-            }
-        }
-
-        async function deleteCurrentProperty() {
-            const source = currentPropertyId ? propertiesCache.find((item) => item.id === currentPropertyId) : null;
-            if (!source) {
-                alert('Selecione um imóvel para excluir.');
-                return;
-            }
+        async function deletePropertyFromModal() {
+            if (!currentPropertyId) return;
+            const source = propertiesCache.find((item) => item.id === currentPropertyId);
+            if (!source) return;
 
             if (!window.confirm(`Excluir o imóvel "${source.label}"?`)) return;
             if (!requestRandomDeleteConfirmation('Atenção: esta ação excluirá o imóvel selecionado.')) return;
 
-            const nextProperties = propertiesCache.filter((item) => item.id !== source.id);
             try {
                 await deletePropertyFromFirestore(source.id);
-                propertiesCache = nextProperties;
+                propertiesCache = propertiesCache.filter((item) => item.id !== source.id);
+                
                 if (fieldValue('f-property-selected') === source.id) {
                     setFieldValue('f-property-selected', '');
                     db.selectedPropertyId = '';
                 }
-                currentPropertyId = null;
-                setPropertyFormData(createEmptyProperty());
+                
                 refreshPropertyList();
                 refreshPropertySelectInContract();
                 refreshVersionFilterOptions();
                 refreshInviteContractOptions();
                 refreshVersionList();
                 render();
+                closePropertyModal();
                 alert('Imóvel excluído com sucesso.');
             } catch (error) {
                 alert(error.message || 'Falhou ao excluir imóvel no Firestore.');
@@ -8665,62 +8660,40 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('f-property-selected').addEventListener('change', onContractPropertySelectionChange);
             document.getElementById('f-landlord-selected').addEventListener('change', onContractLandlordSelectionChange);
             document.getElementById('f-tenant-selected').addEventListener('change', onContractTenantSelectionChange);
-            document.getElementById('btn-open-contract-person-modal').addEventListener('click', openContractPersonModal);
-            document.getElementById('btn-contract-person-cancel').addEventListener('click', closeContractPersonModal);
-            document.getElementById('btn-contract-person-save').addEventListener('click', saveContractPersonFromModal);
-            document.getElementById('contract-person-modal').addEventListener('click', function (event) {
-                if (event.target?.id === 'contract-person-modal') {
-                    closeContractPersonModal();
+            
+            // Listeners para Modal de Pessoa (Unificado)
+            document.getElementById('btn-open-contract-person-modal')?.addEventListener('click', openContractPersonModal);
+            document.getElementById('btn-person-modal-cancel')?.addEventListener('click', closePersonModal);
+            document.getElementById('btn-person-modal-save')?.addEventListener('click', savePersonFromModal);
+            document.getElementById('btn-person-modal-delete')?.addEventListener('click', deletePersonFromModal);
+            document.getElementById('person-modal')?.addEventListener('click', function (event) {
+                if (event.target?.id === 'person-modal') {
+                    closePersonModal();
                 }
             });
 
-            document.getElementById('btn-new-person-cancel')?.addEventListener('click', closeNewPersonModal);
-            document.getElementById('btn-new-person-save')?.addEventListener('click', saveNewPersonFromModal);
-            document.getElementById('new-person-modal')?.addEventListener('click', function (event) {
-                if (event.target?.id === 'new-person-modal') {
-                    closeNewPersonModal();
+            // Listeners para Modal de Imóvel
+            document.getElementById('btn-property-modal-cancel')?.addEventListener('click', closePropertyModal);
+            document.getElementById('btn-property-modal-save')?.addEventListener('click', savePropertyFromModal);
+            document.getElementById('btn-property-modal-delete')?.addEventListener('click', deletePropertyFromModal);
+            document.getElementById('property-modal')?.addEventListener('click', function (event) {
+                if (event.target?.id === 'property-modal') {
+                    closePropertyModal();
                 }
             });
 
-            document.getElementById('btn-new-property-cancel')?.addEventListener('click', closeNewPropertyModal);
-            document.getElementById('btn-new-property-save')?.addEventListener('click', saveNewPropertyFromModal);
-            document.getElementById('new-property-modal')?.addEventListener('click', function (event) {
-                if (event.target?.id === 'new-property-modal') {
-                    closeNewPropertyModal();
-                }
-            });
-            const propertyFields = [
-                'p-label', 'p-cidade', 'p-estado', 'p-bairro', 'p-rua', 'p-numero', 'p-complemento', 'p-cep', 'p-proprietario',
-                'p-memorial-enabled', 'p-memorial-page-break', 'p-memorial-title', 'p-memorial-text', 'p-memorial-note'
-            ];
-            propertyFields.forEach((id) => {
-                const element = document.getElementById(id);
-                if (!element) return;
-                element.addEventListener('input', function () { propertyFormDirty = true; });
-                element.addEventListener('change', function () { propertyFormDirty = true; });
-            });
-
-            document.getElementById('property-list').addEventListener('change', function () {
-                const nextId = fieldValue('property-list');
-                if (!nextId) return;
-                if (!ensurePropertyFormCanChange()) {
-                    refreshPropertyList();
+            // Listagem de Imóveis (Tab-Imóveis)
+            document.getElementById('property-list').addEventListener('dblclick', function () {
+                const id = fieldValue('property-list');
+                if (!id) {
+                    alert('Selecione um imóvel para editar.');
                     return;
                 }
-                selectPropertyForEditor(nextId);
+                openEditPropertyModal(id);
             });
-
             document.getElementById('btn-property-new').addEventListener('click', openNewPropertyModal);
-            document.getElementById('btn-property-save').addEventListener('click', saveCurrentProperty);
-            document.getElementById('btn-property-duplicate').addEventListener('click', duplicateCurrentProperty);
-            document.getElementById('btn-property-delete').addEventListener('click', deleteCurrentProperty);
 
-            document.getElementById('person-list').addEventListener('change', function () {
-                const nextId = fieldValue('person-list');
-                if (!nextId) return;
-                selectPersonForEditor(nextId);
-            });
-
+            // Listagem de Pessoas (Tab-Pessoas)
             document.getElementById('person-list').addEventListener('dblclick', function () {
                 const personId = fieldValue('person-list');
                 if (!personId) {
@@ -8729,9 +8702,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 }
                 openEditPersonModal(personId);
             });
-
             document.getElementById('btn-person-new').addEventListener('click', openNewPersonModal);
 
+            // Convites
             document.getElementById('invite-list').addEventListener('change', function () {
                 currentInvitationId = fieldValue('invite-list') || null;
             });
@@ -8739,17 +8712,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('btn-invite-revoke').addEventListener('click', revokeSelectedInvitation);
             document.getElementById('btn-invite-copy').addEventListener('click', copyLastInviteUrl);
 
-            if (propertiesCache.length) {
-                selectPropertyForEditor(propertiesCache[0].id);
-            } else {
-                setPropertyFormData(createEmptyProperty());
-            }
-            if (landlordsCache.length) {
-                selectPersonForEditor(landlordsCache[0].id);
-            } else {
-                setPersonFormData(createEmptyPerson());
-                refreshPeopleList();
-            }
+            // Inicialização de listagens
+            refreshPeopleList();
+            refreshPropertyList();
             refreshInviteContractOptions();
             refreshInvitationList();
             setContractEditorVisible(false);

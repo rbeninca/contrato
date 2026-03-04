@@ -42,30 +42,43 @@ function generateId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
 }
 
+function pickFirst(...values) {
+  for (const value of values) {
+    if (value !== undefined && value !== null) return value;
+  }
+  return '';
+}
+
 function normalizePersonPayload(raw) {
   const nowIso = new Date().toISOString();
-  const email = (raw?.email || '').toString().trim();
+  const email = pickFirst(raw?.email, raw?.eMail, '').toString().trim();
   const address = raw?.address && typeof raw.address === 'object' ? raw.address : {};
 
   return {
     id: raw?.id || generateId(),
-    ownerId: (raw?.ownerId || '').toString(),
-    name: (raw?.name || '').toString(),
-    phone: (raw?.phone || '').toString(),
+    ownerId: pickFirst(raw?.ownerId, raw?.ownerUID, '').toString(),
+    name: pickFirst(raw?.name, raw?.nome, '').toString(),
+    phone: pickFirst(raw?.phone, raw?.telefone, '').toString(),
     email,
     emailLower: (raw?.emailLower || email).toString().trim().toLowerCase(),
-    cpfCnpj: (raw?.cpfCnpj || '').toString(),
+    cpfCnpj: pickFirst(raw?.cpfCnpj, raw?.cpf, raw?.cnpj, '').toString(),
     rg: (raw?.rg || '').toString(),
-    profession: (raw?.profession || '').toString(),
-    maritalStatus: (raw?.maritalStatus || '').toString(),
+    nationality: pickFirst(raw?.nationality, raw?.nacionalidade, '').toString(),
+    profession: pickFirst(raw?.profession, raw?.profissao, '').toString(),
+    maritalStatus: pickFirst(raw?.maritalStatus, raw?.estadoCivil, '').toString(),
     address: {
-      cidade: (address?.cidade || '').toString(),
-      estado: (address?.estado || '').toString(),
-      rua: (address?.rua || '').toString()
+      cidade: pickFirst(address?.cidade, raw?.cidade, '').toString(),
+      estado: pickFirst(address?.estado, raw?.estado, '').toString(),
+      rua: pickFirst(address?.rua, raw?.rua, raw?.endereco, '').toString()
     },
+    birthCity: pickFirst(raw?.birthCity, raw?.naturalidadeCidade, '').toString(),
+    birthState: pickFirst(raw?.birthState, raw?.naturalidadeEstado, '').toString(),
+    birthDate: pickFirst(raw?.birthDate, raw?.dataNascimento, '').toString(),
+    fatherName: pickFirst(raw?.fatherName, raw?.nomePai, '').toString(),
+    motherName: pickFirst(raw?.motherName, raw?.nomeMae, '').toString(),
     bankAccount: (raw?.bankAccount || '').toString(),
     pixKey: (raw?.pixKey || '').toString(),
-    qualification: (raw?.qualification || '').toString(),
+    qualification: pickFirst(raw?.qualification, raw?.qualificacao, '').toString(),
     notes: (raw?.notes || '').toString(),
     tenantAuthUid: (raw?.tenantAuthUid || '').toString(),
     createdAt: toIsoDate(raw?.createdAt) || nowIso,
@@ -110,9 +123,15 @@ async function upsertPerson(ownerId, person) {
     emailLower: safe.emailLower,
     cpfCnpj: safe.cpfCnpj,
     rg: safe.rg,
+    nationality: safe.nationality,
     profession: safe.profession,
     maritalStatus: safe.maritalStatus,
     address: safe.address,
+    birthCity: safe.birthCity,
+    birthState: safe.birthState,
+    birthDate: safe.birthDate,
+    fatherName: safe.fatherName,
+    motherName: safe.motherName,
     bankAccount: safe.bankAccount,
     pixKey: safe.pixKey,
     qualification: safe.qualification,
