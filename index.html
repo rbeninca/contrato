@@ -1321,7 +1321,7 @@
             flex: 1;
             min-width: 0;
             display: grid;
-            gap: 10px;
+            gap: 8px;
         }
 
         .payment-month-card:last-child {
@@ -1330,9 +1330,9 @@
 
         .payment-month-meta {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 6px 12px;
-            font-size: 13px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 5px 10px;
+            font-size: 12px;
             color: var(--text-secondary);
         }
 
@@ -1340,7 +1340,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
@@ -1348,9 +1348,9 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 4px 8px;
+            padding: 3px 7px;
             border-radius: 999px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.3px;
             text-transform: uppercase;
@@ -1372,8 +1372,8 @@
         }
 
         .payment-contract-link {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border: 1px solid var(--border);
             border-radius: var(--radius);
             background: var(--bg-card);
@@ -1393,13 +1393,14 @@
         .payment-meta-row {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             min-width: 0;
         }
 
         .payment-meta-label {
             font-weight: 700;
             color: var(--text-primary);
+            font-size: 12px;
         }
 
         .payment-inline-link {
@@ -1420,13 +1421,55 @@
         .payment-contract-row {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
+            justify-content: flex-end;
+            grid-column: 1 / -1;
         }
 
         .payment-value-highlight {
             font-weight: 700;
             color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            #tab-pagamentos .payment-month-card {
+                padding: 8px 6px;
+                gap: 6px;
+            }
+
+            #tab-pagamentos .payment-month-tag {
+                width: 14px;
+                min-width: 14px;
+            }
+
+            #tab-pagamentos .payment-month-tag span {
+                font-size: 8px;
+            }
+
+            #tab-pagamentos .payment-month-body {
+                gap: 6px;
+            }
+
+            #tab-pagamentos .payment-month-meta {
+                grid-template-columns: 1fr;
+                gap: 4px 8px;
+                font-size: 11px;
+            }
+
+            #tab-pagamentos .payment-meta-label {
+                font-size: 11px;
+            }
+
+            #tab-pagamentos .payment-inline-link,
+            #tab-pagamentos .payment-value-highlight {
+                font-size: 11px;
+            }
+
+            #tab-pagamentos .payment-month-actions .btn-sm {
+                font-size: 11px;
+                padding: 6px 8px;
+            }
         }
 
         .finance-overview-grid {
@@ -9476,11 +9519,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             const contractRow = document.createElement('div');
             contractRow.className = 'payment-contract-row';
-            const contractLabel = document.createElement('span');
-            contractLabel.className = 'payment-meta-label';
-            contractLabel.textContent = 'Contrato (código):';
-            const contractValue = document.createElement('span');
-            contractValue.textContent = String(entry.contractCode || '-');
             const contractBtn = document.createElement('button');
             contractBtn.className = 'payment-contract-link';
             contractBtn.type = 'button';
@@ -9494,8 +9532,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 </svg>
             `;
             contractBtn.addEventListener('click', () => openPaymentContractFromFinance(entry.contractId));
-            contractRow.appendChild(contractLabel);
-            contractRow.appendChild(contractValue);
             contractRow.appendChild(contractBtn);
             meta.appendChild(contractRow);
 
@@ -9539,8 +9575,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 onClick: () => openEditPersonModal(entry.pixPayeeId)
             });
 
-            createMetaRow('Vencimento:', dueText);
-            createMetaRow('Valor:', amountText, { highlight: true });
+            createMetaRow('Valor • Vencimento:', `${amountText} • ${dueText}`, { highlight: true });
 
             const actions = document.createElement('div');
             actions.className = 'payment-month-actions';
