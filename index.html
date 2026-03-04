@@ -5047,11 +5047,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     const el = document.getElementById(id);
                     if (el && panelToolbar) panelToolbar.appendChild(el);
                 });
+                if (editorActions) editorActions.classList.remove('hidden');
             };
 
             restoreToOrigins();
 
-            const hasContract = !!(openedVersionId || currentPaymentContractId);
+            // Detect new contract: editor visible without a saved version
+            const editorVisible = editorSection && !editorSection.classList.contains('hidden');
+            const hasContract = !!(openedVersionId || currentPaymentContractId || editorVisible);
             let effectiveMode = mode;
             if (!effectiveMode && hasContract) {
                 if (paymentSection && !paymentSection.classList.contains('hidden')) {
@@ -5084,10 +5087,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             // B8: Dynamic header title with property name + status
             const headerTitle = document.getElementById('header-page-title');
-            if (headerTitle && currentVersion) {
-                const refs = getVersionRefIds(currentVersion);
-                const propertyLabel = getPropertyLabelById(refs.propertyId) || 'Contrato';
-                headerTitle.textContent = propertyLabel;
+            if (headerTitle) {
+                if (currentVersion) {
+                    const refs = getVersionRefIds(currentVersion);
+                    const propertyLabel = getPropertyLabelById(refs.propertyId) || 'Contrato';
+                    headerTitle.textContent = propertyLabel;
+                } else {
+                    headerTitle.textContent = 'Novo Contrato';
+                }
             }
 
             // C10: Breadcrumb
@@ -5136,6 +5143,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     const el = document.getElementById(id);
                     if (el) headerToolbar.appendChild(el);
                 });
+                if (editorActions) editorActions.classList.add('hidden');
                 headerToolbar.classList.remove('hidden');
                 return;
             }
@@ -5149,7 +5157,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 headerToolbar.appendChild(sep);
 
                 if (isDraft) {
-                    ['btn-salvar', 'btn-activate-contract'].forEach((id) => {
+                    ['btn-salvar', 'btn-atualizar', 'btn-activate-contract'].forEach((id) => {
                         const el = document.getElementById(id);
                         if (el) headerToolbar.appendChild(el);
                     });
@@ -5164,10 +5172,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                         if (el) headerToolbar.appendChild(el);
                     });
                 }
+                if (editorActions) editorActions.classList.add('hidden');
                 headerToolbar.classList.remove('hidden');
                 return;
             }
 
+            if (editorActions) editorActions.classList.remove('hidden');
             headerToolbar.classList.add('hidden');
         }
 
