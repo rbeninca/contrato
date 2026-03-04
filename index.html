@@ -987,13 +987,129 @@
         }
 
         .payments-months-wrap {
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-height: calc(100vh - 270px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 4px;
+            scrollbar-width: thin;
+        }
+
+        .finance-wheel-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 16px;
+            min-height: calc(100vh - 240px);
+            align-items: stretch;
+        }
+
+        .finance-wheel-column {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            position: relative;
+            min-height: 420px;
+        }
+
+        .finance-wheel-column::before,
+        .finance-wheel-column::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 48px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .finance-wheel-column::before {
+            top: 0;
+            background: linear-gradient(to bottom, var(--bg-card), transparent);
+        }
+
+        .finance-wheel-column::after {
+            bottom: 0;
+            background: linear-gradient(to top, var(--bg-card), transparent);
+        }
+
+        .finance-wheel-list {
+            height: 100%;
+            max-height: calc(100vh - 270px);
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            width: 100%;
-            max-height: calc(100vh - 240px);
-            overflow-y: auto;
-            padding-right: 4px;
+            padding: 180px 10px;
+            gap: 8px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .finance-wheel-list::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        .finance-wheel-item {
+            height: 44px;
+            border: none;
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            scroll-snap-align: center;
+            transition: transform 0.18s ease, opacity 0.18s ease, filter 0.18s ease, color 0.18s ease, background 0.18s ease;
+            opacity: 0.38;
+            transform: scale(0.92);
+            filter: blur(0.45px);
+        }
+
+        .finance-wheel-item.is-centered {
+            opacity: 1;
+            transform: scale(1.05);
+            filter: blur(0);
+            color: var(--text-primary);
+            background: var(--border-light);
+        }
+
+        .finance-wheel-item.is-selected {
+            color: var(--primary);
+        }
+
+        .finance-period-column {
+            min-width: 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            padding: 10px;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .payments-months-wrap::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .payments-months-wrap::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 8px;
+        }
+
+        .payment-month-section {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 12px;
+            overflow: hidden;
         }
 
         .payment-month-board {
@@ -1003,40 +1119,78 @@
             background: var(--bg-card);
             box-shadow: var(--shadow-sm);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            height: 100%;
         }
 
         .payment-month-head {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            flex-direction: row;
+            gap: 12px;
             padding: 12px 14px;
             background: var(--border-light);
             border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 3;
+        }
+
+        .payment-month-head strong {
+            writing-mode: horizontal-tb;
+            text-orientation: initial;
+            transform: none;
+            line-height: 1.2;
+        }
+
+        .payment-month-head span {
+            writing-mode: initial;
+            text-orientation: initial;
+            transform: none;
+            font-size: 12px;
+            text-align: right;
         }
 
         .payment-month-list {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: auto;
+            flex: initial;
             max-height: none;
             min-height: 56px;
-            overflow: visible;
+            overflow-y: visible;
+            overflow-x: hidden;
+            padding: 8px;
+            background: var(--bg-card);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .payment-month-card {
-            border-bottom: 1px solid var(--border-light);
+            border: 1px solid var(--border);
             padding: 12px 14px;
             display: grid;
             gap: 10px;
             width: 100%;
             box-sizing: border-box;
+            border-radius: var(--radius);
+            background: var(--border-light);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 0;
+            height: auto;
         }
 
         .payment-month-card:last-child {
-            border-bottom: none;
+            margin-bottom: 0;
         }
 
         .payment-month-meta {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 6px 12px;
             font-size: 13px;
             color: var(--text-secondary);
@@ -1061,6 +1215,51 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+        }
+
+        .payment-contract-link:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--bg-card);
+        }
+
+        .payment-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .payment-meta-label {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .payment-inline-link {
+            border: none;
+            background: transparent;
+            padding: 0;
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: underline;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .payment-inline-link:hover {
+            color: var(--primary-hover);
+        }
+
+        .payment-contract-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .payment-value-highlight {
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         .config-wrap {
@@ -3967,12 +4166,21 @@
                 <div class="contracts-dashboard-head" style="margin-bottom: 20px;">
                     <div>
                         <h4 class="contracts-dashboard-title" style="font-size: 24px;">Pagamentos</h4>
-                        <p class="contracts-dashboard-subtitle">Listagem mensal com baixa de pagamentos e acesso rápido ao contrato.</p>
+                        <p class="contracts-dashboard-subtitle">Role continuamente pela linha do tempo de pagamentos. A roleta de meses acompanha a posição da lista.</p>
                     </div>
                 </div>
 
-                <div id="dash-months-list" class="payments-months-wrap">
-                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">Carregando pagamentos...</div>
+                <div class="finance-wheel-layout">
+                    <aside class="finance-wheel-column">
+                        <div id="finance-month-picker" class="finance-wheel-list" aria-label="Seletor de meses">
+                            <div style="text-align: center; color: var(--text-secondary); padding: 40px 12px;">Carregando meses...</div>
+                        </div>
+                    </aside>
+                    <section class="finance-period-column">
+                        <div id="dash-months-list" class="payments-months-wrap">
+                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">Carregando pagamentos...</div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
@@ -8200,7 +8408,16 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             people: [],
             properties: [],
             contracts: [],
-            paymentsByContract: {}
+            paymentsByContract: {},
+            monthlyMap: new Map(),
+            monthKeys: [],
+            selectedMonthKey: '',
+            wheelScrollTimer: null,
+            wheelProgrammatic: false,
+            listScrollTimer: null,
+            listProgrammatic: false,
+            renderedStartIndex: -1,
+            renderedEndIndex: -1
         };
 
         function formatMonthYearFromIso(isoDate) {
@@ -8274,8 +8491,10 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         async function loadFinancialDashboard(silent = false) {
             const grid = document.getElementById('dash-months-list');
+            const picker = document.getElementById('finance-month-picker');
             if (!silent) {
                 grid.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p>Carregando pagamentos...</p></div>';
+                if (picker) picker.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 40px 12px;">Carregando meses...</div>';
             }
 
             try {
@@ -8309,13 +8528,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             } catch (error) {
                 console.error('Erro dashboard:', error);
                 grid.innerHTML = `<div style="color: var(--danger); padding: 20px;">Erro: ${error.message}</div>`;
+                if (picker) picker.innerHTML = '<div style="text-align: center; color: var(--danger); padding: 30px 12px;">Falha ao carregar meses.</div>';
             }
         }
 
-        function renderFinancialDashboard() {
-            const grid = document.getElementById('dash-months-list');
-            grid.innerHTML = '';
-
+        function buildFinancialMonthlyMap() {
             const monthlyMap = new Map();
 
             dashState.contracts.forEach((contract) => {
@@ -8334,6 +8551,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     monthlyMap.get(monthKey).push({
                         contractId: contract.id,
                         contractCode,
+                        propertyId: refs.propertyId || '',
+                        tenantId: refs.tenantId || '',
+                        pixPayeeId: refs.pixPayeeId || '',
                         propertyLabel,
                         tenantName,
                         pixPayee,
@@ -8342,154 +8562,485 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 });
             });
 
-            const monthKeys = Array.from(monthlyMap.keys()).sort((a, b) => a.localeCompare(b));
+            return monthlyMap;
+        }
 
-            if (!monthKeys.length) {
-                grid.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Nenhum pagamento encontrado.</div>';
+        function getMonthIndex(monthKey) {
+            if (!monthKey) return -1;
+            return dashState.monthKeys.indexOf(monthKey);
+        }
+
+        function getPreferredInitialMonthKey() {
+            if (!dashState.monthKeys.length) return '';
+            if (dashState.selectedMonthKey && dashState.monthlyMap.has(dashState.selectedMonthKey)) {
+                return dashState.selectedMonthKey;
+            }
+
+            const today = paymentDateToIso(new Date());
+            const currentMonth = getPaymentMonthKey(today);
+            if (currentMonth && dashState.monthlyMap.has(currentMonth)) {
+                return currentMonth;
+            }
+
+            return dashState.monthKeys[dashState.monthKeys.length - 1] || dashState.monthKeys[0];
+        }
+
+        function ensureMonthRangeLoaded(startIndex, endIndex) {
+            const safeStart = Math.max(0, startIndex);
+            const safeEnd = Math.min(dashState.monthKeys.length - 1, endIndex);
+            if (safeStart > safeEnd) return;
+
+            const grid = document.getElementById('dash-months-list');
+            if (!grid) return;
+
+            const prependOnly = dashState.renderedStartIndex >= 0 && safeEnd < dashState.renderedStartIndex;
+            const appendOnly = dashState.renderedEndIndex >= 0 && safeStart > dashState.renderedEndIndex;
+
+            if (prependOnly) {
+                for (let idx = safeEnd; idx >= safeStart; idx -= 1) {
+                    const monthKey = dashState.monthKeys[idx];
+                    if (!monthKey) continue;
+                    if (grid.querySelector(`.payment-month-section[data-month-key="${monthKey}"]`)) continue;
+                    const section = createFinancialMonthSection(monthKey);
+                    if (section) grid.prepend(section);
+                }
+            } else if (appendOnly) {
+                for (let idx = safeStart; idx <= safeEnd; idx += 1) {
+                    const monthKey = dashState.monthKeys[idx];
+                    if (!monthKey) continue;
+                    if (grid.querySelector(`.payment-month-section[data-month-key="${monthKey}"]`)) continue;
+                    const section = createFinancialMonthSection(monthKey);
+                    if (section) grid.appendChild(section);
+                }
+            } else {
+                for (let idx = safeStart; idx <= safeEnd; idx += 1) {
+                    const monthKey = dashState.monthKeys[idx];
+                    if (!monthKey) continue;
+                    if (grid.querySelector(`.payment-month-section[data-month-key="${monthKey}"]`)) continue;
+                    const section = createFinancialMonthSection(monthKey);
+                    if (section) grid.appendChild(section);
+                }
+            }
+
+            dashState.renderedStartIndex = dashState.renderedStartIndex < 0 ? safeStart : Math.min(dashState.renderedStartIndex, safeStart);
+            dashState.renderedEndIndex = dashState.renderedEndIndex < 0 ? safeEnd : Math.max(dashState.renderedEndIndex, safeEnd);
+        }
+
+        function createFinancialPaymentCard(entry) {
+            const payment = entry.payment;
+            const dueDateIso = paymentDateToIso(payment?.dueDate);
+            const dueDateObj = parsePaymentDateValue(payment?.dueDate);
+            const dueText = dueDateObj ? dueDateObj.toLocaleDateString('pt-BR') : '-';
+            const amountText = window.PaymentsManager.formatCurrencyBR(payment?.amount || 0);
+
+            const card = document.createElement('article');
+            card.className = 'payment-month-card';
+
+            const meta = document.createElement('div');
+            meta.className = 'payment-month-meta';
+
+            const contractRow = document.createElement('div');
+            contractRow.className = 'payment-contract-row';
+            const contractLabel = document.createElement('span');
+            contractLabel.className = 'payment-meta-label';
+            contractLabel.textContent = 'Contrato (código):';
+            const contractValue = document.createElement('span');
+            contractValue.textContent = String(entry.contractCode || '-');
+            const contractBtn = document.createElement('button');
+            contractBtn.className = 'payment-contract-link';
+            contractBtn.type = 'button';
+            contractBtn.title = 'Abrir contrato';
+            contractBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+            `;
+            contractBtn.addEventListener('click', () => openPaymentContractFromFinance(entry.contractId));
+            contractRow.appendChild(contractLabel);
+            contractRow.appendChild(contractValue);
+            contractRow.appendChild(contractBtn);
+            meta.appendChild(contractRow);
+
+            const createMetaRow = (label, value, options = {}) => {
+                const row = document.createElement('div');
+                row.className = 'payment-meta-row';
+                const labelStrong = document.createElement('span');
+                labelStrong.className = 'payment-meta-label';
+                labelStrong.textContent = `${label}`;
+                row.appendChild(labelStrong);
+
+                if (options.clickable && options.onClick) {
+                    const valueBtn = document.createElement('button');
+                    valueBtn.type = 'button';
+                    valueBtn.className = 'payment-inline-link';
+                    valueBtn.textContent = String(value || '-');
+                    valueBtn.addEventListener('click', options.onClick);
+                    row.appendChild(valueBtn);
+                } else {
+                    const valueSpan = document.createElement('span');
+                    if (options.highlight) valueSpan.className = 'payment-value-highlight';
+                    valueSpan.textContent = String(value || '-');
+                    row.appendChild(valueSpan);
+                }
+
+                meta.appendChild(row);
+            };
+
+            createMetaRow('Imóvel:', entry.propertyLabel, {
+                clickable: !!entry.propertyId,
+                onClick: () => openEditPropertyModal(entry.propertyId)
+            });
+
+            createMetaRow('Locatário:', entry.tenantName, {
+                clickable: !!entry.tenantId,
+                onClick: () => openEditPersonModal(entry.tenantId)
+            });
+
+            createMetaRow('Beneficiário do PIX:', entry.pixPayee, {
+                clickable: !!entry.pixPayeeId,
+                onClick: () => openEditPersonModal(entry.pixPayeeId)
+            });
+
+            createMetaRow('Vencimento:', dueText);
+            createMetaRow('Valor:', amountText, { highlight: true });
+
+            const actions = document.createElement('div');
+            actions.className = 'payment-month-actions';
+
+            const actionWrap = document.createElement('div');
+            const actionBtn = document.createElement('button');
+            actionBtn.type = 'button';
+            actionBtn.className = payment?.status === 'paid' ? 'btn-secondary btn-sm' : 'btn-primary btn-sm';
+            actionBtn.textContent = payment?.status === 'paid' ? 'Remover baixa' : 'Marcar como pago';
+            if (payment?.status === 'paid') {
+                actionBtn.addEventListener('click', () => undoPaymentAction(entry.contractId, payment.id));
+            } else {
+                actionBtn.addEventListener('click', () => openPaymentMarkModal(entry.contractId, payment.id, payment.amount || 0, dueDateIso));
+            }
+            actionWrap.appendChild(actionBtn);
+            actions.appendChild(actionWrap);
+
+            card.appendChild(meta);
+            card.appendChild(actions);
+            return card;
+        }
+
+        function createFinancialMonthSection(monthKey) {
+            const entries = [...(dashState.monthlyMap.get(monthKey) || [])];
+            entries.sort((a, b) => {
+                const dateA = parsePaymentDateValue(a?.payment?.dueDate);
+                const dateB = parsePaymentDateValue(b?.payment?.dueDate);
+                const tsA = dateA ? dateA.getTime() : 0;
+                const tsB = dateB ? dateB.getTime() : 0;
+                return tsA - tsB;
+            });
+
+            const section = document.createElement('section');
+            section.className = 'payment-month-section';
+            section.dataset.monthKey = monthKey;
+
+            const monthLabel = formatMonthYearFromIso(`${monthKey}-01`);
+
+            const head = document.createElement('header');
+            head.className = 'payment-month-head';
+
+            const strongMonth = document.createElement('strong');
+            strongMonth.style.textTransform = 'capitalize';
+            strongMonth.textContent = `${monthLabel} (${monthKey})`;
+
+            const count = document.createElement('span');
+            count.style.fontSize = '12px';
+            count.style.color = 'var(--text-muted)';
+            count.textContent = `${entries.length} pagamento(s)`;
+
+            head.appendChild(strongMonth);
+            head.appendChild(count);
+
+            const list = document.createElement('div');
+            list.className = 'payment-month-list';
+
+            entries.forEach((entry) => {
+                const card = createFinancialPaymentCard(entry);
+                list.appendChild(card);
+            });
+
+            if (!entries.length) {
+                const emptyInfo = document.createElement('div');
+                emptyInfo.style.padding = '12px 14px';
+                emptyInfo.style.fontSize = '13px';
+                emptyInfo.style.color = 'var(--text-secondary)';
+                emptyInfo.textContent = 'Sem pagamentos visíveis neste mês.';
+                list.appendChild(emptyInfo);
+            }
+
+            section.appendChild(head);
+            section.appendChild(list);
+            return section;
+        }
+
+        function updateWheelSelectedMonth(monthKey) {
+            if (!monthKey) return;
+            dashState.selectedMonthKey = monthKey;
+            const pickerEl = document.getElementById('finance-month-picker');
+            if (!pickerEl) return;
+            const centered = pickerEl.querySelector(`.finance-wheel-item[data-month-key="${monthKey}"]`) || null;
+            updateWheelVisualState(pickerEl, centered);
+        }
+
+        function getVisibleMonthFromTimeline() {
+            const grid = document.getElementById('dash-months-list');
+            if (!grid) return '';
+            const sections = Array.from(grid.querySelectorAll('.payment-month-section[data-month-key]'));
+            if (!sections.length) return '';
+
+            const gridTop = grid.getBoundingClientRect().top;
+            let candidate = sections[0];
+
+            sections.forEach((section) => {
+                const top = section.getBoundingClientRect().top;
+                if (top - gridTop <= 70) {
+                    candidate = section;
+                }
+            });
+
+            return candidate?.dataset?.monthKey || '';
+        }
+
+        function maybeLoadMoreTimelineMonths() {
+            const grid = document.getElementById('dash-months-list');
+            if (!grid || !dashState.monthKeys.length) return;
+
+            const edge = 260;
+            const loadBatch = 2;
+
+            if (grid.scrollTop < edge && dashState.renderedStartIndex > 0) {
+                const oldHeight = grid.scrollHeight;
+                const newStart = Math.max(0, dashState.renderedStartIndex - loadBatch);
+                ensureMonthRangeLoaded(newStart, dashState.renderedStartIndex - 1);
+                const newHeight = grid.scrollHeight;
+                const delta = newHeight - oldHeight;
+                if (delta > 0) {
+                    grid.scrollTop += delta;
+                }
+            }
+
+            const distanceToBottom = grid.scrollHeight - (grid.scrollTop + grid.clientHeight);
+            if (distanceToBottom < edge && dashState.renderedEndIndex < dashState.monthKeys.length - 1) {
+                const newEnd = Math.min(dashState.monthKeys.length - 1, dashState.renderedEndIndex + loadBatch);
+                ensureMonthRangeLoaded(dashState.renderedEndIndex + 1, newEnd);
+            }
+        }
+
+        function scrollTimelineToMonth(monthKey, smooth = true) {
+            if (!monthKey) return;
+            const grid = document.getElementById('dash-months-list');
+            if (!grid) return;
+
+            const targetIndex = getMonthIndex(monthKey);
+            if (targetIndex < 0) return;
+
+            if (targetIndex < dashState.renderedStartIndex || targetIndex > dashState.renderedEndIndex) {
+                const rangeSize = 5;
+                const start = Math.max(0, targetIndex - Math.floor(rangeSize / 2));
+                const end = Math.min(dashState.monthKeys.length - 1, start + rangeSize - 1);
+                grid.innerHTML = '';
+                dashState.renderedStartIndex = -1;
+                dashState.renderedEndIndex = -1;
+                ensureMonthRangeLoaded(start, end);
+            }
+
+            const section = grid.querySelector(`.payment-month-section[data-month-key="${monthKey}"]`);
+            if (!section) return;
+
+            dashState.listProgrammatic = true;
+            section.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+            window.setTimeout(() => {
+                dashState.listProgrammatic = false;
+                maybeLoadMoreTimelineMonths();
+                updateWheelSelectedMonth(monthKey);
+            }, smooth ? 320 : 60);
+        }
+
+        function getNearestWheelItem(pickerEl) {
+            if (!pickerEl) return null;
+            const items = Array.from(pickerEl.querySelectorAll('.finance-wheel-item'));
+            if (!items.length) return null;
+            const pickerRect = pickerEl.getBoundingClientRect();
+            const center = pickerRect.top + (pickerRect.height / 2);
+
+            let nearest = items[0];
+            let nearestDistance = Number.POSITIVE_INFINITY;
+
+            items.forEach((item) => {
+                const rect = item.getBoundingClientRect();
+                const itemCenter = rect.top + (rect.height / 2);
+                const distance = Math.abs(itemCenter - center);
+                if (distance < nearestDistance) {
+                    nearest = item;
+                    nearestDistance = distance;
+                }
+            });
+
+            return nearest;
+        }
+
+        function updateWheelVisualState(pickerEl, centeredItem = null) {
+            if (!pickerEl) return;
+            const target = centeredItem || getNearestWheelItem(pickerEl);
+            const items = pickerEl.querySelectorAll('.finance-wheel-item');
+            items.forEach((item) => {
+                item.classList.toggle('is-centered', item === target);
+                item.classList.toggle('is-selected', item.dataset.monthKey === dashState.selectedMonthKey);
+            });
+        }
+
+        function centerWheelOnMonth(monthKey, smooth = true) {
+            const pickerEl = document.getElementById('finance-month-picker');
+            if (!pickerEl || !monthKey) return;
+            const targetItem = pickerEl.querySelector(`.finance-wheel-item[data-month-key="${monthKey}"]`);
+            if (!targetItem) return;
+
+            const pickerRect = pickerEl.getBoundingClientRect();
+            const itemRect = targetItem.getBoundingClientRect();
+            const delta = (itemRect.top + (itemRect.height / 2)) - (pickerRect.top + (pickerRect.height / 2));
+            if (Math.abs(delta) < 1) {
+                updateWheelVisualState(pickerEl, targetItem);
                 return;
             }
 
+            dashState.wheelProgrammatic = true;
+            pickerEl.scrollBy({ top: delta, behavior: smooth ? 'smooth' : 'auto' });
+            window.setTimeout(() => {
+                dashState.wheelProgrammatic = false;
+                updateWheelVisualState(pickerEl, targetItem);
+            }, smooth ? 220 : 40);
+        }
+
+        function renderFinancialMonthPicker() {
+            const pickerEl = document.getElementById('finance-month-picker');
+            if (!pickerEl) return;
+
+            const monthKeys = dashState.monthKeys || [];
+            if (!monthKeys.length) {
+                pickerEl.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 40px 12px;">Sem meses para exibir.</div>';
+                return;
+            }
+
+            pickerEl.innerHTML = '';
+
             monthKeys.forEach((monthKey) => {
-                const entries = monthlyMap.get(monthKey) || [];
-                entries.sort((a, b) => {
-                    const dateA = parsePaymentDateValue(a?.payment?.dueDate);
-                    const dateB = parsePaymentDateValue(b?.payment?.dueDate);
-                    const tsA = dateA ? dateA.getTime() : 0;
-                    const tsB = dateB ? dateB.getTime() : 0;
-                    return tsA - tsB;
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'finance-wheel-item';
+                item.dataset.monthKey = monthKey;
+                item.textContent = monthKey;
+                item.title = formatMonthYearFromIso(`${monthKey}-01`);
+                item.addEventListener('click', () => {
+                    dashState.selectedMonthKey = monthKey;
+                    scrollTimelineToMonth(monthKey, true);
+                    centerWheelOnMonth(monthKey, true);
                 });
+                pickerEl.appendChild(item);
+            });
 
-                const board = document.createElement('section');
-                board.className = 'payment-month-board';
-                board.style.display = 'block';
-                board.style.width = '100%';
-                board.style.overflow = 'visible';
-                const monthLabel = formatMonthYearFromIso(`${monthKey}-01`);
+            if (!pickerEl.dataset.boundWheel) {
+                pickerEl.addEventListener('scroll', () => {
+                    const centered = getNearestWheelItem(pickerEl);
+                    updateWheelVisualState(pickerEl, centered);
 
-                const head = document.createElement('header');
-                head.className = 'payment-month-head';
+                    if (dashState.wheelProgrammatic) return;
 
-                const strongMonth = document.createElement('strong');
-                strongMonth.style.textTransform = 'capitalize';
-                strongMonth.textContent = monthLabel;
-
-                const count = document.createElement('span');
-                count.style.fontSize = '12px';
-                count.style.color = 'var(--text-muted)';
-                count.textContent = `${entries.length} pagamento(s)`;
-
-                head.appendChild(strongMonth);
-                head.appendChild(count);
-
-                const list = document.createElement('div');
-                list.className = 'payment-month-list';
-                list.style.setProperty('display', 'block', 'important');
-                list.style.setProperty('width', '100%', 'important');
-                list.style.setProperty('min-height', '84px', 'important');
-                list.style.setProperty('overflow', 'visible', 'important');
-                list.style.setProperty('visibility', 'visible', 'important');
-                list.style.setProperty('opacity', '1', 'important');
-                list.style.setProperty('padding', '8px 0', 'important');
-
-                entries.forEach((entry) => {
-                    const payment = entry.payment;
-                    const dueDateIso = paymentDateToIso(payment?.dueDate);
-                    const dueDateObj = parsePaymentDateValue(payment?.dueDate);
-                    const dueText = dueDateObj ? dueDateObj.toLocaleDateString('pt-BR') : '-';
-                    const amountText = window.PaymentsManager.formatCurrencyBR(payment?.amount || 0);
-
-                    const card = document.createElement('article');
-                    card.className = 'payment-month-card';
-                    card.style.setProperty('display', 'grid', 'important');
-                    card.style.setProperty('gap', '10px', 'important');
-                    card.style.setProperty('padding', '12px 14px', 'important');
-                    card.style.setProperty('margin', '0 0 8px 0', 'important');
-                    card.style.setProperty('border', '1px solid var(--border)', 'important');
-                    card.style.setProperty('border-radius', '10px', 'important');
-                    card.style.setProperty('background', 'var(--bg-card)', 'important');
-                    card.style.setProperty('color', 'var(--text-primary)', 'important');
-                    card.style.setProperty('width', '100%', 'important');
-                    card.style.setProperty('box-sizing', 'border-box', 'important');
-                    card.style.setProperty('min-height', '88px', 'important');
-                    card.style.setProperty('visibility', 'visible', 'important');
-                    card.style.setProperty('opacity', '1', 'important');
-
-                    const meta = document.createElement('div');
-                    meta.className = 'payment-month-meta';
-                    meta.style.display = 'grid';
-                    meta.style.gridTemplateColumns = 'repeat(auto-fit, minmax(220px, 1fr))';
-                    meta.style.gap = '6px 12px';
-                    meta.style.fontSize = '13px';
-                    meta.style.color = 'var(--text-secondary)';
-
-                    const metaItems = [
-                        ['Contrato (código):', entry.contractCode],
-                        ['Imóvel:', entry.propertyLabel],
-                        ['Locatário:', entry.tenantName],
-                        ['Beneficiário do PIX:', entry.pixPayee],
-                        ['Vencimento:', dueText],
-                        ['Valor:', amountText]
-                    ];
-
-                    metaItems.forEach(([label, value]) => {
-                        const row = document.createElement('div');
-                        const labelStrong = document.createElement('strong');
-                        labelStrong.textContent = `${label} `;
-                        row.appendChild(labelStrong);
-                        row.appendChild(document.createTextNode(String(value || '-')));
-                        meta.appendChild(row);
-                    });
-
-                    const actions = document.createElement('div');
-                    actions.className = 'payment-month-actions';
-
-                    const actionWrap = document.createElement('div');
-                    const actionBtn = document.createElement('button');
-                    actionBtn.type = 'button';
-                    actionBtn.className = payment?.status === 'paid' ? 'btn-secondary btn-sm' : 'btn-primary btn-sm';
-                    actionBtn.textContent = payment?.status === 'paid' ? 'Remover baixa' : 'Marcar como pago';
-                    if (payment?.status === 'paid') {
-                        actionBtn.addEventListener('click', () => undoPaymentAction(entry.contractId, payment.id));
-                    } else {
-                        actionBtn.addEventListener('click', () => openPaymentMarkModal(entry.contractId, payment.id, payment.amount || 0, dueDateIso));
+                    if (dashState.wheelScrollTimer) {
+                        window.clearTimeout(dashState.wheelScrollTimer);
                     }
-                    actionWrap.appendChild(actionBtn);
 
-                    const contractBtn = document.createElement('button');
-                    contractBtn.className = 'payment-contract-link';
-                    contractBtn.type = 'button';
-                    contractBtn.title = 'Abrir contrato';
-                    contractBtn.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                    `;
-                    contractBtn.addEventListener('click', () => openPaymentContractFromFinance(entry.contractId));
+                    dashState.wheelScrollTimer = window.setTimeout(() => {
+                        const nearest = getNearestWheelItem(pickerEl);
+                        if (!nearest) return;
+                        const nextMonth = nearest.dataset.monthKey || '';
+                        if (!nextMonth) return;
 
-                    actions.appendChild(actionWrap);
-                    actions.appendChild(contractBtn);
+                        dashState.selectedMonthKey = nextMonth;
+                        scrollTimelineToMonth(nextMonth, true);
+                        centerWheelOnMonth(nextMonth, true);
+                    }, 130);
+                }, { passive: true });
+                pickerEl.dataset.boundWheel = '1';
+            }
 
-                    card.appendChild(meta);
-                    card.appendChild(actions);
-                    list.appendChild(card);
-                });
+            window.requestAnimationFrame(() => {
+                centerWheelOnMonth(dashState.selectedMonthKey, false);
+            });
+        }
 
-                board.appendChild(head);
-                board.appendChild(list);
+        function renderFinancialSelectedMonth() {
+            const grid = document.getElementById('dash-months-list');
+            if (!grid) return;
+            const monthKey = dashState.selectedMonthKey;
+            if (!monthKey) {
+                grid.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Selecione um mês na listagem.</div>';
+                return;
+            }
+            scrollTimelineToMonth(monthKey, true);
+        }
 
-                if (!list.children.length) {
-                    const emptyInfo = document.createElement('div');
-                    emptyInfo.style.padding = '12px 14px';
-                    emptyInfo.style.fontSize = '13px';
-                    emptyInfo.style.color = 'var(--text-secondary)';
-                    emptyInfo.textContent = 'Sem pagamentos visíveis neste mês.';
-                    list.appendChild(emptyInfo);
+        function renderFinancialDashboard() {
+            dashState.monthlyMap = buildFinancialMonthlyMap();
+            dashState.monthKeys = Array.from(dashState.monthlyMap.keys()).sort((a, b) => a.localeCompare(b));
+
+            if (!dashState.monthKeys.length) {
+                const grid = document.getElementById('dash-months-list');
+                const pickerEl = document.getElementById('finance-month-picker');
+                if (grid) {
+                    grid.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Nenhum pagamento encontrado.</div>';
                 }
+                if (pickerEl) {
+                    pickerEl.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 40px 12px;">Nenhum mês disponível.</div>';
+                }
+                dashState.selectedMonthKey = '';
+                return;
+            }
 
-                grid.appendChild(board);
+            const grid = document.getElementById('dash-months-list');
+            if (!grid) return;
+
+            dashState.selectedMonthKey = getPreferredInitialMonthKey();
+
+            grid.innerHTML = '';
+            const selectedIndex = Math.max(0, getMonthIndex(dashState.selectedMonthKey));
+            const initialStart = Math.max(0, selectedIndex - 2);
+            const initialEnd = Math.min(dashState.monthKeys.length - 1, selectedIndex + 2);
+            dashState.renderedStartIndex = -1;
+            dashState.renderedEndIndex = -1;
+            ensureMonthRangeLoaded(initialStart, initialEnd);
+
+            if (!grid.dataset.boundTimelineScroll) {
+                grid.addEventListener('scroll', () => {
+                    maybeLoadMoreTimelineMonths();
+
+                    if (dashState.listProgrammatic) return;
+
+                    if (dashState.listScrollTimer) {
+                        window.clearTimeout(dashState.listScrollTimer);
+                    }
+
+                    dashState.listScrollTimer = window.setTimeout(() => {
+                        const visibleMonth = getVisibleMonthFromTimeline();
+                        if (!visibleMonth || visibleMonth === dashState.selectedMonthKey) return;
+                        updateWheelSelectedMonth(visibleMonth);
+                        centerWheelOnMonth(visibleMonth, true);
+                    }, 60);
+                }, { passive: true });
+                grid.dataset.boundTimelineScroll = '1';
+            }
+
+            renderFinancialMonthPicker();
+            window.requestAnimationFrame(() => {
+                scrollTimelineToMonth(dashState.selectedMonthKey, false);
+                maybeLoadMoreTimelineMonths();
             });
         }
 
