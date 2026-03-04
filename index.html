@@ -999,8 +999,8 @@
 
         .finance-wheel-layout {
             display: grid;
-            grid-template-columns: 132px 1fr;
-            gap: 10px;
+            grid-template-columns: 118px 1fr;
+            gap: 8px;
             min-height: calc(100vh - 240px);
             align-items: stretch;
         }
@@ -1084,6 +1084,66 @@
             font-weight: 800;
             letter-spacing: 0.2px;
             text-shadow: 0 0 0.01px currentColor;
+        }
+
+        @media (max-width: 768px) {
+            #tab-pagamentos .finance-wheel-layout {
+                grid-template-columns: 1fr;
+                gap: 0;
+                min-height: auto;
+                position: relative;
+            }
+
+            #tab-pagamentos .finance-period-column {
+                width: 100%;
+                padding: 8px;
+            }
+
+            #tab-pagamentos .finance-wheel-column {
+                position: fixed;
+                right: 8px;
+                bottom: 14px;
+                width: 66px;
+                height: 186px;
+                min-height: 0;
+                border-radius: 12px;
+                z-index: 55;
+                opacity: 0.14;
+                transform: translateY(10px) scale(0.98);
+                transition: opacity 0.2s ease, transform 0.2s ease;
+                pointer-events: none;
+            }
+
+            #tab-pagamentos .finance-wheel-column.show-overlay {
+                opacity: 0.96;
+                transform: translateY(0) scale(1);
+                pointer-events: auto;
+            }
+
+            #tab-pagamentos .finance-wheel-column::before,
+            #tab-pagamentos .finance-wheel-column::after {
+                height: 24px;
+            }
+
+            #tab-pagamentos .finance-wheel-list {
+                max-height: 186px;
+                padding: 72px 1px;
+                gap: 6px;
+            }
+
+            #tab-pagamentos .finance-wheel-item {
+                height: 34px;
+                font-size: 11px;
+            }
+
+            #tab-pagamentos .finance-wheel-item.is-selected {
+                font-size: 13px;
+            }
+
+            #tab-pagamentos .payments-months-wrap {
+                max-height: calc(100vh - 210px);
+                padding-right: 0;
+            }
         }
 
         .finance-period-column {
@@ -8743,12 +8803,32 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             monthKeys: [],
             selectedMonthKey: '',
             wheelScrollTimer: null,
+            wheelOverlayTimer: null,
             wheelProgrammatic: false,
             listScrollTimer: null,
             listProgrammatic: false,
             renderedStartIndex: -1,
             renderedEndIndex: -1
         };
+
+        function setPaymentsWheelOverlayVisible(visible) {
+            if (!window.matchMedia('(max-width: 768px)').matches) return;
+            const wheelColumn = document.querySelector('#tab-pagamentos .finance-wheel-column');
+            if (!wheelColumn) return;
+
+            wheelColumn.classList.toggle('show-overlay', !!visible);
+
+            if (dashState.wheelOverlayTimer) {
+                window.clearTimeout(dashState.wheelOverlayTimer);
+                dashState.wheelOverlayTimer = null;
+            }
+
+            if (visible) {
+                dashState.wheelOverlayTimer = window.setTimeout(() => {
+                    wheelColumn.classList.remove('show-overlay');
+                }, 900);
+            }
+        }
 
         function formatMonthYearFromIso(isoDate) {
             const date = isoDate ? new Date(`${isoDate}T00:00:00`) : null;
@@ -9612,6 +9692,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 item.title = formatMonthYearFromIso(`${monthKey}-01`);
                 item.addEventListener('click', () => {
                     dashState.selectedMonthKey = monthKey;
+                    setPaymentsWheelOverlayVisible(true);
                     scrollTimelineToMonth(monthKey, true);
                     centerWheelOnMonth(monthKey, true);
                 });
@@ -9620,6 +9701,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             if (!pickerEl.dataset.boundWheel) {
                 pickerEl.addEventListener('scroll', () => {
+                    setPaymentsWheelOverlayVisible(true);
                     const centered = getNearestWheelItem(pickerEl);
                     updateWheelVisualState(pickerEl, centered);
 
@@ -9691,6 +9773,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             if (!grid.dataset.boundTimelineScroll) {
                 grid.addEventListener('scroll', () => {
+                    setPaymentsWheelOverlayVisible(true);
                     maybeLoadMoreTimelineMonths();
 
                     if (dashState.listProgrammatic) return;
@@ -9710,6 +9793,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             renderFinancialMonthPicker();
+            setPaymentsWheelOverlayVisible(false);
             window.requestAnimationFrame(() => {
                 scrollTimelineToMonth(dashState.selectedMonthKey, false);
                 maybeLoadMoreTimelineMonths();
