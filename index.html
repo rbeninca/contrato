@@ -1176,8 +1176,9 @@
 
         .payment-month-card {
             border: 1px solid var(--border);
-            padding: 12px 14px;
-            display: grid;
+            padding: 10px 10px;
+            display: flex;
+            align-items: stretch;
             gap: 10px;
             width: 100%;
             box-sizing: border-box;
@@ -1186,6 +1187,37 @@
             box-shadow: var(--shadow-sm);
             margin-bottom: 0;
             height: auto;
+        }
+
+        .payment-month-tag {
+            width: 24px;
+            min-width: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px dashed var(--border);
+            padding-right: 2px;
+            overflow: visible;
+        }
+
+        .payment-month-tag span {
+            display: inline-block;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            white-space: nowrap;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.4px;
+            text-transform: capitalize;
+            line-height: 1;
+        }
+
+        .payment-month-body {
+            flex: 1;
+            min-width: 0;
+            display: grid;
+            gap: 10px;
         }
 
         .payment-month-card:last-child {
@@ -8636,9 +8668,18 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const dueDateObj = parsePaymentDateValue(payment?.dueDate);
             const dueText = dueDateObj ? dueDateObj.toLocaleDateString('pt-BR') : '-';
             const amountText = window.PaymentsManager.formatCurrencyBR(payment?.amount || 0);
+            const monthYearTag = dueDateObj
+                ? dueDateObj.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+                : 'mês indefinido';
 
             const card = document.createElement('article');
             card.className = 'payment-month-card';
+
+            const monthTag = document.createElement('div');
+            monthTag.className = 'payment-month-tag';
+            const monthTagText = document.createElement('span');
+            monthTagText.textContent = monthYearTag;
+            monthTag.appendChild(monthTagText);
 
             const meta = document.createElement('div');
             meta.className = 'payment-month-meta';
@@ -8727,8 +8768,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             actionWrap.appendChild(actionBtn);
             actions.appendChild(actionWrap);
 
-            card.appendChild(meta);
-            card.appendChild(actions);
+            const body = document.createElement('div');
+            body.className = 'payment-month-body';
+            body.appendChild(meta);
+            body.appendChild(actions);
+
+            card.appendChild(monthTag);
+            card.appendChild(body);
             return card;
         }
 
