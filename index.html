@@ -1189,6 +1189,21 @@
             height: auto;
         }
 
+        .payment-month-card.status-open {
+            border-color: #fcd34d;
+            background: #fffbeb;
+        }
+
+        .payment-month-card.status-paid {
+            border-color: #86efac;
+            background: #f0fdf4;
+        }
+
+        .payment-month-card.status-overdue {
+            border-color: #fca5a5;
+            background: #fef2f2;
+        }
+
         .payment-month-tag {
             width: 18px;
             min-width: 18px;
@@ -1238,6 +1253,33 @@
             justify-content: space-between;
             gap: 8px;
             flex-wrap: wrap;
+        }
+
+        .payment-status-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .payment-status-chip.status-open {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .payment-status-chip.status-paid {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .payment-status-chip.status-overdue {
+            background: var(--danger-light);
+            color: var(--danger);
         }
 
         .payment-contract-link {
@@ -1296,6 +1338,176 @@
         .payment-value-highlight {
             font-weight: 700;
             color: var(--text-primary);
+        }
+
+        .finance-overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .finance-overview-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            padding: 14px;
+        }
+
+        .finance-overview-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .finance-overview-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .finance-overview-value.money {
+            font-size: 18px;
+        }
+
+        .finance-overview-list {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .finance-overview-list-head {
+            display: grid;
+            grid-template-columns: 95px 1fr 110px 135px 90px;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            background: var(--border-light);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .finance-overview-row {
+            display: grid;
+            grid-template-columns: 95px 1fr 110px 135px 90px;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .finance-overview-row:last-child {
+            border-bottom: none;
+        }
+
+        .finance-overview-status {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 4px 7px;
+            border-radius: 999px;
+            width: fit-content;
+        }
+
+        .finance-overview-status.paid {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .finance-overview-status.pending {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .finance-overview-status.overdue {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .finance-overview-status.other {
+            background: var(--border-light);
+            color: var(--text-muted);
+        }
+
+        .finance-filters {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            padding: 12px;
+            margin-bottom: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 10px;
+        }
+
+        .finance-filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .finance-filter-field label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .finance-filter-field input,
+        .finance-filter-field select {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 8px 10px;
+            font-size: 13px;
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+
+        .finance-chart-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .finance-chart-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .finance-chart-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .finance-chart-svg {
+            width: 100%;
+            height: 210px;
+            display: block;
+        }
+
+        .finance-chart-empty {
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 28px 10px;
+            text-align: center;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            background: var(--border-light);
         }
 
         .config-wrap {
@@ -4201,6 +4413,57 @@
             <div id="tab-financeiro" class="tab-content hidden">
                 <div class="contracts-dashboard-head" style="margin-bottom: 20px;">
                     <div>
+                        <h4 class="contracts-dashboard-title" style="font-size: 24px;">Financeiro</h4>
+                        <p class="contracts-dashboard-subtitle">Visão geral dos recebimentos, pendências e inadimplência.</p>
+                    </div>
+                </div>
+
+                <div id="finance-overview-filters" class="finance-filters">
+                    <div class="finance-filter-field">
+                        <label>Início</label>
+                        <input type="month" disabled>
+                    </div>
+                    <div class="finance-filter-field">
+                        <label>Fim</label>
+                        <input type="month" disabled>
+                    </div>
+                    <div class="finance-filter-field">
+                        <label>Imóvel</label>
+                        <select disabled><option>Carregando...</option></select>
+                    </div>
+                    <div class="finance-filter-field">
+                        <label>Proprietário</label>
+                        <select disabled><option>Carregando...</option></select>
+                    </div>
+                </div>
+
+                <div id="finance-overview-chart" class="finance-chart-card">
+                    <div class="finance-chart-title">Recebimentos no período</div>
+                    <div class="finance-chart-subtitle">Carregando gráfico...</div>
+                    <div class="finance-chart-empty">Aguarde o carregamento dos dados.</div>
+                </div>
+
+                <div id="finance-overview-kpis" class="finance-overview-grid">
+                    <div class="finance-overview-card">
+                        <div class="finance-overview-label">Carregando...</div>
+                        <div class="finance-overview-value">-</div>
+                    </div>
+                </div>
+
+                <div class="contracts-dashboard-head" style="margin: 0 0 12px 0;">
+                    <div>
+                        <h4 class="contracts-dashboard-title" style="font-size: 18px;">Próximos / Últimos pagamentos</h4>
+                    </div>
+                </div>
+
+                <div id="finance-overview-list" class="finance-overview-list">
+                    <div class="contracts-empty" style="margin: 0; border: none; border-radius: 0;">Carregando dados financeiros...</div>
+                </div>
+            </div>
+
+            <div id="tab-pagamentos" class="tab-content hidden">
+                <div class="contracts-dashboard-head" style="margin-bottom: 20px;">
+                    <div>
                         <h4 class="contracts-dashboard-title" style="font-size: 24px;">Pagamentos</h4>
                         <p class="contracts-dashboard-subtitle">Role continuamente pela linha do tempo de pagamentos. A roleta de meses acompanha a posição da lista.</p>
                     </div>
@@ -5444,6 +5707,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 const headerTitle = document.getElementById('header-page-title');
                 if (headerTitle && !document.getElementById('tab-imoveis')?.classList.contains('hidden')) headerTitle.textContent = 'Imóveis';
                 else if (headerTitle && !document.getElementById('tab-pessoas')?.classList.contains('hidden')) headerTitle.textContent = 'Pessoas';
+                else if (headerTitle && !document.getElementById('tab-pagamentos')?.classList.contains('hidden')) headerTitle.textContent = 'Pagamentos';
                 else if (headerTitle && !document.getElementById('tab-financeiro')?.classList.contains('hidden')) headerTitle.textContent = 'Financeiro';
                 else if (headerTitle) headerTitle.textContent = 'Contratos';
                 return;
@@ -5916,9 +6180,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             await window.PaymentsManager.markAsPaid(contractId, paymentId, paidDate, paidAmount);
             await loadPaymentDashboard(contractId);
             
-            // Se estiver na aba financeiro, atualiza os dados lá também
-            if (!document.getElementById('tab-financeiro').classList.contains('hidden')) {
+            // Atualiza painel de pagamentos contínuo
+            if (!document.getElementById('tab-pagamentos')?.classList.contains('hidden')) {
                 await loadFinancialDashboard(true);
+            }
+
+            // Atualiza dashboard financeiro resumido
+            if (!document.getElementById('tab-financeiro')?.classList.contains('hidden')) {
+                await loadFinanceOverviewDashboard(true);
             }
         }
 
@@ -5927,9 +6196,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             await window.PaymentsManager.undoPayment(contractId, paymentId);
             await loadPaymentDashboard(contractId);
 
-            // Se estiver na aba financeiro, atualiza os dados lá também
-            if (!document.getElementById('tab-financeiro').classList.contains('hidden')) {
+            // Atualiza painel de pagamentos contínuo
+            if (!document.getElementById('tab-pagamentos')?.classList.contains('hidden')) {
                 await loadFinancialDashboard(true);
+            }
+
+            // Atualiza dashboard financeiro resumido
+            if (!document.getElementById('tab-financeiro')?.classList.contains('hidden')) {
+                await loadFinanceOverviewDashboard(true);
             }
         }
 
@@ -8407,22 +8681,32 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const isImoveis = tabName === 'imoveis';
             const isPessoas = tabName === 'pessoas';
             const isFinanceiro = tabName === 'financeiro';
+            const isPagamentos = tabName === 'pagamentos';
 
             document.getElementById('tab-contrato').classList.toggle('hidden', !isContrato);
             document.getElementById('tab-imoveis').classList.toggle('hidden', !isImoveis);
             document.getElementById('tab-pessoas').classList.toggle('hidden', !isPessoas);
             document.getElementById('tab-financeiro').classList.toggle('hidden', !isFinanceiro);
+            document.getElementById('tab-pagamentos').classList.toggle('hidden', !isPagamentos);
 
             document.getElementById('nav-dashboard')?.classList.toggle('active', isContrato);
             document.getElementById('nav-properties')?.classList.toggle('active', isImoveis);
             document.getElementById('nav-people')?.classList.toggle('active', isPessoas);
             document.getElementById('nav-finance')?.classList.toggle('active', isFinanceiro);
-            document.getElementById('nav-payments')?.classList.toggle('active', false);
+            document.getElementById('nav-payments')?.classList.toggle('active', isPagamentos);
 
             // Atualiza título do header
             const headerTitle = document.getElementById('header-page-title');
             if (headerTitle) {
-                headerTitle.textContent = isContrato ? 'Contratos' : isImoveis ? 'Imóveis' : isPessoas ? 'Pessoas' : 'Financeiro';
+                headerTitle.textContent = isContrato
+                    ? 'Contratos'
+                    : isImoveis
+                        ? 'Imóveis'
+                        : isPessoas
+                            ? 'Pessoas'
+                            : isPagamentos
+                                ? 'Pagamentos'
+                                : 'Financeiro';
             }
 
             // Fecha sidebar no mobile
@@ -8436,6 +8720,10 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             syncContractActionButtons(null);
 
             if (isFinanceiro) {
+                loadFinanceOverviewDashboard();
+            }
+
+            if (isPagamentos) {
                 loadFinancialDashboard(false, { focusCurrentMonth: true });
             }
         }
@@ -8445,6 +8733,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             properties: [],
             contracts: [],
             paymentsByContract: {},
+            financeFilters: {
+                startMonth: '',
+                endMonth: '',
+                propertyId: '',
+                ownerKey: ''
+            },
             monthlyMap: new Map(),
             monthKeys: [],
             selectedMonthKey: '',
@@ -8517,6 +8811,347 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             return (contract?.id || '').toString();
         }
 
+        async function loadFinancialData() {
+            const ownerId = currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid;
+            if (!ownerId) throw new Error('Usuário não autenticado.');
+
+            if (landlordsCache && landlordsCache.length > 0) {
+                dashState.people = [...landlordsCache];
+            } else {
+                dashState.people = await window.PeopleRepo.listPeople(ownerId);
+            }
+
+            if (propertiesCache && propertiesCache.length > 0) {
+                dashState.properties = [...propertiesCache];
+            } else {
+                dashState.properties = await window.PropertiesRepo.listProperties(ownerId);
+            }
+
+            dashState.contracts = await window.ContractsRepo.listContracts(ownerId);
+            dashState.paymentsByContract = {};
+
+            const promises = dashState.contracts.map(async (contract) => {
+                const result = await window.PaymentsManager.loadPaymentDashboard(contract.id);
+                dashState.paymentsByContract[contract.id] = result.payments || [];
+            });
+
+            await Promise.all(promises);
+        }
+
+        function toMonthInputValue(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${year}-${month}`;
+        }
+
+        function getDefaultFinanceRange() {
+            const end = new Date();
+            const start = new Date(end.getFullYear(), end.getMonth() - 11, 1);
+            return {
+                startMonth: toMonthInputValue(start),
+                endMonth: toMonthInputValue(end)
+            };
+        }
+
+        function getOwnerDisplay(contract, refs) {
+            const ownerId = refs.ownerId || '';
+            const ownerNameById = getPersonNameById(ownerId);
+            const fallbackOwner = (contract?.data?.imovel?.proprietario || '').toString().trim();
+            const ownerName = ownerNameById || fallbackOwner || 'Proprietário não identificado';
+            return {
+                ownerId,
+                ownerName,
+                ownerKey: ownerId ? `id:${ownerId}` : `name:${ownerName.toLowerCase()}`
+            };
+        }
+
+        function isMonthInRange(monthKey, startMonth, endMonth) {
+            if (!monthKey) return false;
+            if (startMonth && monthKey < startMonth) return false;
+            if (endMonth && monthKey > endMonth) return false;
+            return true;
+        }
+
+        function renderFinanceOverviewDashboard() {
+            const filterEl = document.getElementById('finance-overview-filters');
+            const chartEl = document.getElementById('finance-overview-chart');
+            const kpiEl = document.getElementById('finance-overview-kpis');
+            const listEl = document.getElementById('finance-overview-list');
+            if (!filterEl || !chartEl || !kpiEl || !listEl) return;
+
+            const defaults = getDefaultFinanceRange();
+            if (!dashState.financeFilters.startMonth) dashState.financeFilters.startMonth = defaults.startMonth;
+            if (!dashState.financeFilters.endMonth) dashState.financeFilters.endMonth = defaults.endMonth;
+
+            const entries = [];
+            const propertyOptions = new Map();
+            const ownerOptions = new Map();
+
+            dashState.contracts.forEach((contract) => {
+                const refs = getVersionRefIds(contract);
+                const propertyId = refs.propertyId || '';
+                const propertyLabel = getPropertyLabelById(propertyId) || contract.data?.imovel?.endereco || 'Imóvel não identificado';
+                const tenantName = getPersonNameById(refs.tenantId) || contract.data?.locataria?.nome || 'Locatário não identificado';
+                const ownerInfo = getOwnerDisplay(contract, refs);
+
+                if (propertyId) propertyOptions.set(propertyId, propertyLabel);
+                ownerOptions.set(ownerInfo.ownerKey, ownerInfo.ownerName);
+
+                const payments = dashState.paymentsByContract[contract.id] || [];
+                payments.forEach((payment) => {
+                    if (payment?.status === 'deleted' || payment?.status === 'canceled') return;
+                    const dueDate = parsePaymentDateValue(payment?.dueDate);
+                    const dueMonth = getPaymentMonthKey(payment?.dueDate);
+                    const visualStatus = getPaymentVisualStatus(payment);
+                    const amount = Number(payment?.amount || 0);
+                    const paidAmount = Number(payment?.paidAmount || amount || 0);
+                    const paidDate = parsePaymentDateValue(payment?.paidDate);
+
+                    entries.push({
+                        contractId: contract.id,
+                        propertyId,
+                        propertyLabel,
+                        ownerKey: ownerInfo.ownerKey,
+                        ownerName: ownerInfo.ownerName,
+                        tenantName,
+                        dueDate,
+                        dueMonth,
+                        dueText: dueDate ? dueDate.toLocaleDateString('pt-BR') : '-',
+                        visualStatus,
+                        amount,
+                        paidAmount,
+                        paidDate,
+                        paidMonth: paidDate ? getPaymentMonthKey(paymentDateToIso(paidDate)) : dueMonth
+                    });
+                });
+            });
+
+            const selectedProperty = dashState.financeFilters.propertyId || '';
+            const selectedOwner = dashState.financeFilters.ownerKey || '';
+            const selectedStart = dashState.financeFilters.startMonth || defaults.startMonth;
+            const selectedEnd = dashState.financeFilters.endMonth || defaults.endMonth;
+
+            const safeStart = selectedStart <= selectedEnd ? selectedStart : selectedEnd;
+            const safeEnd = selectedStart <= selectedEnd ? selectedEnd : selectedStart;
+            dashState.financeFilters.startMonth = safeStart;
+            dashState.financeFilters.endMonth = safeEnd;
+
+            const filtered = entries.filter((entry) => {
+                if (selectedProperty && entry.propertyId !== selectedProperty) return false;
+                if (selectedOwner && entry.ownerKey !== selectedOwner) return false;
+                if (!isMonthInRange(entry.dueMonth, safeStart, safeEnd)) return false;
+                return true;
+            });
+
+            const today = new Date();
+            const receivedTotal = filtered
+                .filter((entry) => entry.visualStatus === 'paid')
+                .reduce((sum, entry) => sum + Number(entry.paidAmount || 0), 0);
+            const overdueTotal = filtered
+                .filter((entry) => entry.visualStatus === 'overdue')
+                .reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+            const futureTotal = filtered
+                .filter((entry) => entry.visualStatus === 'pending' && entry.dueDate && entry.dueDate.getTime() > today.getTime())
+                .reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+
+            const pendingCount = filtered.filter((entry) => entry.visualStatus === 'pending' || entry.visualStatus === 'overdue').length;
+
+            kpiEl.innerHTML = `
+                <div class="finance-overview-card">
+                    <div class="finance-overview-label">Recebido no período</div>
+                    <div class="finance-overview-value money">${window.PaymentsManager.formatCurrencyBR(receivedTotal)}</div>
+                </div>
+                <div class="finance-overview-card">
+                    <div class="finance-overview-label">Total em atraso</div>
+                    <div class="finance-overview-value money">${window.PaymentsManager.formatCurrencyBR(overdueTotal)}</div>
+                </div>
+                <div class="finance-overview-card">
+                    <div class="finance-overview-label">Total futuro no período</div>
+                    <div class="finance-overview-value money">${window.PaymentsManager.formatCurrencyBR(futureTotal)}</div>
+                </div>
+                <div class="finance-overview-card">
+                    <div class="finance-overview-label">Pagamentos filtrados</div>
+                    <div class="finance-overview-value">${filtered.length}</div>
+                </div>
+                <div class="finance-overview-card">
+                    <div class="finance-overview-label">Pendências</div>
+                    <div class="finance-overview-value">${pendingCount}</div>
+                </div>
+                <div class="finance-overview-card">
+                    <div class="finance-overview-label">Contratos mapeados</div>
+                    <div class="finance-overview-value">${dashState.contracts.length}</div>
+                </div>
+            `;
+
+            const propertyList = Array.from(propertyOptions.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+            const ownerList = Array.from(ownerOptions.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+
+            filterEl.innerHTML = `
+                <div class="finance-filter-field">
+                    <label for="finance-filter-start">Período (início)</label>
+                    <input id="finance-filter-start" type="month" value="${safeStart}">
+                </div>
+                <div class="finance-filter-field">
+                    <label for="finance-filter-end">Período (fim)</label>
+                    <input id="finance-filter-end" type="month" value="${safeEnd}">
+                </div>
+                <div class="finance-filter-field">
+                    <label for="finance-filter-property">Imóvel</label>
+                    <select id="finance-filter-property">
+                        <option value="">Todos os imóveis</option>
+                        ${propertyList.map(([id, label]) => `<option value="${id}" ${id === selectedProperty ? 'selected' : ''}>${label}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="finance-filter-field">
+                    <label for="finance-filter-owner">Proprietário</label>
+                    <select id="finance-filter-owner">
+                        <option value="">Todos os proprietários</option>
+                        ${ownerList.map(([key, label]) => `<option value="${key}" ${key === selectedOwner ? 'selected' : ''}>${label}</option>`).join('')}
+                    </select>
+                </div>
+            `;
+
+            const bindFilter = (id, field) => {
+                const element = document.getElementById(id);
+                if (!element) return;
+                element.addEventListener('change', () => {
+                    dashState.financeFilters[field] = element.value || '';
+                    renderFinanceOverviewDashboard();
+                });
+            };
+
+            bindFilter('finance-filter-start', 'startMonth');
+            bindFilter('finance-filter-end', 'endMonth');
+            bindFilter('finance-filter-property', 'propertyId');
+            bindFilter('finance-filter-owner', 'ownerKey');
+
+            const monthlyReceived = new Map();
+            filtered
+                .filter((entry) => entry.visualStatus === 'paid')
+                .forEach((entry) => {
+                    if (!entry.paidMonth || !isMonthInRange(entry.paidMonth, safeStart, safeEnd)) return;
+                    monthlyReceived.set(entry.paidMonth, (monthlyReceived.get(entry.paidMonth) || 0) + Number(entry.paidAmount || 0));
+                });
+
+            const months = [];
+            const cursor = new Date(`${safeStart}-01T00:00:00`);
+            const endCursor = new Date(`${safeEnd}-01T00:00:00`);
+            while (cursor.getTime() <= endCursor.getTime()) {
+                const mk = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}`;
+                months.push(mk);
+                cursor.setMonth(cursor.getMonth() + 1);
+            }
+
+            const chartValues = months.map((monthKey) => ({
+                monthKey,
+                label: formatMonthYearFromIso(`${monthKey}-01`).replace(/\sde\s/i, '/'),
+                value: monthlyReceived.get(monthKey) || 0
+            }));
+
+            const maxValue = chartValues.reduce((max, item) => Math.max(max, item.value), 0);
+            if (!chartValues.length || maxValue <= 0) {
+                chartEl.innerHTML = `
+                    <div class="finance-chart-title">Recebimentos no período</div>
+                    <div class="finance-chart-subtitle">Período de ${safeStart} até ${safeEnd}</div>
+                    <div class="finance-chart-empty">Sem valores recebidos para o filtro selecionado.</div>
+                `;
+            } else {
+                const width = 900;
+                const height = 210;
+                const paddingTop = 16;
+                const paddingBottom = 42;
+                const paddingLeft = 20;
+                const paddingRight = 20;
+                const chartHeight = height - paddingTop - paddingBottom;
+                const columnWidth = (width - paddingLeft - paddingRight) / chartValues.length;
+                const bars = chartValues.map((item, index) => {
+                    const barHeight = Math.max(4, (item.value / maxValue) * chartHeight);
+                    const x = paddingLeft + (index * columnWidth) + (columnWidth * 0.14);
+                    const y = paddingTop + (chartHeight - barHeight);
+                    const w = columnWidth * 0.72;
+                    const monthLabel = item.monthKey.slice(5);
+                    const valueLabel = window.PaymentsManager.formatCurrencyBR(item.value);
+                    return `
+                        <rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${barHeight.toFixed(2)}" rx="5" fill="var(--primary)">
+                            <title>${monthLabel}: ${valueLabel}</title>
+                        </rect>
+                        <text x="${(x + (w / 2)).toFixed(2)}" y="${(height - 18).toFixed(2)}" text-anchor="middle" fill="var(--text-muted)" font-size="11">${monthLabel}</text>
+                    `;
+                }).join('');
+
+                chartEl.innerHTML = `
+                    <div class="finance-chart-title">Recebimentos no período</div>
+                    <div class="finance-chart-subtitle">Período de ${safeStart} até ${safeEnd}</div>
+                    <svg class="finance-chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="Gráfico de valores recebidos no período">
+                        <line x1="${paddingLeft}" y1="${height - paddingBottom}" x2="${width - paddingRight}" y2="${height - paddingBottom}" stroke="var(--border)" stroke-width="1" />
+                        ${bars}
+                    </svg>
+                `;
+            }
+
+            if (!filtered.length) {
+                listEl.innerHTML = '<div class="contracts-empty" style="margin:0; border:none; border-radius:0;">Nenhum pagamento encontrado para os filtros selecionados.</div>';
+                return;
+            }
+
+            const statusLabel = (status) => {
+                if (status === 'paid') return 'Pago';
+                if (status === 'overdue') return 'Atrasado';
+                if (status === 'pending') return 'Pendente';
+                return 'Outro';
+            };
+
+            filtered.sort((a, b) => {
+                const tsA = a.dueDate ? a.dueDate.getTime() : 0;
+                const tsB = b.dueDate ? b.dueDate.getTime() : 0;
+                return tsB - tsA;
+            });
+
+            const topEntries = filtered.slice(0, 12);
+            listEl.innerHTML = `
+                <div class="finance-overview-list-head">
+                    <span>Vencimento</span>
+                    <span>Imóvel / Locatário</span>
+                    <span>Status</span>
+                    <span>Valor</span>
+                    <span>Ação</span>
+                </div>
+                ${topEntries.map((entry) => `
+                    <div class="finance-overview-row">
+                        <span>${entry.dueText}</span>
+                        <span>${entry.propertyLabel} • ${entry.tenantName}</span>
+                        <span><span class="finance-overview-status ${entry.visualStatus === 'paid' || entry.visualStatus === 'pending' || entry.visualStatus === 'overdue' ? entry.visualStatus : 'other'}">${statusLabel(entry.visualStatus)}</span></span>
+                        <strong>${window.PaymentsManager.formatCurrencyBR(entry.amount)}</strong>
+                        <button class="btn-secondary btn-sm" type="button" onclick="openPaymentContractFromFinance('${entry.contractId}')">Abrir</button>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        async function loadFinanceOverviewDashboard(silent = false) {
+            const kpiEl = document.getElementById('finance-overview-kpis');
+            const listEl = document.getElementById('finance-overview-list');
+            if (!kpiEl || !listEl) return;
+
+            if (!silent) {
+                kpiEl.innerHTML = `
+                    <div class="finance-overview-card">
+                        <div class="finance-overview-label">Carregando...</div>
+                        <div class="finance-overview-value">-</div>
+                    </div>
+                `;
+                listEl.innerHTML = '<div class="contracts-empty" style="margin:0; border:none; border-radius:0;">Carregando dados financeiros...</div>';
+            }
+
+            try {
+                await loadFinancialData();
+                renderFinanceOverviewDashboard();
+            } catch (error) {
+                console.error('Erro financeiro:', error);
+                listEl.innerHTML = `<div class="contracts-empty" style="margin:0; border:none; border-radius:0; color: var(--danger);">Erro ao carregar dashboard financeiro: ${error.message}</div>`;
+            }
+        }
+
         function openPaymentContractFromFinance(contractId) {
             if (!contractId) return;
             switchTab('contrato');
@@ -8528,37 +9163,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         async function loadFinancialDashboard(silent = false, options = {}) {
             const grid = document.getElementById('dash-months-list');
             const picker = document.getElementById('finance-month-picker');
+            if (!grid || !picker) return;
             if (!silent) {
                 grid.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p>Carregando pagamentos...</p></div>';
                 if (picker) picker.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 40px 12px;">Carregando meses...</div>';
             }
 
             try {
-                const ownerId = currentAuthUser?.uid || window.AppFirebase?.auth?.currentUser?.uid;
-                if (!ownerId) throw new Error('Usuário não autenticado.');
-
-                // Carregar pessoas para resolver nomes
-                if (landlordsCache && landlordsCache.length > 0) {
-                    dashState.people = [...landlordsCache];
-                } else {
-                    dashState.people = await window.PeopleRepo.listPeople(ownerId);
-                }
-
-                // Carregar todos os imóveis para resolver nomes
-                if (propertiesCache && propertiesCache.length > 0) {
-                    dashState.properties = [...propertiesCache];
-                } else {
-                    dashState.properties = await window.PropertiesRepo.listProperties(ownerId);
-                }
-                // Carregar contratos
-                dashState.contracts = await window.ContractsRepo.listContracts(ownerId);
-                
-                // Carregar pagamentos
-                const promises = dashState.contracts.map(async (c) => {
-                    const res = await window.PaymentsManager.loadPaymentDashboard(c.id);
-                    dashState.paymentsByContract[c.id] = res.payments || [];
-                });
-                await Promise.all(promises);
+                await loadFinancialData();
 
                 renderFinancialDashboard(options);
             } catch (error) {
@@ -8665,6 +9277,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         function createFinancialPaymentCard(entry) {
             const payment = entry.payment;
+            const visualStatus = getPaymentVisualStatus(payment);
+            const statusKey = visualStatus === 'paid' ? 'paid' : (visualStatus === 'overdue' ? 'overdue' : 'open');
+            const statusLabel = statusKey === 'paid' ? 'Pago' : (statusKey === 'overdue' ? 'Atrasado' : 'Aberto');
             const dueDateIso = paymentDateToIso(payment?.dueDate);
             const dueDateObj = parsePaymentDateValue(payment?.dueDate);
             const dueText = dueDateObj ? dueDateObj.toLocaleDateString('pt-BR') : '-';
@@ -8675,6 +9290,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             const card = document.createElement('article');
             card.className = 'payment-month-card';
+            card.classList.add(`status-${statusKey}`);
 
             const monthTag = document.createElement('div');
             monthTag.className = 'payment-month-tag';
@@ -8755,6 +9371,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             const actions = document.createElement('div');
             actions.className = 'payment-month-actions';
+
+            const statusChip = document.createElement('span');
+            statusChip.className = `payment-status-chip status-${statusKey}`;
+            statusChip.textContent = statusLabel;
+            actions.appendChild(statusChip);
 
             const actionWrap = document.createElement('div');
             const actionBtn = document.createElement('button');
@@ -9155,7 +9776,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 switchTab('financeiro');
             });
             document.getElementById('nav-payments')?.addEventListener('click', function () {
-                switchTab('financeiro');
+                switchTab('pagamentos');
             });
 
             // Toggle de filtros de contrato
