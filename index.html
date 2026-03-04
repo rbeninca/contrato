@@ -1086,6 +1086,27 @@
             text-shadow: 0 0 0.01px currentColor;
         }
 
+        .finance-wheel-item.month-past {
+            color: var(--text-muted);
+            opacity: 0.26;
+        }
+
+        .finance-wheel-item.month-future {
+            color: var(--text-secondary);
+            background: color-mix(in srgb, var(--primary) 8%, transparent);
+        }
+
+        .finance-wheel-item.month-current {
+            color: var(--text-primary);
+        }
+
+        .finance-wheel-item.is-selected.month-past,
+        .finance-wheel-item.is-selected.month-future,
+        .finance-wheel-item.is-selected.month-current {
+            color: var(--primary);
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
             #tab-pagamentos .finance-wheel-layout {
                 grid-template-columns: 1fr;
@@ -1174,6 +1195,14 @@
             box-shadow: var(--shadow-sm);
             margin-bottom: 12px;
             overflow: hidden;
+        }
+
+        .payment-month-section.month-past .payment-month-head {
+            border-left: 3px solid var(--text-muted);
+        }
+
+        .payment-month-section.month-future .payment-month-head {
+            border-left: 3px solid var(--primary);
         }
 
         .payment-month-board {
@@ -8805,6 +8834,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             wheelScrollTimer: null,
             wheelOverlayTimer: null,
             wheelProgrammatic: false,
+            wheelSyncMutedUntil: 0,
             listScrollTimer: null,
             listProgrammatic: false,
             renderedStartIndex: -1,
@@ -8885,6 +8915,15 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const y = date.getFullYear();
             const m = String(date.getMonth() + 1).padStart(2, '0');
             return `${y}-${m}`;
+        }
+
+        function getMonthTemporalClass(monthKey) {
+            if (!monthKey) return '';
+            const currentMonth = getPaymentMonthKey(new Date());
+            if (!currentMonth) return '';
+            if (monthKey < currentMonth) return 'month-past';
+            if (monthKey > currentMonth) return 'month-future';
+            return 'month-current';
         }
 
         function getContractCode(contract) {
@@ -9493,6 +9532,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const section = document.createElement('section');
             section.className = 'payment-month-section';
             section.dataset.monthKey = monthKey;
+            section.classList.add(getMonthTemporalClass(monthKey));
 
             const monthLabel = formatMonthYearFromIso(`${monthKey}-01`);
 
@@ -9649,11 +9689,15 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             });
         }
 
-        function centerWheelOnMonth(monthKey, smooth = true) {
+        function centerWheelOnMonth(monthKey, smooth = true, muteWheelSync = false) {
             const pickerEl = document.getElementById('finance-month-picker');
             if (!pickerEl || !monthKey) return;
             const targetItem = pickerEl.querySelector(`.finance-wheel-item[data-month-key="${monthKey}"]`);
             if (!targetItem) return;
+
+            if (muteWheelSync) {
+                dashState.wheelSyncMutedUntil = Date.now() + (smooth ? 320 : 120);
+            }
 
             const pickerRect = pickerEl.getBoundingClientRect();
             const itemRect = targetItem.getBoundingClientRect();
@@ -9687,6 +9731,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 const item = document.createElement('button');
                 item.type = 'button';
                 item.className = 'finance-wheel-item';
+                item.classList.add(getMonthTemporalClass(monthKey));
                 item.dataset.monthKey = monthKey;
                 item.textContent = monthKey;
                 item.title = formatMonthYearFromIso(`${monthKey}-01`);
@@ -9707,6 +9752,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
                     if (dashState.wheelProgrammatic) return;
 
+                     if (Date.now() < (dashState.wheelSyncMutedUntil || 0)) {
+                        if (dashState.wheelScrollTimer) {
+                            window.clearTimeout(dashState.wheelScrollTimer);
+                            dashState.wheelScrollTimer = null;
+                        }
+                        return;
+                    }
+
                     if (dashState.wheelScrollTimer) {
                         window.clearTimeout(dashState.wheelScrollTimer);
                     }
@@ -9719,14 +9772,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
                         dashState.selectedMonthKey = nextMonth;
                         scrollTimelineToMonth(nextMonth, true);
-                        centerWheelOnMonth(nextMonth, true);
+                        centerWheelOnMonth(nextMonth, true, true);
                     }, 130);
                 }, { passive: true });
                 pickerEl.dataset.boundWheel = '1';
             }
 
             window.requestAnimationFrame(() => {
-                centerWheelOnMonth(dashState.selectedMonthKey, false);
+                centerWheelOnMonth(dashState.selectedMonthKey, false, true);
             });
         }
 
@@ -9786,7 +9839,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                         const visibleMonth = getVisibleMonthFromTimeline();
                         if (!visibleMonth || visibleMonth === dashState.selectedMonthKey) return;
                         updateWheelSelectedMonth(visibleMonth);
-                        centerWheelOnMonth(visibleMonth, true);
+                        centerWheelOnMonth(visibleMonth, true, true);
                     }, 60);
                 }, { passive: true });
                 grid.dataset.boundTimelineScroll = '1';
@@ -10175,7 +10228,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             refreshInvitationList();
             setContractEditorVisible(false);
             syncContractActionButtons(null);
-            switchTab('financeiro');
+            switchTab('pagamentos');
 
             document.querySelectorAll('.editor-panel input, .editor-panel textarea, .editor-panel select').forEach(field => {
                 field.addEventListener('focus', function () {
