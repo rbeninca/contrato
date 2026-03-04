@@ -31,6 +31,8 @@
             --radius-sm: 6px;
             --radius: 10px;
             --radius-lg: 16px;
+            --sidebar-width: 240px;
+            --sidebar-mini-width: 65px;
         }
 
         * {
@@ -53,13 +55,20 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 240px;
+            width: var(--sidebar-mini-width);
             background: linear-gradient(180deg, var(--text-primary) 0%, #1e293b 100%);
             display: flex;
             flex-direction: column;
             padding: 20px 16px;
-            z-index: 100;
-            transition: width 0.3s ease;
+            z-index: 1000;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .app-sidebar:hover {
+            width: var(--sidebar-width);
+            box-shadow: 4px 0 25px rgba(0,0,0,0.15);
         }
 
         .sidebar-brand {
@@ -190,7 +199,7 @@
 
         /* Header Superior */
         .app-header {
-            margin-left: 240px;
+            margin-left: var(--sidebar-mini-width);
             background: var(--bg-card);
             border-bottom: 1px solid var(--border);
             padding: 10px 28px;
@@ -202,6 +211,7 @@
             z-index: 50;
             gap: 12px;
             flex-wrap: wrap; /* allow header to grow with payment toolbar */
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .header-left {
@@ -405,9 +415,10 @@
 
         /* Área Principal */
         .app-main {
-            margin-left: 240px;
+            margin-left: var(--sidebar-mini-width);
             padding: 24px 28px;
             min-height: calc(100vh - 60px);
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Botões Modernos */
@@ -1854,8 +1865,7 @@
             /* Buttons em formulários mais compactos */
             #btn-property-new,
             #btn-person-new,
-            #btn-new-contract-dashboard,
-            #btn-carregar {
+            #btn-new-contract-dashboard {
                 width: 100%;
                 margin-bottom: 6px;
             }
@@ -2823,7 +2833,7 @@
         }
 
         /* Responsivo - Landscape Mobile */
-        @media (max-height: 600px) and (orientation: landscape) {
+        @media (max-height: 800px) and (orientation: landscape) {
             .app-sidebar {
                 width: 180px;
                 padding: 8px 6px;
@@ -2871,7 +2881,70 @@
         }
 
         /* Responsivo - Ajustes gerais de layout em mobile */
-        @media (max-width: 600px) {
+        @media (max-width: 800px) {
+            .app-sidebar {
+                top: auto;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100% !important;
+                height: 60px;
+                flex-direction: row;
+                padding: 0;
+                border-top: 1px solid rgba(255,255,255,0.1);
+                background: #1e293b;
+                transform: none !important;
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+                z-index: 1000;
+            }
+
+            .app-sidebar:hover {
+                width: 100% !important;
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            }
+
+            .sidebar-brand, 
+            .sidebar-footer, 
+            .sidebar-btn span, 
+            .sidebar-brand-text,
+            #btn-manage-access {
+                display: none !important;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                height: 100%;
+                width: 100%;
+                gap: 0;
+            }
+
+            .sidebar-btn {
+                justify-content: center;
+                height: 100%;
+                border-radius: 0;
+                padding: 0;
+                flex: 1;
+            }
+
+            .sidebar-btn svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            /* Ajustes do Conteúdo Principal */
+            .app-main {
+                margin-left: 0 !important;
+                margin-bottom: 60px;
+                padding: 16px;
+            }
+
+            .app-header {
+                margin-left: 0 !important;
+                padding: 10px 16px;
+            }
+
             .content-layout.dashboard-mode {
                 display: flex;
                 flex-direction: column;
@@ -2885,8 +2958,6 @@
                 order: 2;
                 max-width: 100%;
             }
-
-
 
             /* Melhorias no modal em telas muito pequenas */
             .modal-backdrop {
@@ -3447,9 +3518,7 @@
                     <div id="contracts-dashboard-grid" class="contracts-grid"></div>
                     <div id="contracts-dashboard-empty" class="contracts-empty hidden"></div>
                     <div class="editor-actions" style="margin-top: 10px;">
-                        <button class="btn-primary" id="btn-carregar" type="button">Abrir contrato</button>
                         <button class="btn-secondary hidden" id="btn-open-invite-panel" type="button">Gerar convite</button>
-                        
                     </div>
                 </div>
 
@@ -8332,7 +8401,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             }
 
             document.getElementById('btn-salvar')?.addEventListener('click', saveCurrentVersion);
-            document.getElementById('btn-carregar')?.addEventListener('click', openSelectedVersion);
             document.getElementById('btn-excluir-versao')?.addEventListener('click', deleteSelectedVersion);
             document.getElementById('version-filter-property')?.addEventListener('change', reloadVersionsWithActiveFilters);
             document.getElementById('version-filter-landlord')?.addEventListener('change', reloadVersionsWithActiveFilters);
