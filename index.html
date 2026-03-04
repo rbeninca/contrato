@@ -201,6 +201,7 @@
             top: 0;
             z-index: 50;
             gap: 12px;
+            flex-wrap: wrap; /* allow header to grow with payment toolbar */
         }
 
         .header-left {
@@ -1463,6 +1464,38 @@
             flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 12px;
+        }
+
+        /* toolbar relocated into header when payment dashboard active */
+        #header-payment-toolbar {
+            display: none; /* hidden by default */
+            position: relative;
+            top: 0;
+            left: 0;
+            right: 0;
+            /* fill full width of header row */
+            flex-basis: 100%;
+            padding: 0 16px;
+            background: var(--bg-card);
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 8px;
+            z-index: 51;
+        }
+
+        #header-payment-toolbar > * {
+            margin: 0;
+        }
+
+        #header-payment-toolbar:not(.hidden) {
+            display: flex;
+        }
+
+        @media (max-width: 900px) {
+            #header-payment-toolbar {
+                left: 0;
+            }
         }
 
         .btn-highlight {
@@ -3032,6 +3065,7 @@
                     <line x1="12" y1="3" x2="12" y2="15"></line>
                 </svg>
             </button>
+            <button class="header-btn-primary hidden" id="btn-header-view-payments" type="button">Visualizar pagamentos</button>
             <button class="header-btn-primary" id="btn-print" onclick="window.print()" type="button">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="6 9 6 2 18 2 18 9"></polyline>
@@ -3041,6 +3075,7 @@
                 Imprimir
             </button>
         </div>
+        <div id="header-payment-toolbar" class="payment-toolbar hidden"></div>
     </header>
     <input id="backup-import-input" type="file" accept="application/json" class="hidden">
 
@@ -3593,6 +3628,7 @@
 
                         <div class="payment-toolbar">
                             <button class="btn-secondary" id="btn-payment-view-readonly" type="button">Visualizar contrato (somente leitura)</button>
+                            <button class="btn-secondary" id="btn-payment-view-dashboard" type="button">Visualizar pagamentos</button>
                             <button class="btn-primary" id="btn-payment-renew-cycle" type="button">Renovar / Reajustar Ciclo</button>
                             <button class="btn-secondary" id="btn-payment-create-manual" type="button">Adicionar pagamento manual</button>
                             <button class="btn-secondary btn-danger-subtle" id="btn-payment-clear-all" type="button">Limpar todos os pagamentos</button>
@@ -4899,6 +4935,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             btnActivate.classList.toggle('hidden', status !== 'draft');
             btnClose.classList.toggle('hidden', status !== 'active');
             btnReopen.classList.toggle('hidden', status !== 'closed');
+            // header payment view button visible when a version is loaded and not already in payment dashboard
+            const btnViewHeader = document.getElementById('btn-header-view-payments');
+            if (btnViewHeader) {
+                const layout = document.querySelector('.content-layout');
+                const inDashboard = layout?.classList.contains('dashboard-mode');
+                btnViewHeader.classList.toggle('hidden', !version?.id || inDashboard);
+            }
             btnReturnDraft.classList.toggle('hidden', status === 'draft');
             btnActivate.dataset.contractId = version.id;
             btnClose.dataset.contractId = version.id;
@@ -4916,6 +4959,23 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             if (dashboard) dashboard.classList.toggle('hidden', !!visible);
             if (payment) payment.classList.toggle('hidden', !visible);
             if (layout) layout.classList.toggle('dashboard-mode', true);
+
+            // payment toolbar moves to header when dashboard is visible
+            const panelToolbar = document.querySelector('#payment-dashboard-section .payment-toolbar');
+            const headerToolbar = document.getElementById('header-payment-toolbar');
+            if (visible && panelToolbar && headerToolbar) {
+                // transfer all buttons from panel to header
+                while (panelToolbar.firstChild) {
+                    headerToolbar.appendChild(panelToolbar.firstChild);
+                }
+                headerToolbar.classList.remove('hidden');
+            } else if (headerToolbar && panelToolbar) {
+                // move buttons back to panel toolbar when hiding
+                while (headerToolbar.firstChild) {
+                    panelToolbar.appendChild(headerToolbar.firstChild);
+                }
+                headerToolbar.classList.add('hidden');
+            }
         }
 
         function closePaymentDashboard() {
@@ -8103,6 +8163,16 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('btn-export-backup')?.addEventListener('click', exportBackupJson);
             document.getElementById('btn-import-backup')?.addEventListener('click', function () {
                 document.getElementById('backup-import-input').click();
+            });
+            document.getElementById('btn-header-view-payments')?.addEventListener('click', async function () {
+                if (openedVersionId) {
+                    await loadPaymentDashboard(openedVersionId);
+                }
+            });
+            document.getElementById('btn-payment-view-dashboard')?.addEventListener('click', async function () {
+                if (currentPaymentContractId) {
+                    await loadPaymentDashboard(currentPaymentContractId);
+                }
             });
             const btnNewContractDashboard = document.getElementById('btn-new-contract-dashboard');
             if (btnNewContractDashboard) {
