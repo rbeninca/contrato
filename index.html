@@ -236,6 +236,112 @@
             gap: 12px;
         }
 
+        .header-contract-nav {
+            width: 100%;
+            display: flex;
+            gap: 8px;
+            padding-top: 4px;
+            border-top: 1px solid var(--border-light);
+            margin-top: 2px;
+            padding-bottom: 2px;
+        }
+
+        .header-mode-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .header-mode-btn.active {
+            background: var(--text-primary);
+            color: #fff;
+            border-color: var(--text-primary);
+        }
+
+        .header-mode-btn:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .header-mode-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .header-breadcrumb {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 0 2px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-light);
+            margin-top: 2px;
+        }
+
+        .breadcrumb-link {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .breadcrumb-link:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb-sep {
+            color: var(--text-muted);
+        }
+
+        .breadcrumb-current {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .breadcrumb-status {
+            display: inline-flex;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 4px;
+        }
+
+        .breadcrumb-status.draft {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .breadcrumb-status.active {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .breadcrumb-status.closed {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 4px;
+            flex-shrink: 0;
+        }
+
         .sync-badge {
             display: inline-flex;
             align-items: center;
@@ -853,37 +959,7 @@
             color: var(--text-primary);
         }
 
-        .tabs-wrap {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 20px;
-            background: var(--border-light);
-            padding: 4px;
-            border-radius: var(--radius);
-            width: fit-content;
-        }
 
-        .tab-btn {
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            padding: 10px 16px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-primary);
-        }
-
-        .tab-btn.active {
-            background: var(--bg-card);
-            color: var(--primary);
-            box-shadow: var(--shadow-sm);
-        }
 
         .tab-content.hidden {
             display: none;
@@ -1482,6 +1558,9 @@
             flex-wrap: wrap;
             gap: 8px;
             z-index: 51;
+            border-top: 1px dashed var(--border);
+            padding-top: 8px;
+            margin-top: 2px;
         }
 
         #header-payment-toolbar > * {
@@ -2578,17 +2657,7 @@
                 padding: 6px;
             }
 
-            /* Tabs */
-            .tabs-wrap {
-                gap: 2px;
-                padding: 2px;
-                margin-bottom: 16px;
-            }
 
-            .tab-btn {
-                padding: 8px 10px;
-                font-size: 11px;
-            }
 
             /* Payment List Mobile */
             .payment-list {
@@ -2817,9 +2886,7 @@
                 max-width: 100%;
             }
 
-            .tab-btn.active::after {
-                display: none;
-            }
+
 
             /* Melhorias no modal em telas muito pequenas */
             .modal-backdrop {
@@ -3065,7 +3132,6 @@
                     <line x1="12" y1="3" x2="12" y2="15"></line>
                 </svg>
             </button>
-            <button class="header-btn-primary hidden" id="btn-header-view-payments" type="button">Visualizar pagamentos</button>
             <button class="header-btn-primary" id="btn-print" onclick="window.print()" type="button">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="6 9 6 2 18 2 18 9"></polyline>
@@ -3074,6 +3140,11 @@
                 </svg>
                 Imprimir
             </button>
+        </div>
+        <div id="header-breadcrumb" class="header-breadcrumb hidden"></div>
+        <div id="header-contract-nav" class="header-contract-nav hidden">
+            <button id="btn-header-tab-contract" class="header-mode-btn" type="button">Contrato</button>
+            <button id="btn-header-tab-payment" class="header-mode-btn" type="button">Pagamento</button>
         </div>
         <div id="header-payment-toolbar" class="payment-toolbar hidden"></div>
     </header>
@@ -3337,11 +3408,7 @@
         <div class="editor-panel">
             <h3 class="hidden">Dados do Contrato (não aparece na impressão)</h3>
             <div id="gist-connection-note" class="status-note hidden">Aguardando login Firebase...</div>
-            <div class="tabs-wrap hidden">
-                <button class="tab-btn active" id="tab-btn-contrato" type="button">Contratos</button>
-                <button class="tab-btn" id="tab-btn-imoveis" type="button">Imóveis</button>
-                <button class="tab-btn" id="tab-btn-pessoas" type="button">Pessoas</button>
-            </div>
+
 
             <div id="tab-contrato" class="tab-content">
                 <div class="version-wrap" id="contract-dashboard-section">
@@ -3627,13 +3694,11 @@
                         </div>
 
                         <div class="payment-toolbar">
-                            <button class="btn-secondary" id="btn-payment-view-readonly" type="button">Visualizar contrato (somente leitura)</button>
-                            <button class="btn-secondary" id="btn-payment-view-dashboard" type="button">Visualizar pagamentos</button>
                             <button class="btn-primary" id="btn-payment-renew-cycle" type="button">Renovar / Reajustar Ciclo</button>
                             <button class="btn-secondary" id="btn-payment-create-manual" type="button">Adicionar pagamento manual</button>
                             <button class="btn-secondary btn-danger-subtle" id="btn-payment-clear-all" type="button">Limpar todos os pagamentos</button>
                             <button class="btn-secondary" id="btn-payment-refresh" type="button">Atualizar pagamentos</button>
-                            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); padding:0 6px;">
+                            <label id="payment-filter-hide-deleted-wrap" style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); padding:0 6px;">
                                 <input id="payment-filter-hide-deleted" type="checkbox" checked>
                                 Ocultar pagamentos excluídos
                             </label>
@@ -4928,6 +4993,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 btnClose.dataset.contractId = '';
                 btnReopen.dataset.contractId = '';
                 btnReturnDraft.dataset.contractId = '';
+                syncHeaderContextToolbar(null);
                 return;
             }
 
@@ -4935,18 +5001,13 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             btnActivate.classList.toggle('hidden', status !== 'draft');
             btnClose.classList.toggle('hidden', status !== 'active');
             btnReopen.classList.toggle('hidden', status !== 'closed');
-            // header payment view button visible when a version is loaded and not already in payment dashboard
-            const btnViewHeader = document.getElementById('btn-header-view-payments');
-            if (btnViewHeader) {
-                const layout = document.querySelector('.content-layout');
-                const inDashboard = layout?.classList.contains('dashboard-mode');
-                btnViewHeader.classList.toggle('hidden', !version?.id || inDashboard);
-            }
+
             btnReturnDraft.classList.toggle('hidden', status === 'draft');
             btnActivate.dataset.contractId = version.id;
             btnClose.dataset.contractId = version.id;
             btnReopen.dataset.contractId = version.id;
             btnReturnDraft.dataset.contractId = version.id;
+            syncHeaderContextToolbar(null);
         }
 
         function setPaymentDashboardVisible(visible) {
@@ -4959,23 +5020,155 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             if (dashboard) dashboard.classList.toggle('hidden', !!visible);
             if (payment) payment.classList.toggle('hidden', !visible);
             if (layout) layout.classList.toggle('dashboard-mode', true);
+            syncHeaderContextToolbar(visible ? 'payment' : null);
+        }
 
-            // payment toolbar moves to header when dashboard is visible
-            const panelToolbar = document.querySelector('#payment-dashboard-section .payment-toolbar');
+        function syncHeaderContextToolbar(mode) {
+            const nav = document.getElementById('header-contract-nav');
+            const tabContract = document.getElementById('btn-header-tab-contract');
+            const tabPayment = document.getElementById('btn-header-tab-payment');
             const headerToolbar = document.getElementById('header-payment-toolbar');
-            if (visible && panelToolbar && headerToolbar) {
-                // transfer all buttons from panel to header
-                while (panelToolbar.firstChild) {
-                    headerToolbar.appendChild(panelToolbar.firstChild);
+            const breadcrumb = document.getElementById('header-breadcrumb');
+            const headerRight = document.querySelector('.header-right');
+            const editorActions = document.querySelector('#contract-editor-section .editor-actions.editor-actions-sticky') || document.querySelector('#contract-editor-section .editor-actions');
+            const panelToolbar = document.querySelector('#payment-dashboard-section .payment-toolbar');
+            const editorSection = document.getElementById('contract-editor-section');
+            const paymentSection = document.getElementById('payment-dashboard-section');
+
+            const contractAllIds = ['btn-salvar', 'btn-activate-contract', 'btn-close-contract-editor', 'btn-close-contract', 'btn-reopen-contract', 'btn-return-draft-contract', 'btn-atualizar'];
+            const paymentIds = ['btn-payment-renew-cycle', 'btn-payment-create-manual', 'btn-payment-clear-all', 'btn-payment-refresh', 'payment-filter-hide-deleted-wrap'];
+
+            const restoreToOrigins = function () {
+                contractAllIds.forEach((id) => {
+                    const el = document.getElementById(id);
+                    if (el && editorActions) editorActions.appendChild(el);
+                });
+                paymentIds.forEach((id) => {
+                    const el = document.getElementById(id);
+                    if (el && panelToolbar) panelToolbar.appendChild(el);
+                });
+            };
+
+            restoreToOrigins();
+
+            const hasContract = !!(openedVersionId || currentPaymentContractId);
+            let effectiveMode = mode;
+            if (!effectiveMode && hasContract) {
+                if (paymentSection && !paymentSection.classList.contains('hidden')) {
+                    effectiveMode = 'payment';
+                } else if (editorSection && !editorSection.classList.contains('hidden')) {
+                    effectiveMode = 'contract';
+                }
+            }
+
+            // Resolve contract info for breadcrumb and button decisions
+            const currentVersionId = openedVersionId || currentPaymentContractId;
+            const currentVersion = currentVersionId ? getVersionById(currentVersionId) : null;
+            const currentStatus = currentVersion ? getContractStatus(currentVersion) : 'draft';
+            const isDraft = currentStatus === 'draft';
+
+            if (!hasContract) {
+                if (nav) nav.classList.add('hidden');
+                if (headerToolbar) headerToolbar.classList.add('hidden');
+                if (breadcrumb) breadcrumb.classList.add('hidden');
+                if (tabContract) { tabContract.classList.remove('active'); tabContract.setAttribute('aria-pressed', 'false'); }
+                if (tabPayment) { tabPayment.classList.remove('active'); tabPayment.setAttribute('aria-pressed', 'false'); }
+                // Reset header title
+                const headerTitle = document.getElementById('header-page-title');
+                if (headerTitle && !document.getElementById('tab-imoveis')?.classList.contains('hidden')) headerTitle.textContent = 'Imóveis';
+                else if (headerTitle && !document.getElementById('tab-pessoas')?.classList.contains('hidden')) headerTitle.textContent = 'Pessoas';
+                else if (headerTitle && !document.getElementById('tab-financeiro')?.classList.contains('hidden')) headerTitle.textContent = 'Financeiro';
+                else if (headerTitle) headerTitle.textContent = 'Contratos';
+                return;
+            }
+
+            // B8: Dynamic header title with property name + status
+            const headerTitle = document.getElementById('header-page-title');
+            if (headerTitle && currentVersion) {
+                const refs = getVersionRefIds(currentVersion);
+                const propertyLabel = getPropertyLabelById(refs.propertyId) || 'Contrato';
+                headerTitle.textContent = propertyLabel;
+            }
+
+            // C10: Breadcrumb
+            if (breadcrumb) {
+                const modeLabel = effectiveMode === 'payment' ? 'Pagamentos' : 'Contrato';
+                const statusLabel = getContractStatusLabel(currentStatus);
+                breadcrumb.innerHTML = `<span class="breadcrumb-link" id="breadcrumb-back">Contratos</span> <span class="breadcrumb-sep">›</span> <span class="breadcrumb-current">${modeLabel}</span> <span class="breadcrumb-status ${currentStatus}">${statusLabel}</span>`;
+                breadcrumb.classList.remove('hidden');
+                // Attach breadcrumb back handler
+                const backLink = document.getElementById('breadcrumb-back');
+                if (backLink) {
+                    backLink.onclick = function () {
+                        setContractEditorVisible(false);
+                        currentPaymentContractId = null;
+                        setPaymentDashboardVisible(false);
+                        syncContractActionButtons(null);
+                    };
+                }
+            }
+
+            if (nav) nav.classList.remove('hidden');
+            if (tabContract) {
+                tabContract.classList.toggle('active', effectiveMode === 'contract');
+                tabContract.setAttribute('aria-pressed', effectiveMode === 'contract' ? 'true' : 'false');
+            }
+            // B7: Disable payment tab for draft contracts
+            if (tabPayment) {
+                tabPayment.classList.toggle('active', effectiveMode === 'payment');
+                tabPayment.setAttribute('aria-pressed', effectiveMode === 'payment' ? 'true' : 'false');
+                tabPayment.disabled = isDraft;
+                tabPayment.classList.toggle('disabled', isDraft);
+                tabPayment.title = isDraft ? 'Ative o contrato para gerenciar pagamentos' : '';
+            }
+
+            if (!headerToolbar) return;
+            headerToolbar.innerHTML = '';
+
+            if (effectiveMode === 'payment') {
+                // C9: Voltar first, then payment actions
+                const btnVoltar = document.getElementById('btn-close-contract-editor');
+                if (btnVoltar) headerToolbar.appendChild(btnVoltar);
+                const sep = document.createElement('div');
+                sep.className = 'toolbar-separator';
+                headerToolbar.appendChild(sep);
+                paymentIds.forEach((id) => {
+                    const el = document.getElementById(id);
+                    if (el) headerToolbar.appendChild(el);
+                });
+                headerToolbar.classList.remove('hidden');
+                return;
+            }
+
+            if (effectiveMode === 'contract') {
+                // C9: Ordered buttons — Voltar | primary actions | destructive actions
+                const btnVoltar = document.getElementById('btn-close-contract-editor');
+                if (btnVoltar) headerToolbar.appendChild(btnVoltar);
+                const sep = document.createElement('div');
+                sep.className = 'toolbar-separator';
+                headerToolbar.appendChild(sep);
+
+                if (isDraft) {
+                    ['btn-salvar', 'btn-activate-contract'].forEach((id) => {
+                        const el = document.getElementById(id);
+                        if (el) headerToolbar.appendChild(el);
+                    });
+                } else if (currentStatus === 'active') {
+                    ['btn-atualizar', 'btn-return-draft-contract', 'btn-close-contract'].forEach((id) => {
+                        const el = document.getElementById(id);
+                        if (el) headerToolbar.appendChild(el);
+                    });
+                } else if (currentStatus === 'closed') {
+                    ['btn-reopen-contract'].forEach((id) => {
+                        const el = document.getElementById(id);
+                        if (el) headerToolbar.appendChild(el);
+                    });
                 }
                 headerToolbar.classList.remove('hidden');
-            } else if (headerToolbar && panelToolbar) {
-                // move buttons back to panel toolbar when hiding
-                while (headerToolbar.firstChild) {
-                    panelToolbar.appendChild(headerToolbar.firstChild);
-                }
-                headerToolbar.classList.add('hidden');
+                return;
             }
+
+            headerToolbar.classList.add('hidden');
         }
 
         function closePaymentDashboard() {
@@ -5516,14 +5709,16 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     const select = document.getElementById('version-list');
                     if (select) select.value = version.id;
 
-                    if (status === 'active' || status === 'closed') {
-                        await loadPaymentDashboard(version.id);
-                        return;
-                    }
-
+                    // B5: Comportamento unificado — qualquer status abre o editor do contrato
                     openedVersionId = version.id;
+                    currentPaymentContractId = version.id;
                     setFormData(version.data);
                     syncValorExtensoFromValor();
+                    render();
+                    refreshVersionList();
+                    setContractEditorVisible(true);
+                    setContractEditorReadOnly(status !== 'draft');
+                    syncContractActionButtons(version);
                     render();
                     refreshVersionList();
                     setContractEditorVisible(true);
@@ -7515,16 +7710,15 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 setContractEditorReadOnly(status !== 'draft');
                 syncContractActionButtons(openedVersion);
             }
+            syncHeaderContextToolbar(visible ? 'contract' : null);
         }
 
         async function closeContractEditorSection() {
-            const openedVersion = openedVersionId ? getVersionById(openedVersionId) : null;
-            const status = getContractStatus(openedVersion);
-            if (openedVersion?.id && status === 'active') {
-                await loadPaymentDashboard(openedVersion.id);
-                return;
-            }
+            // B6: Voltar SEMPRE retorna ao dashboard de contratos
+            openedVersionId = null;
+            currentPaymentContractId = null;
             setContractEditorVisible(false);
+            setPaymentDashboardVisible(false);
             syncContractActionButtons(null);
         }
 
@@ -7810,10 +8004,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('tab-pessoas').classList.toggle('hidden', !isPessoas);
             document.getElementById('tab-financeiro').classList.toggle('hidden', !isFinanceiro);
 
-            document.getElementById('tab-btn-contrato')?.classList.toggle('active', isContrato);
-            document.getElementById('tab-btn-imoveis')?.classList.toggle('active', isImoveis);
-            document.getElementById('tab-btn-pessoas')?.classList.toggle('active', isPessoas);
-            
             document.getElementById('nav-dashboard')?.classList.toggle('active', isContrato);
             document.getElementById('nav-properties')?.classList.toggle('active', isImoveis);
             document.getElementById('nav-people')?.classList.toggle('active', isPessoas);
@@ -7828,7 +8018,12 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             // Fecha sidebar no mobile
             document.getElementById('app-sidebar')?.classList.remove('open');
 
+            // A4: Limpa estado do contrato ao navegar pelo sidebar
+            openedVersionId = null;
+            currentPaymentContractId = null;
             setContractEditorVisible(false);
+            setPaymentDashboardVisible(false);
+            syncContractActionButtons(null);
 
             if (isFinanceiro) {
                 loadFinancialDashboard();
@@ -8089,15 +8284,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 syncTerminoFromInicioPrazo();
                 render();
             });
-            document.getElementById('tab-btn-contrato').addEventListener('click', function () {
-                switchTab('contrato');
-            });
-            document.getElementById('tab-btn-imoveis').addEventListener('click', function () {
-                switchTab('imoveis');
-            });
-            document.getElementById('tab-btn-pessoas').addEventListener('click', function () {
-                switchTab('pessoas');
-            });
             document.getElementById('nav-dashboard').addEventListener('click', function () {
                 switchTab('contrato');
             });
@@ -8164,16 +8350,17 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('btn-import-backup')?.addEventListener('click', function () {
                 document.getElementById('backup-import-input').click();
             });
-            document.getElementById('btn-header-view-payments')?.addEventListener('click', async function () {
-                if (openedVersionId) {
-                    await loadPaymentDashboard(openedVersionId);
-                }
+            document.getElementById('btn-header-tab-contract')?.addEventListener('click', function () {
+                const contractId = openedVersionId || currentPaymentContractId;
+                if (!contractId) return;
+                openContractReadOnlyFromDashboard(contractId);
             });
-            document.getElementById('btn-payment-view-dashboard')?.addEventListener('click', async function () {
-                if (currentPaymentContractId) {
-                    await loadPaymentDashboard(currentPaymentContractId);
-                }
+            document.getElementById('btn-header-tab-payment')?.addEventListener('click', async function () {
+                const contractId = currentPaymentContractId || openedVersionId;
+                if (!contractId) return;
+                await loadPaymentDashboard(contractId);
             });
+
             const btnNewContractDashboard = document.getElementById('btn-new-contract-dashboard');
             if (btnNewContractDashboard) {
                 btnNewContractDashboard.addEventListener('click', startNewContractFromDashboard);
@@ -8213,11 +8400,6 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('btn-payment-refresh')?.addEventListener('click', async function () {
                 if (currentPaymentContractId) {
                     await loadPaymentDashboard(currentPaymentContractId);
-                }
-            });
-            document.getElementById('btn-payment-view-readonly')?.addEventListener('click', function () {
-                if (currentPaymentContractId) {
-                    openContractReadOnlyFromDashboard(currentPaymentContractId);
                 }
             });
             document.getElementById('payment-filter-hide-deleted')?.addEventListener('change', async function () {
