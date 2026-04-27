@@ -2540,6 +2540,7 @@
         }
 
         /* Responsivo - Mobile (768px e menos) */
+        @media (max-width: 768px) {
             .content-layout {
                 padding: 16px 12px;
                 gap: 16px;
@@ -4747,7 +4748,7 @@
                         <strong>FORMA DE PAGAMENTO:</strong> O ALUGUEL SERÁ PAGO IMPRETERIVELMENTE ATÉ O DIA <span id="txt-vencimento-dia" class="var-text">10</span> DE CADA MÊS
                         MÊS ATRAVÉS DE PIX PARA:
                         <ul style="margin-top: 8px; list-style: none; padding-left: 0;">
-                            <li>• <strong>Favorecida:</strong> <strong id="txt-pix-titular" class="var-text"></strong>
+                            <li>• <strong>Favorecido(a):</strong> <strong id="txt-pix-titular" class="var-text"></strong>
                             </li>
                             <li>• <strong>Chave PIX (CPF):</strong> <span id="txt-pix-chave" class="var-text"></span>
                             </li>
@@ -7969,7 +7970,10 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
         function applyOwnerSelectionToContractFields() {
             const selectedId = fieldValue('f-owner-selected');
             const person = getUnifiedPeopleList().find((item) => item.id === selectedId);
-            setFieldValue('f-imovel-proprietario', person?.name || '');
+            const currentOwnerText = fieldValue('f-imovel-proprietario');
+            const landlordName = fieldValue('f-locador-nome');
+            const ownerName = person?.name || currentOwnerText || landlordName || '';
+            setFieldValue('f-imovel-proprietario', ownerName);
         }
 
         function applyPixPayeeSelectionToContractFields() {
@@ -8005,6 +8009,35 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             applyOwnerSelectionToContractFields();
             applyPixPayeeSelectionToContractFields();
             applyGuarantorSelectionsToContractFields();
+        }
+
+        function syncContractDataFromSelectedEntities() {
+            const selectedPropertyId = fieldValue('f-property-selected');
+            const selectedLandlordId = fieldValue('f-landlord-selected');
+            const selectedTenantId = fieldValue('f-tenant-selected');
+
+            const property = propertiesCache.find((item) => item.id === selectedPropertyId) || null;
+            const landlord = landlordsCache.find((item) => item.id === selectedLandlordId) || null;
+            const tenant = tenantsCache.find((item) => item.id === selectedTenantId) || null;
+
+            if (landlord) applyLandlordToContractFields(landlord);
+            if (tenant) applyTenantToContractFields(tenant);
+            if (property) {
+                applyPropertyToContractFields(property);
+                if (property.ownerId) {
+                    setFieldValue('f-owner-selected', property.ownerId);
+                    db.selectedPeople = db.selectedPeople || {};
+                    db.selectedPeople.ownerId = property.ownerId;
+                }
+            }
+
+            syncRegisteredPeopleIntoContractFields();
+            toggleLocatariaConjugeVisibility();
+            toggleFiador2Visibility();
+            updateGuarantorSpouseVisibility();
+            syncValorExtensoFromValor();
+            syncTerminoFromInicioPrazo();
+            render();
         }
 
         function onContractLandlordSelectionChange() {
@@ -8228,6 +8261,75 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setFieldValue('modal-property-memorial-note', '');
         }
 
+        function renderModalPropertyPhotoPreview(urls = []) {
+            const preview = document.getElementById('modal-property-fotos-preview');
+            if (!preview) return;
+            preview.innerHTML = '';
+
+            urls.forEach((url) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Foto do imóvel';
+                img.style = 'width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);';
+                preview.appendChild(img);
+            });
+        }
+
+        function bindModalPropertyPhotoInputPreview() {
+            const input = document.getElementById('modal-property-fotos');
+            const preview = document.getElementById('modal-property-fotos-preview');
+            if (!input || !preview) return;
+            if (input.dataset.previewBound === '1') return;
+
+            input.addEventListener('change', function () {
+                preview.innerHTML = '';
+                const files = Array.from(input.files || []);
+                if (!files.length) return;
+
+                files.forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const img = document.createElement('img');
+                        img.src = event.target?.result || '';
+                        img.alt = file.name || 'Foto selecionada';
+                        img.style = 'width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);';
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            input.dataset.previewBound = '1';
+        }
+
+        async function uploadPropertyPhotosToFirebase(propertyId, files = []) {
+            const fb = window.AppFirebase;
+            if (!fb?.ready || !fb.storage || !fb.storageRef || !fb.uploadBytes || !fb.getDownloadURL) {
+                throw new Error('Firebase Storage não está disponível.');
+            }
+
+            const safePropertyId = (propertyId || '').toString().trim();
+            if (!safePropertyId) {
+                throw new Error('ID do imóvel inválido para upload de fotos.');
+            }
+
+            const userId = currentAuthUser?.uid || fb?.auth?.currentUser?.uid;
+            if (!userId) {
+                throw new Error('Faça login para enviar fotos do imóvel.');
+            }
+
+            const uploads = files.map(async (file, index) => {
+                const extFromName = (file?.name || '').split('.').pop();
+                const ext = extFromName ? extFromName.toLowerCase() : 'jpg';
+                const path = `properties/${userId}/${safePropertyId}/${Date.now()}-${index}.${ext}`;
+                const ref = fb.storageRef(fb.storage, path);
+                await fb.uploadBytes(ref, file);
+                return fb.getDownloadURL(ref);
+            });
+
+            return Promise.all(uploads);
+        }
+
         function openNewPropertyModal() {
             const modal = document.getElementById('property-modal');
             if (!modal) return;
@@ -8266,16 +8368,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setFieldValue('modal-property-memorial-text', property.memorial?.text || '');
             setFieldValue('modal-property-memorial-note', property.memorial?.note || '');
 
-            // Fotos
-            document.getElementById('modal-property-fotos-preview').innerHTML = '';
-            if (property.fotos && property.fotos.length > 0) {
-                property.fotos.forEach(url => {
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.style = 'width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);';
-                    document.getElementById('modal-property-fotos-preview').appendChild(img);
-                });
-            }
+            setFieldValue('modal-property-fotos', '');
+            renderModalPropertyPhotoPreview(Array.isArray(property.fotos) ? property.fotos : []);
 
             modal.classList.remove('hidden');
             document.getElementById('modal-property-label')?.focus();
@@ -8297,11 +8391,20 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             const nowIso = new Date().toISOString();
             const existing = currentPropertyId ? propertiesCache.find(p => p.id === currentPropertyId) : null;
+            const nextPropertyId = currentPropertyId || generatePropertyId();
+            const inputPhotos = document.getElementById('modal-property-fotos');
+            const selectedFiles = Array.from(inputPhotos?.files || []).filter((file) => file instanceof File);
+            let photoUrls = Array.isArray(existing?.fotos) ? [...existing.fotos] : [];
+
+            if (selectedFiles.length) {
+                photoUrls = await uploadPropertyPhotosToFirebase(nextPropertyId, selectedFiles);
+            }
             
             const nextProperty = {
-                id: currentPropertyId || generatePropertyId(),
+                id: nextPropertyId,
                 label: label,
                 owner: fieldValue('modal-property-owner'),
+                fotos: photoUrls,
                 address: {
                     cidade: fieldValue('modal-property-cidade'),
                     estado: fieldValue('modal-property-estado'),
@@ -8336,6 +8439,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 refreshVersionFilterOptions();
                 refreshInviteContractOptions();
                 refreshVersionList();
+                renderModalPropertyPhotoPreview(nextProperty.fotos || []);
                 closePropertyModal();
                 alert('Imóvel salvo com sucesso.');
             } catch (error) {
@@ -8520,6 +8624,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const fiadoresValidos = garantiaTipo === 'fiador'
                 ? (db.fiadores || []).filter((fiador) => (fiador?.nome || '').trim())
                 : [];
+            const normalizeName = (value) => (value || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toUpperCase();
 
             const locatariaConjuge = (db.locataria?.conjuge_qualificacao || '').trim();
             const trechoConjugeLocataria = db.locataria?.estado_civil === 'casado' && locatariaConjuge
@@ -8532,11 +8637,14 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             `;
 
             document.getElementById('txt-endereco-imovel').innerText = db.imovel.endereco.toUpperCase();
+            const landlordName = (db.locador?.nome || '').toString().trim();
+            const ownerName = (db.imovel?.proprietario || landlordName).toString().trim();
             const usaProcurador = db.locador?.usa_procurador !== false;
+            const showProcuradorPhrase = !!(usaProcurador && ownerName && normalizeName(ownerName) !== normalizeName(landlordName));
             const proprietarioEl = document.getElementById('txt-proprietario');
-            document.getElementById('txt-procurador-frase').innerText = usaProcurador ? ', PROCURADOR DE SEU LEGÍTIMO PROPRIETÁRIO, ' : '';
-            proprietarioEl.innerText = usaProcurador ? db.imovel.proprietario.toUpperCase() : '';
-            proprietarioEl.classList.toggle('hidden', !usaProcurador);
+            document.getElementById('txt-procurador-frase').innerText = showProcuradorPhrase ? ', PROCURADOR DE SEU LEGÍTIMO PROPRIETÁRIO, ' : '';
+            proprietarioEl.innerText = showProcuradorPhrase ? ownerName.toUpperCase() : '';
+            proprietarioEl.classList.toggle('hidden', !showProcuradorPhrase);
             const foro = (db.foro || 'PALOTINA - PR').toString().trim() || 'PALOTINA - PR';
             document.getElementById('txt-foro').innerText = foro.toUpperCase();
             document.getElementById('txt-local-assinatura').innerText = foro;
@@ -10142,6 +10250,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             toggleFiador2Visibility();
             toggleGarantiaFields(false);
             syncGarantiaCaucaoFromAluguel();
+            bindModalPropertyPhotoInputPreview();
 
             document.getElementById('btn-manage-access')?.addEventListener('click', loadAuthorizedUsers);
             document.getElementById('btn-close-access-modal')?.addEventListener('click', function () {
@@ -10178,9 +10287,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             });
 
             document.getElementById('btn-atualizar').addEventListener('click', function () {
-                syncValorExtensoFromValor();
-                syncTerminoFromInicioPrazo();
-                render();
+                syncContractDataFromSelectedEntities();
             });
             document.getElementById('nav-dashboard').addEventListener('click', function () {
                 switchTab('contrato');

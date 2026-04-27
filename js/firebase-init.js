@@ -21,6 +21,12 @@ import {
   deleteDoc,
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 
 
 const config = window.FIREBASE_CONFIG || {};
@@ -32,12 +38,14 @@ if (!isConfigValid) {
   const app = getApps().length ? getApp() : initializeApp(config);
   const auth = getAuth(app);
   const db = getFirestore(app);
+  const storage = getStorage(app);
 
   window.AppFirebase = {
     ready: true,
     app,
     auth,
     db,
+    storage,
     onAuthStateChanged,
     signInWithPopup,
     GoogleAuthProvider,
@@ -52,6 +60,9 @@ if (!isConfigValid) {
     doc,
     setDoc,
     deleteDoc,
-    serverTimestamp
+    serverTimestamp,
+    storageRef,
+    uploadBytes,
+    getDownloadURL
   };
 }

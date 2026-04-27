@@ -17,10 +17,14 @@ function waitForFirebase(timeoutMs = 10000) {
 
 function normalizePropertyPayload(raw) {
   const nowIso = new Date().toISOString();
+  const photos = Array.isArray(raw.fotos)
+    ? raw.fotos.filter((item) => typeof item === 'string' && item.trim())
+    : [];
   return {
     id: raw.id,
     label: raw.label || '',
     owner: raw.owner || '',
+    fotos: photos,
     address: {
       cidade: raw.address?.cidade || '',
       estado: raw.address?.estado || '',
@@ -66,6 +70,7 @@ async function upsertProperty(ownerId, property) {
     ownerId,
     label: safeProperty.label,
     owner: safeProperty.owner,
+    fotos: safeProperty.fotos,
     address: safeProperty.address,
     memorial: safeProperty.memorial,
     updatedAt: safeProperty.updatedAt,
