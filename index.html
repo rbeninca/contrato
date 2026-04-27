@@ -4418,6 +4418,31 @@
                         </div>
                     </div>
                     <div class="editor-section-content">
+                        <div class="editor-grid">
+                            <div class="editor-field full">
+                                <label for="f-garantia-tipo">Modalidade de garantia</label>
+                                <select id="f-garantia-tipo">
+                                    <option value="fiador">Fiador(es)</option>
+                                    <option value="caucao_3_alugueis">3 aluguéis adiantados (sem fiador)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="garantia-caucao-fields" class="hidden" style="margin: 12px 0;">
+                            <div class="editor-grid">
+                                <div class="editor-field">
+                                    <label for="f-garantia-caucao-valor">Total da garantia (R$)</label>
+                                    <input id="f-garantia-caucao-valor" type="text" readonly>
+                                    <span class="field-hint">Calculado automaticamente como 3x o valor do aluguel.</span>
+                                </div>
+                                <div class="editor-field">
+                                    <label for="f-garantia-caucao-extenso">Total por extenso</label>
+                                    <input id="f-garantia-caucao-extenso" type="text" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="garantia-fiador-fields">
                         <!-- Fiador 1 -->
                         <div class="editor-grid">
                             <div class="editor-field"><label for="f-guarantor1-selected">Fiador 1</label><select id="f-guarantor1-selected" onchange="updateGuarantorSpouseVisibility()">
@@ -4445,6 +4470,7 @@
                             <div class="editor-field conditional-field" id="guarantor2-spouse-field"><label for="f-guarantor2-spouse-selected">Cônjuge do Fiador 2</label><select id="f-guarantor2-spouse-selected">
                                 <option value="">(Selecionar cônjuge)</option>
                             </select></div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -4835,17 +4861,30 @@
                 </div>
 
                 <div class="clause">
-                    <span class="clause-title">Cláusula XI - Fiança</span>
-                    ASSINAM TAMBÉM O PRESENTE CONTRATO COMO <strong>FIADORES</strong> E PRINCIPAIS PAGADORES,
-                    SOLIDARIAMENTE RESPONSÁVEIS:
-                    <div id="txt-lista-fiadores"
-                        style="margin-top: 10px; padding: 12px; border: 1px solid #f1f5f9; border-radius: 4px;"></div>
-                    <span class="paragraph"><strong>PARÁGRAFO ÚNICO:</strong> O FIADOR E PRINCIPAL PAGADOR FICAM TAMBÉM
-                        RESPONSÁVEIS PELAS CUSTAS JUDICIAIS E HONORÁRIOS ADVOCATÍCIOS A QUE VIER A SER CONDENADA O
-                        LOCATÁRIO EM AÇÃO DE DESPEJO OU QUALQUER OUTRA MEDIDA JUDICIAL QUE FOR INTENTADA PELO LOCADOR
-                        PARA PREVALECER SEUS DIREITOS E INTERESSES, DESDE QUE OS FIADORES SEJAM NOTIFICADOS, SENDO QUE O
-                        FIADOR RENUNCIA EXPRESSAMENTE O BENEFÍCIO DE ORDEM ESTIPULADO NO ARTIGO 827 DO CÓDIGO
-                        CIVIL.</span>
+                    <span id="txt-garantia-titulo" class="clause-title">Cláusula XI - Fiança</span>
+
+                    <div id="txt-garantia-fiador-bloco">
+                        ASSINAM TAMBÉM O PRESENTE CONTRATO COMO <strong>FIADORES</strong> E PRINCIPAIS PAGADORES,
+                        SOLIDARIAMENTE RESPONSÁVEIS:
+                        <div id="txt-lista-fiadores"
+                            style="margin-top: 10px; padding: 12px; border: 1px solid #f1f5f9; border-radius: 4px;"></div>
+                        <span class="paragraph"><strong>PARÁGRAFO ÚNICO:</strong> O FIADOR E PRINCIPAL PAGADOR FICAM TAMBÉM
+                            RESPONSÁVEIS PELAS CUSTAS JUDICIAIS E HONORÁRIOS ADVOCATÍCIOS A QUE VIER A SER CONDENADA O
+                            LOCATÁRIO EM AÇÃO DE DESPEJO OU QUALQUER OUTRA MEDIDA JUDICIAL QUE FOR INTENTADA PELO LOCADOR
+                            PARA PREVALECER SEUS DIREITOS E INTERESSES, DESDE QUE OS FIADORES SEJAM NOTIFICADOS, SENDO QUE O
+                            FIADOR RENUNCIA EXPRESSAMENTE O BENEFÍCIO DE ORDEM ESTIPULADO NO ARTIGO 827 DO CÓDIGO
+                            CIVIL.</span>
+                    </div>
+
+                    <div id="txt-garantia-caucao-bloco" class="hidden">
+                        COMO GARANTIA, O LOCATÁRIO EFETUA O PAGAMENTO DE TRÊS PARCELAS DO ALUGUEL, SENDO
+                        <strong>R$ <span id="txt-garantia-caucao-parcela" class="var-text"></span></strong> NO ATO DA
+                        ASSINATURA DO CONTRATO, NO TOTAL DE
+                        <strong>R$ <span id="txt-garantia-caucao-total" class="var-text"></span>
+                            (<span id="txt-garantia-caucao-extenso" class="var-text"></span>)</strong>.
+                        VALOR ESTE A SER RESTITUÍDO AO LOCATÁRIO QUANDO DA DESOCUPAÇÃO DO IMÓVEL, DESCONTANDO-SE
+                        POSSÍVEIS GASTOS EFETUADOS COM O IMÓVEL.
+                    </div>
                 </div>
 
                 <div class="clause">
@@ -4963,6 +5002,11 @@
                 recebedor_cpf: "000.000.000-00",
                 pix_chave: "000.000.000-00",
                 banco_detalhes: "BANCO EXEMPLO - AG 0000 - C/C 000000-0"
+            },
+            garantia: {
+                tipo: "fiador",
+                caucaoValor: "3.000,00",
+                caucaoExtenso: "três mil reais"
             },
             fiadores: [
                 {
@@ -6869,6 +6913,25 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const valor = fieldValue('f-financeiro-valor');
             const extenso = currencyToExtenso(valor);
             setFieldValue('f-financeiro-extenso', extenso);
+            syncGarantiaCaucaoFromAluguel();
+        }
+
+        function formatCurrencyFromNumber(value) {
+            if (!Number.isFinite(value)) return '';
+            return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function syncGarantiaCaucaoFromAluguel() {
+            const aluguel = parseCurrencyToNumber(fieldValue('f-financeiro-valor'));
+            if (!aluguel || aluguel <= 0) {
+                setFieldValue('f-garantia-caucao-valor', '');
+                setFieldValue('f-garantia-caucao-extenso', '');
+                return;
+            }
+            const total = aluguel * 3;
+            const totalText = formatCurrencyFromNumber(total);
+            setFieldValue('f-garantia-caucao-valor', totalText);
+            setFieldValue('f-garantia-caucao-extenso', currencyToExtenso(totalText));
         }
 
         function parseDatePtBr(value) {
@@ -6965,6 +7028,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const includeSecondFiador = (chkFiador2?.checked) || !!fieldValue('f-fiador2-nome');
             const locatariaEstadoCivil = fieldValue('f-locataria-estado-civil') || 'solteiro';
             const includeLocatariaConjuge = locatariaEstadoCivil === 'casado';
+            const garantiaTipo = fieldValue('f-garantia-tipo') || 'fiador';
             return {
                 locador: {
                     nome: fieldValue('f-locador-nome'),
@@ -7008,6 +7072,11 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                     recebedor_cpf: fieldValue('f-pagamento-cpf'),
                     pix_chave: fieldValue('f-pagamento-chave'),
                     banco_detalhes: fieldValue('f-pagamento-banco')
+                },
+                garantia: {
+                    tipo: garantiaTipo,
+                    caucaoValor: fieldValue('f-garantia-caucao-valor'),
+                    caucaoExtenso: fieldValue('f-garantia-caucao-extenso')
                 },
                 fiadores: [
                     {
@@ -7056,6 +7125,9 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setFieldValue('f-pagamento-chave', data.pagamento?.pix_chave || '');
             setFieldValue('f-pagamento-cpf', data.pagamento?.recebedor_cpf || '');
             setFieldValue('f-pagamento-banco', data.pagamento?.banco_detalhes || '');
+            setFieldValue('f-garantia-tipo', data.garantia?.tipo || 'fiador');
+            setFieldValue('f-garantia-caucao-valor', data.garantia?.caucaoValor || '');
+            setFieldValue('f-garantia-caucao-extenso', data.garantia?.caucaoExtenso || '');
             setFieldValue('f-fiador1-nome', data.fiadores?.[0]?.nome || '');
             setFieldValue('f-fiador1-estado-civil', data.fiadores?.[0]?.estado_civil || (data.fiadores?.[1] ? 'casado' : 'solteiro'));
             setFieldValue('f-fiador1-desc', data.fiadores?.[0]?.desc || '');
@@ -7080,6 +7152,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             refreshParticipantRoleSelects();
             toggleLocatariaConjugeVisibility();
             toggleFiador2Visibility();
+            toggleGarantiaFields(false);
+            syncGarantiaCaucaoFromAluguel();
         }
 
         function toggleLocatariaConjugeVisibility() {
@@ -7113,6 +7187,26 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 fiador2Fields.style.display = checkbox?.checked ? 'grid' : 'none';
             }
             updateGuarantorSpouseVisibility();
+        }
+
+        function toggleGarantiaFields(shouldRender = true) {
+            const garantiaTipo = fieldValue('f-garantia-tipo') || 'fiador';
+            const fiadorFields = document.getElementById('garantia-fiador-fields');
+            const caucaoFields = document.getElementById('garantia-caucao-fields');
+
+            if (fiadorFields) fiadorFields.classList.toggle('hidden', garantiaTipo !== 'fiador');
+            if (caucaoFields) caucaoFields.classList.toggle('hidden', garantiaTipo === 'fiador');
+
+            if (garantiaTipo !== 'fiador') {
+                const chkFiador2 = document.getElementById('chk-fiador2-enabled');
+                if (chkFiador2) chkFiador2.checked = false;
+                toggleFiador2Section();
+            }
+
+            if (shouldRender) {
+                syncGarantiaCaucaoFromAluguel();
+                render();
+            }
         }
 
         function updateGuarantorSpouseVisibility() {
@@ -8422,6 +8516,10 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
         function render() {
             db = getFormData();
+            const garantiaTipo = db.garantia?.tipo || 'fiador';
+            const fiadoresValidos = garantiaTipo === 'fiador'
+                ? (db.fiadores || []).filter((fiador) => (fiador?.nome || '').trim())
+                : [];
 
             const locatariaConjuge = (db.locataria?.conjuge_qualificacao || '').trim();
             const trechoConjugeLocataria = db.locataria?.estado_civil === 'casado' && locatariaConjuge
@@ -8456,16 +8554,39 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('txt-pix-cpf').innerText = db.pagamento.recebedor_cpf;
             document.getElementById('txt-banco-detalhe').innerText = db.pagamento.banco_detalhes.toUpperCase();
 
-            document.getElementById('txt-lista-fiadores').innerHTML = db.fiadores.map(fiador =>
-                `<p style="margin-bottom:8px"><strong><span id="txt-fiador-${db.fiadores.indexOf(fiador)}-papel" class="var-text">${(fiador.papel || '').toUpperCase()}</span>:</strong> <span id="txt-fiador-${db.fiadores.indexOf(fiador)}-nome" class="var-text">${(fiador.nome || '').toUpperCase()}</span>, <span id="txt-fiador-${db.fiadores.indexOf(fiador)}-desc" class="var-text">${(fiador.desc || '').toUpperCase()}</span>.</p>`
-            ).join('');
+            const listaFiadores = document.getElementById('txt-lista-fiadores');
+            if (listaFiadores) {
+                listaFiadores.innerHTML = fiadoresValidos.length
+                    ? fiadoresValidos.map((fiador, index) =>
+                        `<p style="margin-bottom:8px"><strong><span id="txt-fiador-${index}-papel" class="var-text">${(fiador.papel || '').toUpperCase()}</span>:</strong> <span id="txt-fiador-${index}-nome" class="var-text">${(fiador.nome || '').toUpperCase()}</span>, <span id="txt-fiador-${index}-desc" class="var-text">${(fiador.desc || '').toUpperCase()}</span>.</p>`
+                    ).join('')
+                    : '<p>SEM FIADORES INFORMADOS.</p>';
+            }
+
+            const garantiaTitulo = document.getElementById('txt-garantia-titulo');
+            const garantiaFiadorBloco = document.getElementById('txt-garantia-fiador-bloco');
+            const garantiaCaucaoBloco = document.getElementById('txt-garantia-caucao-bloco');
+            if (garantiaTitulo) {
+                garantiaTitulo.innerText = garantiaTipo === 'fiador'
+                    ? 'Cláusula XI - Fiança'
+                    : 'Cláusula XI - Garantia por Caução';
+            }
+            if (garantiaFiadorBloco) garantiaFiadorBloco.classList.toggle('hidden', garantiaTipo !== 'fiador');
+            if (garantiaCaucaoBloco) garantiaCaucaoBloco.classList.toggle('hidden', garantiaTipo === 'fiador');
+
+            const garantiaParcelaEl = document.getElementById('txt-garantia-caucao-parcela');
+            const garantiaTotalEl = document.getElementById('txt-garantia-caucao-total');
+            const garantiaExtensoEl = document.getElementById('txt-garantia-caucao-extenso');
+            if (garantiaParcelaEl) garantiaParcelaEl.innerText = db.financeiro.valor;
+            if (garantiaTotalEl) garantiaTotalEl.innerText = db.garantia?.caucaoValor || '';
+            if (garantiaExtensoEl) garantiaExtensoEl.innerText = (db.garantia?.caucaoExtenso || '').toUpperCase();
 
             document.getElementById('txt-data-assinatura').innerText = db.financeiro.assinatura.toUpperCase();
 
             const signatures = [
                 { name: db.locador.nome, role: "Locador" },
                 { name: db.locataria.nome, role: "Locatária" },
-                ...db.fiadores.map(fiador => ({ name: fiador.nome, role: fiador.papel }))
+                ...fiadoresValidos.map(fiador => ({ name: fiador.nome, role: fiador.papel }))
             ];
 
             document.getElementById('container-assinaturas').innerHTML = signatures.map(signature => `
@@ -8597,6 +8718,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             // Atualiza visibilidade condicional dos campos de cônjuge
             if (visible) {
                 updateGuarantorSpouseVisibility();
+                toggleGarantiaFields(false);
                 // Verifica se tem fiador 2 para marcar o checkbox
                 const guarantor2Id = fieldValue('f-guarantor2-selected');
                 const chkFiador2 = document.getElementById('chk-fiador2-enabled');
@@ -8640,13 +8762,16 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             const guarantor1Selected = fieldValue('f-guarantor1-selected');
             const guarantor2Selected = fieldValue('f-guarantor2-selected');
-            if ((fieldValue('f-fiador1-nome') || fieldValue('f-fiador1-desc')) && !guarantor1Selected) {
-                alert('Fiador 1 deve ser selecionado em pessoa cadastrada.');
-                return;
-            }
-            if ((fieldValue('f-fiador2-nome') || fieldValue('f-fiador2-desc')) && !guarantor2Selected) {
-                alert('Fiador 2 deve ser selecionado em pessoa cadastrada.');
-                return;
+            const garantiaTipo = fieldValue('f-garantia-tipo') || 'fiador';
+            if (garantiaTipo === 'fiador') {
+                if ((fieldValue('f-fiador1-nome') || fieldValue('f-fiador1-desc')) && !guarantor1Selected) {
+                    alert('Fiador 1 deve ser selecionado em pessoa cadastrada.');
+                    return;
+                }
+                if ((fieldValue('f-fiador2-nome') || fieldValue('f-fiador2-desc')) && !guarantor2Selected) {
+                    alert('Fiador 2 deve ser selecionado em pessoa cadastrada.');
+                    return;
+                }
             }
 
             const editorName = ensureEditorName();
@@ -10015,6 +10140,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             applyDataFromSource();
             toggleLocatariaConjugeVisibility();
             toggleFiador2Visibility();
+            toggleGarantiaFields(false);
+            syncGarantiaCaucaoFromAluguel();
 
             document.getElementById('btn-manage-access')?.addEventListener('click', loadAuthorizedUsers);
             document.getElementById('btn-close-access-modal')?.addEventListener('click', function () {
@@ -10025,6 +10152,10 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             document.getElementById('f-financeiro-valor').addEventListener('input', function () {
                 syncValorExtensoFromValor();
                 render();
+            });
+
+            document.getElementById('f-garantia-tipo')?.addEventListener('change', function () {
+                toggleGarantiaFields(true);
             });
 
             document.getElementById('f-financeiro-inicio').addEventListener('input', function () {
