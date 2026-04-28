@@ -4440,6 +4440,10 @@
                                     <label for="f-garantia-caucao-extenso">Total por extenso</label>
                                     <input id="f-garantia-caucao-extenso" type="text" readonly>
                                 </div>
+                                <div class="editor-field full">
+                                    <label for="f-garantia-caucao-forma">Forma de adiantamento dos 3 aluguéis</label>
+                                    <textarea id="f-garantia-caucao-forma" placeholder="Ex.: 1º pagamento no ato da assinatura, 2º em 10 dias e 3º em 20 dias."></textarea>
+                                </div>
                             </div>
                         </div>
 
@@ -4829,7 +4833,14 @@
                     <span class="paragraph"><strong>PARÁGRAFO ÚNICO:</strong> QUAISQUER BENFEITORIAS QUE SEJAM
                         REALIZADAS, MESMO COM AUTORIZAÇÃO DO LOCADOR, FICARÃO INCORPORADAS DESDE LOGO AO IMÓVEL.</span>
                 </div>
+                <div class="clause">
+                    <span class="clause-title">Cláusula XIV – Da Inadimplência e Rescisão</span> NÃO PAGAMENTO DO ALUGUEL E/OU ENCARGOS DA LOCAÇÃO POR PERÍODO SUPERIOR A 15 (QUINZE) DIAS APÓS O VENCIMENTO CARACTERIZARÁ INADIMPLÊNCIA CONTRATUAL, FACULTANDO AO LOCADOR CONSIDERAR RESCINDIDO O PRESENTE CONTRATO, INDEPENDENTEMENTE DE NOTIFICAÇÃO JUDICIAL OU EXTRAJUDICIAL.
 
+
+                <span class="paragraph"><strong>PARÁGRAFO PRIMEIRO:</strong>NESSA HIPÓTESE, PODERÁ O LOCADOR PROMOVER A COMPETENTE AÇÃO DE DESPEJO, CUMULADA COM COBRANÇA DOS VALORES DEVIDOS, SEM PREJUÍZO DA APLICAÇÃO DAS MULTAS CONTRATUAIS PREVISTAS.UM CONTRATO DE LOCAÇÃO, O ATRASO NO PAGAMENTO DO ALUGUEL OU DE QUALQUER ENCARGO PREVISTO NESTE CONTRATO POR UM PERÍODO SUPERIOR A 30 (TRINTA) DIAS CONSECUTIVOS OU INTERCALADOS, MESMO QUE NÃO SEJAM OS PRIMEIROS MESES DE ATRASO, CONSTITUIRÁ O LOCATÁRIO EM MORA, AUTORIZANDO O LOCADOR A PROMOVER A COMPETENTE AÇÃO DE DESPEJO, CUMULADA COM COBRANÇA DOS VALORES DEVIDOS, SEM PREJUÍZO DA APLICAÇÃO DAS MULTAS CONTRATUAIS PREVISTAS.
+
+                <span class="paragraph"><strong>PARÁGRAFO SEGUNDO:</strong> A TOLERÂNCIA EVENTUAL QUANTO A ATRASOS NÃO IMPLICARÁ NOVAÇÃO OU RENÚNCIA DE DIREITOS, PERMANECENDO ÍNTEGRA A EXIGIBILIDADE DAS OBRIGAÇÕES CONTRATUAIS.</span>
+                </div>
                 <div class="clause">
                     <span class="clause-title">Cláusula IX</span>
                     OS CONTRATANTES SE OBRIGAM MUTUAMENTE A RESPEITAR O PRESENTE CONTRATO, FICANDO A PARTE INFRATORA
@@ -4885,6 +4896,7 @@
                             (<span id="txt-garantia-caucao-extenso" class="var-text"></span>)</strong>.
                         VALOR ESTE A SER RESTITUÍDO AO LOCATÁRIO QUANDO DA DESOCUPAÇÃO DO IMÓVEL, DESCONTANDO-SE
                         POSSÍVEIS GASTOS EFETUADOS COM O IMÓVEL.
+                        <span id="txt-garantia-caucao-forma-wrap" class="paragraph hidden"><strong>FORMA DE ADIANTAMENTO:</strong> <span id="txt-garantia-caucao-forma" class="var-text"></span>.</span>
                     </div>
                 </div>
 
@@ -4910,6 +4922,18 @@
                         LOCADOR A RESCISÃO ANTECIPADA DO CONTRATO, COM A INCIDÊNCIA DA MULTA RESCISÓRIA PREVISTA NA
                         CLÁUSULA IX.</span>
                 </div>
+                <div class="clause">
+                    <span class="clause-title">Cláusula XIII – Da Vistoria do Imóvel  </span>
+                    O LOCATÁRIO DECLARA, NESTE ATO, QUE RECEBEU O IMÓVEL EM PERFEITO ESTADO DE CONSERVAÇÃO, HIGIENE E FUNCIONAMENTO, CONFORME LAUDO DE VISTORIA DETALHADO, ACOMPANHADO DE REGISTROS FOTOGRÁFICOS, QUE INTEGRA O PRESENTE CONTRATO PARA TODOS OS FINS DE DIREITO.
+                    
+                    <span class="paragraph"> <strong >PARAGRAFO PRIMEIRO:</strong> O LOCATÁRIO COMPROMETE-SE A RESTITUIR O IMÓVEL, AO TÉRMINO DA LOCAÇÃO, NAS MESMAS CONDIÇÕES EM QUE O RECEBEU, RESSALVADO O DESGASTE NATURAL DECORRENTE DO USO REGULAR.
+                    </span>
+                    
+                    <span class="paragraph">
+
+                     <span>
+                        <strong >PARAGRAFO SEGUNDO:</strong> A ENTREGA DAS CHAVES FICARÁ CONDICIONADA À REALIZAÇÃO DE VISTORIA FINAL, MEDIANTE COMPARAÇÃO COM O LAUDO DE VISTORIA INICIAL, DEVIDAMENTE ASSINADA PELAS PARTES.</div> 
+                    </span>
 
                 <div class="clause">
                     <span class="clause-title">Cláusula XIV - Do Foro</span>
@@ -5007,7 +5031,8 @@
             garantia: {
                 tipo: "fiador",
                 caucaoValor: "3.000,00",
-                caucaoExtenso: "três mil reais"
+                caucaoExtenso: "três mil reais",
+                caucaoForma: ""
             },
             fiadores: [
                 {
@@ -7077,7 +7102,8 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
                 garantia: {
                     tipo: garantiaTipo,
                     caucaoValor: fieldValue('f-garantia-caucao-valor'),
-                    caucaoExtenso: fieldValue('f-garantia-caucao-extenso')
+                    caucaoExtenso: fieldValue('f-garantia-caucao-extenso'),
+                    caucaoForma: fieldValue('f-garantia-caucao-forma')
                 },
                 fiadores: [
                     {
@@ -7129,6 +7155,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             setFieldValue('f-garantia-tipo', data.garantia?.tipo || 'fiador');
             setFieldValue('f-garantia-caucao-valor', data.garantia?.caucaoValor || '');
             setFieldValue('f-garantia-caucao-extenso', data.garantia?.caucaoExtenso || '');
+            setFieldValue('f-garantia-caucao-forma', data.garantia?.caucaoForma || '');
             setFieldValue('f-fiador1-nome', data.fiadores?.[0]?.nome || '');
             setFieldValue('f-fiador1-estado-civil', data.fiadores?.[0]?.estado_civil || (data.fiadores?.[1] ? 'casado' : 'solteiro'));
             setFieldValue('f-fiador1-desc', data.fiadores?.[0]?.desc || '');
@@ -8633,7 +8660,7 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
 
             document.getElementById('intro-partes').innerHTML = `
                 <p><strong>LOCADOR:</strong> <span id="txt-locador-nome-intro" class="var-text">${db.locador.nome.toUpperCase()}</span>, <span id="txt-locador-qualificacao-intro" class="var-text">${db.locador.qualificacao.toUpperCase()}</span>.</p>
-                <p style="margin-top:12px"><strong>LOCATÁRIA:</strong> <span id="txt-locataria-nome-intro" class="var-text">${db.locataria.nome.toUpperCase()}</span>, <span id="txt-locataria-qualificacao-intro" class="var-text">${db.locataria.qualificacao.toUpperCase()}</span>${trechoConjugeLocataria}.</p>
+                <p style="margin-top:12px"><strong>LOCATÁRIO(A):</strong> <span id="txt-locataria-nome-intro" class="var-text">${db.locataria.nome.toUpperCase()}</span>, <span id="txt-locataria-qualificacao-intro" class="var-text">${db.locataria.qualificacao.toUpperCase()}</span>${trechoConjugeLocataria}.</p>
             `;
 
             document.getElementById('txt-endereco-imovel').innerText = db.imovel.endereco.toUpperCase();
@@ -8685,15 +8712,20 @@ Utensílios/acessórios: espelho, box, torneiras, tanque, saboneteira e itens fi
             const garantiaParcelaEl = document.getElementById('txt-garantia-caucao-parcela');
             const garantiaTotalEl = document.getElementById('txt-garantia-caucao-total');
             const garantiaExtensoEl = document.getElementById('txt-garantia-caucao-extenso');
+            const garantiaFormaWrapEl = document.getElementById('txt-garantia-caucao-forma-wrap');
+            const garantiaFormaEl = document.getElementById('txt-garantia-caucao-forma');
             if (garantiaParcelaEl) garantiaParcelaEl.innerText = db.financeiro.valor;
             if (garantiaTotalEl) garantiaTotalEl.innerText = db.garantia?.caucaoValor || '';
             if (garantiaExtensoEl) garantiaExtensoEl.innerText = (db.garantia?.caucaoExtenso || '').toUpperCase();
+            const caucaoForma = (db.garantia?.caucaoForma || '').trim();
+            if (garantiaFormaWrapEl) garantiaFormaWrapEl.classList.toggle('hidden', !caucaoForma);
+            if (garantiaFormaEl) garantiaFormaEl.innerText = caucaoForma.toUpperCase();
 
             document.getElementById('txt-data-assinatura').innerText = db.financeiro.assinatura.toUpperCase();
 
             const signatures = [
                 { name: db.locador.nome, role: "Locador" },
-                { name: db.locataria.nome, role: "Locatária" },
+                { name: db.locataria.nome, role: "Locatário(a)" },
                 ...fiadoresValidos.map(fiador => ({ name: fiador.nome, role: fiador.papel }))
             ];
 
