@@ -1,0 +1,179 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(data) {
+      return isSignedIn() && data.ownerId == request.auth.uid;
+    }
+
+    function keepsImmutableOwnership() {
+      return request.resource.data.ownerId == resource.data.ownerId
+        && (
+          resource.data.createdAt == null
+          || request.resource.data.createdAt == resource.data.createdAt
+        );
+    }
+
+    function invitationDoc(invitationId) {
+      return get(/databases/$(database)/documents/invitations/$(invitationId));
+    }
+
+    function guestCanUseInvitation(invitationId) {
+      let inv = invitationDoc(invitationId);
+      return inv.exists()
+        && (inv.data.status == 'active' || inv.data.status == 'accepted')
+        && (
+          inv.data.invitedTenantUid == request.auth.uid
+          || inv.data.invitedTenantUid == ''
+        );
+    }
+
+    function ownerCanReadInvitation(data) {
+      return isOwner(data);
+    }
+
+    function guestCanReadInvitation(data) {
+      return isSignedIn()
+        && (
+          data.invitedTenantUid == request.auth.uid
+          || (data.status == 'active' && data.invitedTenantUid == '')
+        );
+    }
+
+    function guestAllowedParticipantKeys(invitationId) {
+      let role = invitationDoc(invitationId).data.role;
+      return role == 'guarantor1Id'
+        ? ['guarantor1Id', 'guarantor1SpouseId']
+        : (role == 'guarantor2Id'
+          ? ['guarantor2Id', 'guarantor2SpouseId']
+          : [role]);
+    }
+
+    match /users/{uid} {
+      allow read: if isSignedIn() && request.auth.uid == uid;
+      allow create: if isSignedIn() && request.auth.uid == uid;
+      allow update: if isSignedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+    }
+
+    match /people/{personId} {
+      allow read: if isOwner(resource.data);
+
+      allow create: if isSignedIn()
+        && (
+          request.resource.data.ownerId == request.auth.uid
+          || (
+            request.resource.data.updatedByInvitationId is string
+            && guestCanUseInvitation(request.resource.data.updatedByInvitationId)
+            && request.resource.data.tenantAuthUid == request.auth.uid
+            && request.resource.data.ownerId == invitationDoc(request.resource.data.updatedByInvitationId).data.ownerId
+          )
+        );
+
+      allow update: if (
+        isOwner(resource.data) && keepsImmutableOwnership()
+      ) || (
+        isSignedIn()
+        && resource.data.updatedByInvitationId is string
+        && request.resource.data.updatedByInvitationId == resource.data.updatedByInvitationId
+        && guestCanUseInvitation(resource.data.updatedByInvitationId)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.tenantAuthUid == request.auth.uid
+      );
+
+      allow delete: if isOwner(resource.data);
+    }
+
+    match /properties/{propertyId} {
+      allow read: if isOwner(resource.data);
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isOwner(resource.data) && keepsImmutableOwnership();
+      allow delete: if isOwner(resource.data);
+    }
+
+    match /contracts/{contractId} {
+      allow read: if isOwner(resource.data);
+
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid;
+
+      allow update: if (
+        isOwner(resource.data) && keepsImmutableOwnership()
+      ) || (
+        isSignedIn()
+        && request.resource.data.updatedByInvitationId is string
+        && guestCanUseInvitation(request.resource.data.updatedByInvitationId)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.propertyId == resource.data.propertyId
+        && request.resource.data.status == resource.data.status
+        && request.resource.data.data == resource.data.data
+        && request.resource.data.participants.diff(resource.data.participants).affectedKeys().hasOnly(
+          guestAllowedParticipantKeys(request.resource.data.updatedByInvitationId)
+        )
+      );
+
+      allow delete: if isOwner(resource.data);
+
+      match /payments/{paymentId} {
+        allow read: if isSignedIn()
+          && get(/databases/$(database)/documents/contracts/$(contractId)).data.ownerId == request.auth.uid;
+
+        allow create: if isSignedIn()
+          && get(/databases/$(database)/documents/contracts/$(contractId)).data.ownerId == request.auth.uid;
+
+        allow update: if isSignedIn()
+          && get(/databases/$(database)/documents/contracts/$(contractId)).data.ownerId == request.auth.uid;
+
+        allow delete: if isSignedIn()
+          && get(/databases/$(database)/documents/contracts/$(contractId)).data.ownerId == request.auth.uid;
+      }
+    }
+
+    match /invitations/{invitationId} {
+      allow read: if ownerCanReadInvitation(resource.data) || guestCanReadInvitation(resource.data);
+
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.status == 'active'
+        && request.resource.data.expiresAt > request.time;
+
+      allow update: if (
+        isOwner(resource.data)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.contractId == resource.data.contractId
+        && request.resource.data.tokenHash == resource.data.tokenHash
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.role == resource.data.role
+      ) || (
+        isSignedIn()
+        && (resource.data.invitedTenantUid == '' || resource.data.invitedTenantUid == request.auth.uid)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.contractId == resource.data.contractId
+        && request.resource.data.tokenHash == resource.data.tokenHash
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.invitedTenantUid == request.auth.uid
+        && request.resource.data.status == 'accepted'
+      );
+
+      allow delete: if isOwner(resource.data);
+    }
+
+    // Legado
+    match /landlords/{landlordId} {
+      allow read, write: if false;
+    }
+
+    match /tenants/{tenantId} {
+      allow read, write: if false;
+    }
+  }
+}
